@@ -5,5 +5,5 @@ import com.example.project_x.data.model.User
 import javax.inject.Inject
 
 class UserDataSource @Inject constructor(private val apiService: ApiService) {
-    suspend fun registerUser(user: User) = apiService.registerUser(user)
+  suspend fun registerUser(user: User) = apiService.registerUser(user)
 }

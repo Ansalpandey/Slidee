@@ -21,7 +21,8 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
         val result = userRepository.registerUser(user)
         userStateHolder.value = userStateHolder.value.copy(isLoading = false, data = result)
       } catch (e: Exception) {
-        userStateHolder.value = userStateHolder.value.copy(isLoading = false, error = e.message ?: "An error occurred")
+        userStateHolder.value =
+          userStateHolder.value.copy(isLoading = false, error = e.message ?: "An error occurred")
       }
     }
   }

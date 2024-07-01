@@ -19,14 +19,14 @@ object AppModule {
   @Provides
   fun provideRetrofit(): Retrofit {
     return Retrofit.Builder()
-        .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/users/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor(
-                    HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build())
-        .build()
+      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/users/")
+      .addConverterFactory(GsonConverterFactory.create())
+      .client(
+        OkHttpClient.Builder()
+          .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+          .build()
+      )
+      .build()
   }
 
   @Provides
