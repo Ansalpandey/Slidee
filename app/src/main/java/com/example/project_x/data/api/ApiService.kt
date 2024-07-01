@@ -5,5 +5,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface ApiService {
-  @POST("register") suspend fun registerUser(@Body user: User): User
+  @POST("users/register") suspend fun registerUser(@Body user: User): User
+
+  @POST("users/login") suspend fun loginUser(@Body user: User): User
 }

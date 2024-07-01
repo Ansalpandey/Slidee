@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.project_x.ui.screens.HomeScreen
+import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
       val viewModel = viewModel<AuthViewModel>()
       ProjectXTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          RegisterScreen(modifier = Modifier.padding(innerPadding), viewModel)
+          HomeScreen(modifier = Modifier.padding(innerPadding), viewModel)
         }
       }
     }
