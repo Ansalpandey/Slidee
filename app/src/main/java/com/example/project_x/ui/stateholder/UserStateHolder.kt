@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 data class UserStateHolder(
   val isLoading: Boolean = false,
   val data: Flow<User>? = null,
-  val error: String = "",
+  val error: String? = "",
   val isLoggedIn: Boolean = false,
 )

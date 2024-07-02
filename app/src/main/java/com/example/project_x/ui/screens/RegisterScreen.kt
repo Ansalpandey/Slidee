@@ -112,7 +112,7 @@ fun RegisterScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     Text("Register")
   }
 
-  if (userState.error.isNotBlank()) {
+  if (userState.error?.isNotBlank() == true) {
     Spacer(modifier = Modifier.height(16.dp))
     Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
   }

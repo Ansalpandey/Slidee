@@ -1,5 +1,6 @@
 package com.example.project_x.data.datasource
 
+import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.model.User
 import javax.inject.Inject
@@ -7,21 +8,45 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class UserDataSource @Inject constructor(private val apiService: ApiService) {
-  fun registerUser(user: User): Flow<Result<User>> = flow {
+  suspend fun registerUser(user: User): Flow<Resource<User>> = flow {
+    emit(Resource.Loading())
     try {
       val response = apiService.registerUser(user)
-      emit(Result.success(response))
+      if (response.isSuccessful) {
+        emit(Resource.Success(response.body()))
+      } else {
+        emit(Resource.Error("Registration failed"))
+      }
     } catch (e: Exception) {
-      emit(Result.failure<User>(e))
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
 
-  fun loginUser(user: User): Flow<Result<User>> = flow {
+  suspend fun loginUser(user: User): Flow<Resource<User>> = flow {
+    emit(Resource.Loading())
     try {
       val response = apiService.loginUser(user)
-      emit(Result.success(response))
+      if (response.isSuccessful) {
+        emit(Resource.Success(response.body()))
+      } else {
+        emit(Resource.Error("Login failed"))
+      }
     } catch (e: Exception) {
-      emit(Result.failure(e))
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun logoutUser(): Flow<Resource<User>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = apiService.logoutUser()
+      if (response.isSuccessful) {
+        emit(Resource.Success(response.body()))
+      } else {
+        emit(Resource.Error("Logout failed"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
 }

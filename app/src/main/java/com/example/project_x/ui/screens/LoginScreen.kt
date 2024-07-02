@@ -30,11 +30,10 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
-  val userState = viewModel.loggedInUserStateHolder.collectAsState().value
+  val userState = viewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
-  var email by rememberSaveable { mutableStateOf("") }
+  var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
-  var username by rememberSaveable { mutableStateOf("") }
 
   if (userState.isLoading) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -48,9 +47,9 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     verticalArrangement = Arrangement.Center,
   ) {
     OutlinedTextField(
-      value = email,
-      onValueChange = { email = it },
-      label = { Text("email or username") },
+      value = emailOrUsername,
+      onValueChange = { emailOrUsername = it },
+      label = { Text("Email or Username") },
       modifier = Modifier.fillMaxWidth(),
     )
     Spacer(modifier = Modifier.height(8.dp))
@@ -65,8 +64,8 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
       onClick = {
         val user =
           User(
-            email = email.takeIf { it.isNotEmpty() },
-            username = username.takeIf { it.isNotEmpty() },
+            email = if (emailOrUsername.contains('@')) emailOrUsername else null,
+            username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
             password = password,
           )
         viewModel.loginUser(user)
@@ -77,7 +76,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
       Text("Login")
     }
 
-    if (userState.error.isNotBlank()) {
+    if (userState.error?.isNotBlank() == true) {
       Spacer(modifier = Modifier.height(16.dp))
       Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
     }

@@ -23,5 +23,5 @@ sealed class Resource<T>(val data: T? = null, val message: String? = null) {
    *
    * @param message The error message.
    */
-  class Error<T>(message: String) : Resource<T>(message = message)
+  class Error<T>(message: String?) : Resource<T>(message = message)
 }

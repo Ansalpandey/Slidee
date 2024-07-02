@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.project_x"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.project_x"
@@ -52,7 +52,6 @@ android {
 }
 
 dependencies {
-    val lifecycleVersion = "2.8.2"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -62,6 +61,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -92,4 +92,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
 
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation (libs.androidx.datastore.preferences)
+
+    implementation(libs.androidx.core.splashscreen)
 }
