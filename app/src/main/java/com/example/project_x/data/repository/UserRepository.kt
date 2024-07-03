@@ -9,12 +9,12 @@ import com.example.project_x.preferences.UserPreferences
 import com.example.project_x.preferences.dataStore
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class UserRepository
@@ -78,13 +78,11 @@ constructor(
   }
 
   suspend fun logoutUser() {
-    dataStore.edit { preferences ->
-      preferences[UserPreferences.IS_LOGGED_IN] = false
-      preferences[UserPreferences.USER_NAME] = ""
-      preferences[UserPreferences.USER_EMAIL] = ""
-      preferences[UserPreferences.USER_AGE] = 0
-      preferences[UserPreferences.USER_USERNAME] = ""
-      preferences[UserPreferences.USER_BIO] = ""
-    }
+    userDataSource.logoutUser()
+    clearUserPreferences()
+  }
+
+  private suspend fun clearUserPreferences() {
+    dataStore.edit { preferences -> preferences.clear() }
   }
 }

@@ -21,7 +21,7 @@ object AppModule {
   @Provides
   fun provideRetrofit(): Retrofit {
     return Retrofit.Builder()
-      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+        .baseUrl("https://39e8-45-118-166-105.ngrok-free.app/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
       .client(
         OkHttpClient.Builder()
