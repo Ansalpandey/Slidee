@@ -13,6 +13,6 @@ interface ApiService {
 
   @POST("users/logout") suspend fun logoutUser(): Response<User>
 
-    @GET("users")
-    suspend fun getUsers(): Response<User>
+  @GET("users")
+  suspend fun getUserProfile(): Response<User>
 }

@@ -85,4 +85,12 @@ constructor(
   private suspend fun clearUserPreferences() {
     dataStore.edit { preferences -> preferences.clear() }
   }
+
+  suspend fun getUserProfile(): Flow<Resource<User>> {
+    return userDataSource.getUserProfile().onEach { resource ->
+      if (resource is Resource.Success && resource.data != null) {
+        setUserPreferences(resource.data, true)
+      }
+    }
+  }
 }

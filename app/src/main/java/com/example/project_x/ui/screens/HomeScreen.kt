@@ -1,31 +1,60 @@
 package com.example.project_x.ui.screens
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.project_x.common.Resource
+import com.example.project_x.data.model.User
 import com.example.project_x.ui.viewmodel.AuthViewModel
+import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
-  val userState by viewModel.userStateHolder.collectAsState()
+fun HomeScreen(
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  profileViewModel: ProfileViewModel,
+) {
+  val userState by authViewModel.userStateHolder.collectAsState()
+  val profileState by profileViewModel.userProfileState.collectAsState()
 
-  // Check if userState is still loading
   if (userState.isLoading) {
-    // Show loading indicator or splash screen while determining login state
-    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      CircularProgressIndicator() // Or any other loading indicator
-    }
+    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
   } else {
-    // User state is not loading, check if logged in
     if (userState.isLoggedIn) {
-      TestScreen(viewModel = viewModel)
+      LaunchedEffect(key1 = true) { profileViewModel.fetchUserProfile() }
+      when (profileState) {
+        is Resource.Loading -> {
+          Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+          }
+        }
+
+        is Resource.Success -> {
+          val user = (profileState as Resource.Success<User>).data
+          Column {
+            Text("Welcome ${user?.username}")
+            Text("Name: ${user?.name}")
+            Text("Email: ${user?.email}")
+            Text("Age: ${user?.age}")
+            Text("Bio: ${user?.bio}")
+            // Add more content here
+          }
+        }
+
+        is Resource.Error -> {
+          Text("Failed to load profile: ${(profileState as Resource.Error).message}")
+        }
+      }
     } else {
-      LoginScreen(viewModel = viewModel)
+      LoginScreen(viewModel = authViewModel)
     }
   }
 }
