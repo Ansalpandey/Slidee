@@ -43,77 +43,80 @@ fun RegisterScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       CircularProgressIndicator()
     }
-  }
+  } else {
 
-  Column(
-    modifier = Modifier.fillMaxSize().padding(16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-    OutlinedTextField(
-      value = name,
-      onValueChange = { name = it },
-      label = { Text("Name") },
-      modifier = Modifier.fillMaxWidth(),
-    )
-  }
-  OutlinedTextField(
-    value = email,
-    onValueChange = { email = it },
-    label = { Text("Email") },
-    modifier = Modifier.fillMaxWidth(),
-  )
-  Spacer(modifier = Modifier.height(8.dp))
-  OutlinedTextField(
-    value = password,
-    onValueChange = { password = it },
-    label = { Text("Password") },
-    modifier = Modifier.fillMaxWidth(),
-  )
-  Spacer(modifier = Modifier.height(16.dp))
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center,
+    ) {
+      OutlinedTextField(
+        value = name,
+        onValueChange = { name = it },
+        label = { Text("Name") },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      OutlinedTextField(
+        value = email,
+        onValueChange = { email = it },
+        label = { Text("Email") },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+      OutlinedTextField(
+        value = password,
+        onValueChange = { password = it },
+        label = { Text("Password") },
+        modifier = Modifier.fillMaxWidth(),
+      )
+      Spacer(modifier = Modifier.height(16.dp))
 
-  OutlinedTextField(
-    value = username,
-    onValueChange = { username = it },
-    label = { Text("Username") },
-    modifier = Modifier.fillMaxWidth(),
-  )
+      OutlinedTextField(
+        value = username,
+        onValueChange = { username = it },
+        label = { Text("Username") },
+        modifier = Modifier.fillMaxWidth(),
+      )
 
-  OutlinedTextField(
-    value = bio,
-    onValueChange = { bio = it },
-    label = { Text("Bio") },
-    modifier = Modifier.fillMaxWidth(),
-  )
+      OutlinedTextField(
+        value = bio,
+        onValueChange = { bio = it },
+        label = { Text("Bio") },
+        modifier = Modifier.fillMaxWidth(),
+      )
 
-  OutlinedTextField(
-    value = age,
-    onValueChange = { age = it },
-    label = { Text("Age") },
-    modifier = Modifier.fillMaxWidth(),
-  )
+      OutlinedTextField(
+        value = age,
+        onValueChange = { age = it },
+        label = { Text("Age") },
+        modifier = Modifier.fillMaxWidth(),
+      )
 
-  Button(
-    onClick = {
-      val user =
-        User(
-          name = name,
-          email = email,
-          age = age.toInt(),
-          username = username,
-          password = password,
-          bio = bio,
-        )
-      viewModel.registerUser(user)
-      Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
-    },
-    modifier = Modifier.fillMaxWidth(),
-  ) {
-    Text("Register")
-  }
+      Button(
+        onClick = {
+          val user =
+            User(
+              name = name,
+              email = email,
+              age = age.toInt(),
+              username = username,
+              password = password,
+              bio = bio,
+            )
+          viewModel.registerUser(user)
+          Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+        },
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Text("Register")
+      }
 
-  if (userState.error?.isNotBlank() == true) {
-    Spacer(modifier = Modifier.height(16.dp))
-    Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
+      if (userState.error?.isNotBlank() == true) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
+      }
+    }
   }
 }

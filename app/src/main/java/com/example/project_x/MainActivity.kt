@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
             authViewModel = viewModel,
             profileViewModel = profileViewModel,
           )
+//          RegisterScreen(modifier = Modifier.padding(innerPadding), viewModel = viewModel)
         }
       }
     }
