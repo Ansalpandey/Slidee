@@ -1,15 +1,24 @@
 package com.example.project_x.data.datasource
 
+import android.util.Log
 import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
-import com.example.project_x.data.model.Profile
-import com.example.project_x.data.model.User
+import com.example.project_x.data.api.AuthenticatedApiService
+import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.UserRequest
+import com.example.project_x.data.model.UserResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class UserDataSource @Inject constructor(private val apiService: ApiService) {
-  suspend fun registerUser(user: User): Flow<Resource<User>> = flow {
+class UserDataSource
+@Inject
+constructor(
+  private val apiService: ApiService,
+  private val authenticatedApiService: AuthenticatedApiService,
+) {
+
+  suspend fun registerUser(user: UserRequest): Flow<Resource<UserResponse>> = flow {
     emit(Resource.Loading())
     try {
       val response = apiService.registerUser(user)
@@ -23,12 +32,13 @@ class UserDataSource @Inject constructor(private val apiService: ApiService) {
     }
   }
 
-  suspend fun loginUser(user: User): Flow<Resource<User>> = flow {
+  suspend fun loginUser(user: UserRequest): Flow<Resource<UserResponse>> = flow {
     emit(Resource.Loading())
     try {
       val response = apiService.loginUser(user)
       if (response.isSuccessful) {
-        emit(Resource.Success(response.body()))
+        val userResponse = response.body()
+        emit(Resource.Success(userResponse))
       } else {
         emit(Resource.Error("Login failed"))
       }
@@ -37,7 +47,7 @@ class UserDataSource @Inject constructor(private val apiService: ApiService) {
     }
   }
 
-  suspend fun logoutUser(): Flow<Resource<User>> = flow {
+  suspend fun logoutUser(): Flow<Resource<UserResponse>> = flow {
     emit(Resource.Loading())
     try {
       val response = apiService.logoutUser()
@@ -51,14 +61,17 @@ class UserDataSource @Inject constructor(private val apiService: ApiService) {
     }
   }
 
-  suspend fun getUserProfile(accessToken: String): Flow<Resource<Profile>> = flow {
+  suspend fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
     emit(Resource.Loading())
     try {
-      val response = apiService.getUserProfile(accessToken)
+      val response = authenticatedApiService.getUserProfile()
       if (response.isSuccessful) {
-        emit(Resource.Success(response.body()))
+        response.body()?.let {
+          emit(Resource.Success(it))
+          Log.d("UserDataSource", "fetchUserProfile: $it")
+        } ?: emit(Resource.Error("Failed to fetch user profile: Empty response body"))
       } else {
-        emit(Resource.Error("Failed to load profile"))
+        emit(Resource.Error("Failed to fetch user profile: ${response.errorBody()?.string()}"))
       }
     } catch (e: Exception) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))

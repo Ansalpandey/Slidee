@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.project_x.data.model.User
+import com.example.project_x.data.model.UserRequest
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -97,7 +97,7 @@ fun RegisterScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
       Button(
         onClick = {
           val user =
-            User(
+            UserRequest(
               name = name,
               email = email,
               age = age.toInt(),

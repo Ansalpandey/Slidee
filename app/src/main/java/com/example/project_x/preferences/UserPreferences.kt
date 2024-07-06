@@ -16,7 +16,8 @@ object UserPreferences {
   val USER_AGE = intPreferencesKey("user_age")
   val USER_USERNAME = stringPreferencesKey("user_username")
   val USER_BIO = stringPreferencesKey("user_bio")
-  val ACCESS_TOKEN = stringPreferencesKey("access_token") // Add this key
+  val COVER_IMAGE = stringPreferencesKey("cover_image") // Add this key
+  val PROFILE_IMAGE = stringPreferencesKey("profile_image") // Add this key
 }
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")

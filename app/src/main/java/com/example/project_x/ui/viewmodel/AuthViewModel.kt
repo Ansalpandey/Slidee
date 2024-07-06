@@ -3,16 +3,17 @@ package com.example.project_x.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
-import com.example.project_x.data.model.User
+import com.example.project_x.data.model.UserRequest
+import com.example.project_x.data.model.UserResponse
 import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
@@ -26,19 +27,19 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
     }
   }
 
-  fun registerUser(user: User) {
+  fun registerUser(user: UserRequest) {
     viewModelScope.launch {
       userRepository.registerUser(user).collect { resource -> handleResource(resource) }
     }
   }
 
-  fun loginUser(user: User) {
+  fun loginUser(user: UserRequest) {
     viewModelScope.launch {
       userRepository.loginUser(user).collect { resource -> handleResource(resource) }
     }
   }
 
-  private fun handleResource(resource: Resource<User>) {
+  private fun handleResource(resource: Resource<UserResponse>) {
     when (resource) {
       is Resource.Loading -> {
         _userStateHolder.value = _userStateHolder.value.copy(isLoading = true)

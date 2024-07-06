@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.project_x.common.Resource
+import androidx.compose.ui.unit.sp
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 
@@ -30,24 +31,13 @@ fun HomeScreen(
     if (userState.isLoggedIn) {
       LaunchedEffect(key1 = true) {
         profileViewModel.fetchUserProfile()
+        Log.d("HomeScreen", "fetchUserProfile: ${profileViewModel.fetchUserProfile()}")
       }
-      profileState.let {
-        when (it) {
-          is Resource.Loading -> {
-            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-              CircularProgressIndicator()
-            }
-          }
-
-          is Resource.Success -> {
-            val user = it.data
-            Column { Text("Welcome ${user?.user?.name}") }
-          }
-
-          is Resource.Error -> {
-            Text("Failed to load profile: ${(it).message}")
-          }
-        }
+      Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
+        Text(text = "Welcome ${profileState.data}!", fontSize = 24.sp)
       }
     } else {
       LoginScreen(viewModel = authViewModel)

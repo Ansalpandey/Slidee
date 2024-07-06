@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.project_x.data.model.User
+import com.example.project_x.data.model.UserRequest
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -42,7 +42,9 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
   }
 
   Column(
-    modifier = Modifier.fillMaxSize().padding(16.dp),
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
@@ -63,7 +65,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     Button(
       onClick = {
         val user =
-          User(
+          UserRequest(
             email = if (emailOrUsername.contains('@')) emailOrUsername else null,
             username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
             password = password,
