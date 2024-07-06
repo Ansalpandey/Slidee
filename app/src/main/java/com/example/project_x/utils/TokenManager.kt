@@ -1,21 +1,23 @@
 package com.example.project_x.utils
 
 import android.content.Context
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class TokenManager @Inject constructor(@ApplicationContext private val context: Context) {
-    val sharedPreferences = context.getSharedPreferences("TokenManager", Context.MODE_PRIVATE)
+  private val sharedPreferences = context.getSharedPreferences("TokenManager", Context.MODE_PRIVATE)
 
-    fun saveToken(token: String) {
-        sharedPreferences.edit().putString("token", token).apply()
-    }
+  fun saveToken(token: String) {
+    sharedPreferences.edit().putString("token", token).apply()
+    Log.d("TokenManager", "saveToken: $token")
+  }
 
-    fun getToken(): String? {
-        return sharedPreferences.getString("token", null)
-    }
+  fun getToken(): String? {
+    return sharedPreferences.getString("token", null)
+  }
 
-    fun deleteToken() {
-        sharedPreferences.edit().remove("token").apply()
-    }
+  fun deleteToken() {
+    sharedPreferences.edit().remove("token").apply()
+  }
 }
