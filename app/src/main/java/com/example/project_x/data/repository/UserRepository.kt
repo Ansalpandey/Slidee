@@ -71,8 +71,8 @@ constructor(
     return userDataSource.loginUser(user).onEach { resource ->
       if (resource is Resource.Success) {
         setUserPreferences(resource.data!!, true)
-          tokenManager.saveToken(resource.data.token!!)
-          Log.d("UserRepository", "loginUserToken: ${resource.data.token}")
+        tokenManager.saveToken(resource.data.token!!)
+        Log.d("UserRepository", "loginUserToken: ${resource.data.token}")
       }
     }
   }
@@ -80,14 +80,14 @@ constructor(
   private suspend fun setUserPreferences(user: UserResponse, isLoggedIn: Boolean) {
     dataStore.edit { preferences ->
       preferences[UserPreferences.IS_LOGGED_IN] = isLoggedIn
-        preferences[UserPreferences.USER_NAME] = user.user.name
-        preferences[UserPreferences.USER_ID] = user.user.id
-        preferences[UserPreferences.USER_EMAIL] = user.user.email
-        preferences[UserPreferences.USER_AGE] = user.user.age
-        preferences[UserPreferences.USER_USERNAME] = user.user.username
-        preferences[UserPreferences.USER_BIO] = user.user.bio
-        preferences[UserPreferences.COVER_IMAGE] = user.user.coverImage
-        preferences[UserPreferences.PROFILE_IMAGE] = user.user.profileImage
+      preferences[UserPreferences.USER_NAME] = user.user.name
+      preferences[UserPreferences.USER_ID] = user.user.id
+      preferences[UserPreferences.USER_EMAIL] = user.user.email
+      preferences[UserPreferences.USER_AGE] = user.user.age
+      preferences[UserPreferences.USER_USERNAME] = user.user.username
+      preferences[UserPreferences.USER_BIO] = user.user.bio
+      preferences[UserPreferences.COVER_IMAGE] = user.user.coverImage
+      preferences[UserPreferences.PROFILE_IMAGE] = user.user.profileImage
     }
   }
 

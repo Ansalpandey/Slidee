@@ -15,5 +15,4 @@ interface ApiService {
 
   @POST("users/logout")
   suspend fun logoutUser(): Response<UserResponse>
-
 }

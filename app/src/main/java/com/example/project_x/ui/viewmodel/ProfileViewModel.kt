@@ -1,6 +1,5 @@
 package com.example.project_x.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
@@ -20,15 +19,15 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
 
-  init {
-    fetchUserProfile()
-  }
+  private var isProfileFetched = false
 
   fun fetchUserProfile() {
-    viewModelScope.launch {
-      userRepository.getUserProfile().collect { resource ->
-        _profileState.value = resource
-        Log.d("ProfileViewModel", "fetchUserProfile: $resource")
+    if (!isProfileFetched) {
+      viewModelScope.launch {
+        userRepository.getUserProfile().collect { resource ->
+          _profileState.value = resource
+          isProfileFetched = true
+        }
       }
     }
   }

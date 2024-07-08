@@ -1,6 +1,5 @@
 package com.example.project_x.data.datasource
 
-import android.util.Log
 import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
@@ -65,23 +64,14 @@ constructor(
     emit(Resource.Loading())
     try {
       val response = authenticatedApiService.getUserProfile()
-        Log.d("UserDataSource", "getUserProfile Before If: $response")
       if (response.isSuccessful) {
-        response.body()?.let {
-          emit(Resource.Success(it))
-          Log.d("UserDataSource", "fetchUserProfile: $it")
-        }
-            ?: run {
-                Log.e("UserDataSource", "Empty response body")
-                emit(Resource.Error("Failed to fetch user profile: Empty response body"))
-            }
+        response.body()?.let { emit(Resource.Success(it)) }
+          ?: run { emit(Resource.Error("Failed to fetch user profile: Empty response body")) }
       } else {
-          val errorMessage = response.errorBody()?.string() ?: "Unknown error"
-          Log.e("UserDataSource", "Error: $errorMessage")
-          emit(Resource.Error("Failed to fetch user profile: $errorMessage"))
+        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+        emit(Resource.Error("Failed to fetch user profile: $errorMessage"))
       }
     } catch (e: Exception) {
-        Log.e("UserDataSource", "Exception: ${e.localizedMessage}", e)
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }

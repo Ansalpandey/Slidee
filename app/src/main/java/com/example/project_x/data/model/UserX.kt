@@ -13,5 +13,5 @@ data class UserX(
     val password: String,
     val profileImage: String,
     val updatedAt: String,
-    val username: String
+    val username: String,
 )
