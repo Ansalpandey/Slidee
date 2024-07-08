@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface AuthenticatedApiService {
 
-    @GET("users")
+    @GET("users/profile")
     suspend fun getUserProfile(): Response<ProfileResponse>
 }

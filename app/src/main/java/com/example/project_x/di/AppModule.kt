@@ -2,10 +2,10 @@ package com.example.project_x.di
 
 import android.content.Context
 import com.example.project_x.data.api.ApiService
+import com.example.project_x.data.api.AuthInterceptor
 import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.data.repository.UserRepository
-import com.example.project_x.utils.AuthInterceptor
 import com.example.project_x.utils.TokenManager
 import dagger.Module
 import dagger.Provides
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-object AppModule {
+class AppModule {
 
   @Singleton
   @Provides
@@ -44,7 +44,7 @@ object AppModule {
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+      .baseUrl("http://192.168.1.7:3000/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
   }
 

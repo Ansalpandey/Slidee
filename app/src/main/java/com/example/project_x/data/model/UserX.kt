@@ -1,16 +1,17 @@
 package com.example.project_x.data.model
 
 data class UserX(
-    val _id: String,
-    val username: String,
-    val name: String,
-    val email: String,
-    val profileImage: String,
-    val bio: String,
-    val coverImage: String,
-    val courses: List<Any>,
-    val age: Int,
-    val createdAt: String,
-    val updatedAt: String,
     val __v: Int,
+    val _id: String,
+    val age: Int,
+    val bio: String,
+    val courses: List<Any>,
+    val coverImage: String,
+    val createdAt: String,
+    val email: String,
+    val name: String,
+    val password: String,
+    val profileImage: String,
+    val updatedAt: String,
+    val username: String
 )
