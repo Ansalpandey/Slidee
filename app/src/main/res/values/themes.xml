@@ -6,8 +6,8 @@
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation
         duration. -->
-        <item name="windowSplashScreenBackground">#000000</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/icon</item>
+        <item name="windowSplashScreenBackground">#ffffff</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_icon</item>
         <!-- Required for animated icons. -->
         <item name="windowSplashScreenAnimationDuration">4000</item>
 
