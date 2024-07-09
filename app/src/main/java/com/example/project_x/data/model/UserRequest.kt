@@ -8,5 +8,6 @@ data class UserRequest(
     val name: String? = null,
     val password: String? = null,
     val profileImage: String? = null,
+    val profileImageBase64: String? = null,
     val username: String? = null,
 )

@@ -72,7 +72,6 @@ constructor(
       if (resource is Resource.Success) {
         setUserPreferences(resource.data!!, true)
         tokenManager.saveToken(resource.data.token!!)
-        Log.d("UserRepository", "loginUserToken: ${resource.data.token}")
       }
     }
   }

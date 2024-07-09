@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
@@ -48,6 +49,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
+    Text(text = "Login", fontSize = 42.sp)
     OutlinedTextField(
       value = emailOrUsername,
       onValueChange = { emailOrUsername = it },

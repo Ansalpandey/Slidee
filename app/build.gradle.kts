@@ -99,4 +99,12 @@ dependencies {
 
     implementation(libs.okhttp)
 
+    //For rememberLauncherForActivityResult()
+    implementation(libs.androidx.activity.compose.v161)
+
+//For PickVisualMedia contract
+    implementation(libs.androidx.activity.ktx)
+
+
+
 }

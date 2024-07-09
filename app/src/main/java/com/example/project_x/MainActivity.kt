@@ -23,15 +23,18 @@ class MainActivity : ComponentActivity() {
     installSplashScreen()
     enableEdgeToEdge()
     setContent {
-      val viewModel: AuthViewModel = hiltViewModel()
+      val authViewModel: AuthViewModel = hiltViewModel()
       val profileViewModel: ProfileViewModel = hiltViewModel()
       ProjectXTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
           HomeScreen(
             modifier = Modifier.padding(innerPadding),
-            authViewModel = viewModel,
+            authViewModel = authViewModel,
             profileViewModel = profileViewModel,
           )
+//
+//                    RegisterScreen(modifier = Modifier.padding(innerPadding), authViewModel =
+//           authViewModel)
         }
       }
     }
