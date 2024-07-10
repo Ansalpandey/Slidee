@@ -1,7 +1,6 @@
 package com.example.project_x.utils
 
 import android.content.Context
-import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -10,7 +9,6 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
 
   fun saveToken(token: String) {
     sharedPreferences.edit().putString("token", token).apply()
-    Log.d("TokenManager", "saveToken: $token")
   }
 
   fun getToken(): String? {

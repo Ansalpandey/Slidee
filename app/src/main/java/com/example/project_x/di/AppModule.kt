@@ -5,7 +5,6 @@ import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthInterceptor
 import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.datasource.UserDataSource
-import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.utils.TokenManager
 import dagger.Module
 import dagger.Provides
@@ -70,15 +69,5 @@ class AppModule {
     authenticatedApiService: AuthenticatedApiService,
   ): UserDataSource {
     return UserDataSource(apiService, authenticatedApiService)
-  }
-
-  @Singleton
-  @Provides
-  fun provideUserRepository(
-    userDataSource: UserDataSource,
-    tokenManager: TokenManager,
-    @ApplicationContext context: Context,
-  ): UserRepository {
-    return UserRepository(userDataSource, context = context, tokenManager = tokenManager)
   }
 }

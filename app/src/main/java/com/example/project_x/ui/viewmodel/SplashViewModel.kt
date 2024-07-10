@@ -11,13 +11,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor() : ViewModel() {
-    private val splashShowFlow = MutableStateFlow(true)
-    val isSplashShow = splashShowFlow.asStateFlow()
+  private val splashShowFlow = MutableStateFlow(true)
+  val isSplashShow = splashShowFlow.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            delay(2000)
-            splashShowFlow.value = false
-        }
+  init {
+    viewModelScope.launch {
+      delay(2000)
+      splashShowFlow.value = false
     }
+  }
 }

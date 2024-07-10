@@ -3,9 +3,9 @@ package com.example.project_x.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
+import com.example.project_x.data.implementation.UserRepositoryImplementation
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
-import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(private val userRepository: UserRepositoryImplementation) :
+  ViewModel() {
 
   private val _userStateHolder = MutableStateFlow(UserStateHolder())
   val userStateHolder: StateFlow<UserStateHolder> = _userStateHolder.asStateFlow()

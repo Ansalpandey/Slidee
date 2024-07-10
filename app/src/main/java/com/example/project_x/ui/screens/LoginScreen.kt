@@ -1,6 +1,7 @@
 package com.example.project_x.ui.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,11 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,9 +49,10 @@ import com.example.project_x.ui.theme.LeadingIconColor
 import com.example.project_x.ui.theme.SFDisplayFont
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
-  val userState = viewModel.userStateHolder.collectAsState().value
+fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
+  val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
@@ -98,6 +103,9 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
           modifier = Modifier.size(24.dp),
         )
       },
+      singleLine = true,
+      maxLines = 1,
+      keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
     )
     Spacer(modifier = Modifier.height(8.dp))
     OutlinedTextField(
@@ -113,6 +121,9 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
           modifier = Modifier.size(32.dp),
         )
       },
+      singleLine = true,
+      maxLines = 1,
+      keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
     )
     Spacer(modifier = Modifier.height(16.dp))
     Button(
@@ -124,7 +135,7 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
             username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
             password = password,
           )
-        viewModel.loginUser(user)
+        authViewModel.loginUser(user)
         Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
       },
       modifier = Modifier
@@ -156,6 +167,12 @@ fun LoginScreen(modifier: Modifier = Modifier, viewModel: AuthViewModel) {
     OutlinedButton(
       onClick = { /*TODO*/ },
       shape = RoundedCornerShape(10.dp),
+      border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+      colors =
+      ButtonDefaults.outlinedButtonColors(
+        containerColor = Color.Transparent, // Keeps the inside transparent
+        contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
+      ),
       modifier = Modifier
         .fillMaxWidth()
         .height(50.dp),
