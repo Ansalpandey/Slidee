@@ -50,8 +50,6 @@ constructor(
                   age = preferences[UserPreferences.USER_AGE] ?: 0,
                   username = preferences[UserPreferences.USER_USERNAME] ?: "",
                   bio = preferences[UserPreferences.USER_BIO] ?: "",
-                  profileImage = "",
-                  coverImage = "",
                 ),
               )
             ),
@@ -85,8 +83,6 @@ constructor(
       preferences[UserPreferences.USER_AGE] = user.user.age
       preferences[UserPreferences.USER_USERNAME] = user.user.username
       preferences[UserPreferences.USER_BIO] = user.user.bio
-      preferences[UserPreferences.COVER_IMAGE] = user.user.coverImage
-      preferences[UserPreferences.PROFILE_IMAGE] = user.user.profileImage
     }
   }
 

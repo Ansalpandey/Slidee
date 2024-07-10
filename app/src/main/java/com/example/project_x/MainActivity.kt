@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.project_x.ui.screens.HomeScreen
+import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -43,10 +43,12 @@ fun MyApp(
     profileViewModel: ProfileViewModel,
 ) {
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        HomeScreen(
-            modifier = Modifier.padding(innerPadding),
-            authViewModel = authViewModel,
-            profileViewModel = profileViewModel,
-        )
+//        HomeScreen(
+//            modifier = Modifier.padding(innerPadding),
+//            authViewModel = authViewModel,
+//            profileViewModel = profileViewModel,
+//        )
+
+        RegisterScreen(authViewModel = authViewModel, modifier = Modifier.padding(innerPadding))
   }
 }
