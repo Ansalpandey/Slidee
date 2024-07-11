@@ -13,6 +13,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
+import com.example.project_x.ui.viewmodel.CourseViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.ui.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,11 +30,13 @@ class MainActivity : ComponentActivity() {
     setContent {
       val authViewModel: AuthViewModel = hiltViewModel()
       val profileViewModel: ProfileViewModel = hiltViewModel()
+      val courseViewModel: CourseViewModel = hiltViewModel()
       ProjectXTheme {
         MyApp(
           modifier = Modifier.fillMaxSize(),
           authViewModel = authViewModel,
           profileViewModel = profileViewModel,
+          courseViewModel = courseViewModel,
         )
       }
     }
@@ -41,6 +44,16 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyApp(modifier: Modifier, authViewModel: AuthViewModel, profileViewModel: ProfileViewModel) {
-  HomeScreen(authViewModel = authViewModel, profileViewModel = profileViewModel)
+fun MyApp(
+  modifier: Modifier,
+  authViewModel: AuthViewModel,
+  profileViewModel: ProfileViewModel,
+  courseViewModel: CourseViewModel,
+) {
+  HomeScreen(
+    authViewModel = authViewModel,
+    profileViewModel = profileViewModel,
+    courseViewModel = courseViewModel,
+    modifier = modifier,
+  )
 }

@@ -34,9 +34,9 @@ fun CustomAppBar(modifier: Modifier = Modifier, image: String?, name: String?) {
                     contentDescription = "profile_image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                      .padding(10.dp)
-                      .clip(CircleShape)
-                      .size(50.dp),
+                        .padding(10.dp)
+                        .clip(CircleShape)
+                        .size(50.dp),
                 )
             else {
                 AsyncImage(
@@ -44,9 +44,9 @@ fun CustomAppBar(modifier: Modifier = Modifier, image: String?, name: String?) {
                     contentDescription = "profileImage",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                      .padding(10.dp)
-                      .clip(CircleShape)
-                      .size(50.dp),
+                        .padding(10.dp)
+                        .clip(CircleShape)
+                        .size(50.dp),
                 )
             }
         },

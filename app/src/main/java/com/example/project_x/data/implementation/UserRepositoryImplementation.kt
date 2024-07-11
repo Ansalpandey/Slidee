@@ -25,79 +25,79 @@ import javax.inject.Inject
 class UserRepositoryImplementation
 @Inject
 constructor(
-    private val userDataSource: UserDataSource,
-    @ApplicationContext private val context: Context,
-    private val tokenManager: TokenManager,
+  private val userDataSource: UserDataSource,
+  @ApplicationContext private val context: Context,
+  private val tokenManager: TokenManager,
 ) : UserRepository {
-    private val dataStore = context.dataStore
+  private val dataStore = context.dataStore
 
-    override val userStateHolder: Flow<UserStateHolder> =
-        dataStore.data.map { preferences ->
-            val isLoggedIn = preferences[UserPreferences.IS_LOGGED_IN] ?: false
-            if (isLoggedIn) {
-                UserStateHolder(
-                    isLoading = false,
-                    data =
-                    flowOf(
-                        UserResponse(
-                            message = "",
-                            user =
-                            User(
-                                id = preferences[UserPreferences.USER_ID] ?: "",
-                                name = preferences[UserPreferences.USER_NAME] ?: "",
-                                email = preferences[UserPreferences.USER_EMAIL] ?: "",
-                                age = preferences[UserPreferences.USER_AGE] ?: 0,
-                                username = preferences[UserPreferences.USER_USERNAME] ?: "",
-                                bio = preferences[UserPreferences.USER_BIO] ?: "",
-                            ),
-                        )
-                    ),
-                    error = "",
-                    isLoggedIn = isLoggedIn,
-                )
-            } else {
-                UserStateHolder()
-            }
-        }
-
-    override suspend fun registerUser(user: UserRequest): Flow<Resource<UserResponse>> {
-        return userDataSource.registerUser(user)
+  override val userStateHolder: Flow<UserStateHolder> =
+    dataStore.data.map { preferences ->
+      val isLoggedIn = preferences[UserPreferences.IS_LOGGED_IN] ?: false
+      if (isLoggedIn) {
+        UserStateHolder(
+          isLoading = false,
+          data =
+          flowOf(
+            UserResponse(
+              message = "",
+              user =
+              User(
+                id = preferences[UserPreferences.USER_ID] ?: "",
+                name = preferences[UserPreferences.USER_NAME] ?: "",
+                email = preferences[UserPreferences.USER_EMAIL] ?: "",
+                age = preferences[UserPreferences.USER_AGE] ?: 0,
+                username = preferences[UserPreferences.USER_USERNAME] ?: "",
+                bio = preferences[UserPreferences.USER_BIO] ?: "",
+              ),
+            )
+          ),
+          error = "",
+          isLoggedIn = isLoggedIn,
+        )
+      } else {
+        UserStateHolder()
+      }
     }
 
-    override suspend fun loginUser(user: UserRequest): Flow<Resource<UserResponse>> {
-        return userDataSource.loginUser(user).onEach { resource ->
-            if (resource is Resource.Success) {
-                setUserPreferences(resource.data!!, true)
-                tokenManager.saveToken(resource.data.token!!)
-            }
-        }
-    }
+  override suspend fun registerUser(user: UserRequest): Flow<Resource<UserResponse>> {
+    return userDataSource.registerUser(user)
+  }
 
-    private suspend fun setUserPreferences(user: UserResponse, isLoggedIn: Boolean) {
-        dataStore.edit { preferences ->
-            preferences[UserPreferences.IS_LOGGED_IN] = isLoggedIn
-            preferences[UserPreferences.USER_NAME] = user.user.name
-            preferences[UserPreferences.USER_ID] = user.user.id
-            preferences[UserPreferences.USER_EMAIL] = user.user.email
-            preferences[UserPreferences.USER_AGE] = user.user.age
-            preferences[UserPreferences.USER_USERNAME] = user.user.username
-            preferences[UserPreferences.USER_BIO] = user.user.bio
-        }
+  override suspend fun loginUser(user: UserRequest): Flow<Resource<UserResponse>> {
+    return userDataSource.loginUser(user).onEach { resource ->
+      if (resource is Resource.Success) {
+        setUserPreferences(resource.data!!, true)
+        tokenManager.saveToken(resource.data.token!!)
+      }
     }
+  }
 
-    override suspend fun logoutUser() {
-        userDataSource.logoutUser()
-        clearUserPreferences()
+  private suspend fun setUserPreferences(user: UserResponse, isLoggedIn: Boolean) {
+    dataStore.edit { preferences ->
+      preferences[UserPreferences.IS_LOGGED_IN] = isLoggedIn
+      preferences[UserPreferences.USER_NAME] = user.user.name
+      preferences[UserPreferences.USER_ID] = user.user.id
+      preferences[UserPreferences.USER_EMAIL] = user.user.email
+      preferences[UserPreferences.USER_AGE] = user.user.age
+      preferences[UserPreferences.USER_USERNAME] = user.user.username
+      preferences[UserPreferences.USER_BIO] = user.user.bio
     }
+  }
 
-    private suspend fun clearUserPreferences() {
-        dataStore.edit { preferences -> preferences.clear() }
-    }
+  override suspend fun logoutUser() {
+    userDataSource.logoutUser()
+    clearUserPreferences()
+  }
 
-    override fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
-        userDataSource.getUserProfile().collect { resource ->
-            Log.d("UserRepository", "getUserProfile: $resource")
-            emit(resource)
-        }
+  private suspend fun clearUserPreferences() {
+    dataStore.edit { preferences -> preferences.clear() }
+  }
+
+  override fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
+    userDataSource.getUserProfile().collect { resource ->
+      Log.d("UserRepository", "getUserProfile: $resource")
+      emit(resource)
     }
+  }
 }
