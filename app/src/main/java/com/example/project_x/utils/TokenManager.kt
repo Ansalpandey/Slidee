@@ -18,4 +18,20 @@ class TokenManager @Inject constructor(@ApplicationContext private val context: 
   fun deleteToken() {
     sharedPreferences.edit().remove("token").apply()
   }
+
+    fun saveRefreshToken(refreshToken: String) {
+        sharedPreferences.edit().putString("refreshToken", refreshToken).apply()
+    }
+
+    fun getRefreshToken(): String? {
+        return sharedPreferences.getString("refreshToken", null)
+    }
+
+    fun deleteRefreshToken() {
+        sharedPreferences.edit().remove("refreshToken").apply()
+    }
+
+    fun clearTokens() {
+        sharedPreferences.edit().clear().apply()
+    }
 }

@@ -5,11 +5,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
@@ -28,16 +32,20 @@ class MainActivity : ComponentActivity() {
     splashScreen.setKeepOnScreenCondition { splashViewModel.isSplashShow.value }
     enableEdgeToEdge()
     setContent {
-      val authViewModel: AuthViewModel = hiltViewModel()
-      val profileViewModel: ProfileViewModel = hiltViewModel()
-      val courseViewModel: CourseViewModel = hiltViewModel()
+        val authViewModel: AuthViewModel by viewModels()
+        val profileViewModel: ProfileViewModel by viewModels()
+        val courseViewModel: CourseViewModel by viewModels()
+        val navController = rememberNavController()
       ProjectXTheme {
-        MyApp(
-          modifier = Modifier.fillMaxSize(),
-          authViewModel = authViewModel,
-          profileViewModel = profileViewModel,
-          courseViewModel = courseViewModel,
-        )
+          Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+              MyApp(
+                  modifier = Modifier.fillMaxSize(),
+                  authViewModel = authViewModel,
+                  profileViewModel = profileViewModel,
+                  courseViewModel = courseViewModel,
+                  navController = navController,
+              )
+          }
       }
     }
   }
@@ -49,11 +57,17 @@ fun MyApp(
   authViewModel: AuthViewModel,
   profileViewModel: ProfileViewModel,
   courseViewModel: CourseViewModel,
+  navController: NavController,
 ) {
-  HomeScreen(
-    authViewModel = authViewModel,
-    profileViewModel = profileViewModel,
-    courseViewModel = courseViewModel,
-    modifier = modifier,
-  )
+    HomeScreen(
+        authViewModel = authViewModel,
+        profileViewModel = profileViewModel,
+        courseViewModel = courseViewModel,
+        modifier = modifier,
+        navController = navController
+    )
+    //
+    //  RegisterScreen(authViewModel = authViewModel, navController = navController)
+
+//  LoginScreen(authViewModel = authViewModel, navController = navController)
 }

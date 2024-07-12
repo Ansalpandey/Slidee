@@ -4,6 +4,7 @@ import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import kotlinx.coroutines.flow.Flow
@@ -75,4 +76,17 @@ constructor(
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
+
+    suspend fun refreshToken(refreshToken: String): Resource<TokenResponse> {
+        return try {
+            val response = authenticatedApiService.refreshToken(refreshToken)
+            if (response.isSuccessful) {
+                Resource.Success(response.body()!!)
+            } else {
+                Resource.Error("Failed to refresh token")
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.localizedMessage ?: "Unknown error")
+        }
+    }
 }

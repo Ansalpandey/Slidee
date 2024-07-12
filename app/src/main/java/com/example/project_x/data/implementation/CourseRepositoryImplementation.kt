@@ -10,8 +10,8 @@ import javax.inject.Inject
 class CourseRepositoryImplementation
 @Inject
 constructor(private val courseDataSource: CourseDataSource) : CourseRepository {
-    // Implementation of CourseRepository
-    override suspend fun getCourses(): Flow<Resource<CourseResponse>> {
-        return courseDataSource.getCourses()
-    }
+  // Implementation of CourseRepository
+  override suspend fun getCourses(): Flow<Resource<CourseResponse>> {
+    return courseDataSource.getCourses()
+  }
 }

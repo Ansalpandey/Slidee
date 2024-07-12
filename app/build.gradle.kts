@@ -3,6 +3,7 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.android)
   kotlin("kapt")
   id("com.google.dagger.hilt.android")
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -46,7 +47,8 @@ dependencies {
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
   implementation(libs.core.ktx)
-  testImplementation(libs.junit)
+    implementation(libs.androidx.ui.text.google.fonts)
+    testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
   androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -66,7 +68,6 @@ dependencies {
   // Dagger Hilt
   implementation(libs.hilt.android)
   kapt(libs.hilt.compiler)
-  implementation(libs.androidx.hilt.navigation.compose)
 
   // ViewModel
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -89,4 +90,7 @@ dependencies {
   // For PickVisualMedia contract
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.material.icons.extended)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
 }

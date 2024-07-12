@@ -15,36 +15,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project_x.data.model.Course
-import com.example.project_x.ui.theme.SFDisplayFont
 
 @Composable
 fun CourseItem(modifier: Modifier = Modifier, course: Course) {
     Column(modifier = Modifier
-      .fillMaxWidth()
-      .height(350.dp)
-      .padding(10.dp)) {
+        .fillMaxWidth()
+        .height(350.dp)
+        .padding(10.dp)) {
         Card(modifier = Modifier
-          .width(300.dp)
-          .height(350.dp)) {
+            .width(300.dp)
+            .height(350.dp)) {
             AsyncImage(
                 model = course.thumbnail,
                 contentDescription = "course thumbnail",
                 modifier = Modifier
-                  .fillMaxWidth()
-                  .height(200.dp),
+                    .fillMaxWidth()
+                    .height(200.dp),
                 contentScale = ContentScale.FillBounds,
             )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = course.name!!,
                     fontSize = 22.sp,
-                    fontFamily = SFDisplayFont,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "Rs. ${course.fee}",
                     fontSize = 16.sp,
-                    fontFamily = SFDisplayFont,
+
                     fontWeight = FontWeight.Light,
                 )
                 Text(text = "Instructor: ${course.madeBy?.name!!}")

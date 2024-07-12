@@ -11,6 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dagger.internal.Provider
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -60,6 +61,21 @@ class AppModule {
     okHttpClient: OkHttpClient,
   ): AuthenticatedApiService {
     return retrofitBuilder.client(okHttpClient).build().create(AuthenticatedApiService::class.java)
+  }
+
+  @Singleton
+  @Provides
+  fun provideAuthInterceptor(tokenManager: TokenManager): AuthInterceptor {
+    return AuthInterceptor(tokenManager)
+  }
+
+  @Singleton
+  @Provides
+  fun provideUserDataSourceProvider(
+    apiService: ApiService,
+    authenticatedApiService: AuthenticatedApiService,
+  ): Provider<UserDataSource> {
+    return Provider { UserDataSource(apiService, authenticatedApiService) }
   }
 
   @Singleton

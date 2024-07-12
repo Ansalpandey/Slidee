@@ -2,8 +2,11 @@ package com.example.project_x.data.api
 
 import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.TokenResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 interface AuthenticatedApiService {
 
@@ -12,4 +15,7 @@ interface AuthenticatedApiService {
 
   @GET("courses")
   suspend fun getCourses(): Response<CourseResponse>
+
+  @POST("users/refresh-token")
+  suspend fun refreshToken(@Body refreshToken: String): Response<TokenResponse>
 }

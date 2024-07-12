@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import com.example.project_x.common.Resource
 import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.User
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
@@ -69,6 +70,7 @@ constructor(
       if (resource is Resource.Success) {
         setUserPreferences(resource.data!!, true)
         tokenManager.saveToken(resource.data.token!!)
+        tokenManager.saveRefreshToken(resource.data.token)
       }
     }
   }
@@ -94,10 +96,14 @@ constructor(
     dataStore.edit { preferences -> preferences.clear() }
   }
 
-  override fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
+  override suspend fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
     userDataSource.getUserProfile().collect { resource ->
       Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
+  }
+
+  override suspend fun refreshToken(refreshToken: String): Resource<TokenResponse> {
+    return userDataSource.refreshToken(refreshToken)
   }
 }

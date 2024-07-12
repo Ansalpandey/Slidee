@@ -2,6 +2,7 @@ package com.example.project_x.data.repository
 
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import com.example.project_x.ui.stateholder.UserStateHolder
@@ -16,5 +17,7 @@ interface UserRepository {
 
   suspend fun logoutUser()
 
-  fun getUserProfile(): Flow<Resource<ProfileResponse>>
+  suspend fun getUserProfile(): Flow<Resource<ProfileResponse>>
+
+  suspend fun refreshToken(refreshToken: String): Resource<TokenResponse>
 }

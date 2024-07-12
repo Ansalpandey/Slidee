@@ -10,7 +10,6 @@ data class Course(
     val madeBy: MadeBy?,
     val name: String?, // Charlotte Tillman
     val rating: Double?, // 4.7
-    val thumbnail:
-    String?, // http://res.cloudinary.com/ansalpandey/image/upload/v1720672057/kdwceccw7symmptdtfoo.png
+    val thumbnail: String?, // http://res.cloudinary.com/ansalpandey/image/upload/v1720672057/kdwceccw7symmptdtfoo.png
     val updatedAt: String?, // 2024-07-11T04:27:37.831Z
 )

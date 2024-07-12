@@ -23,10 +23,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,20 +49,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
-import com.example.project_x.ui.theme.ButtonColor
-import com.example.project_x.ui.theme.LeadingIconColor
-import com.example.project_x.ui.theme.SFDisplayFont
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import java.io.InputStream
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
+fun RegisterScreen(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+    navController: NavController,
+) {
   val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
   var email by rememberSaveable { mutableStateOf("") }
@@ -68,6 +74,8 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
   var name by rememberSaveable { mutableStateOf("") }
   var username by rememberSaveable { mutableStateOf("") }
   var bio by rememberSaveable { mutableStateOf("") }
+
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
   var profileImageUri: Uri? by remember { mutableStateOf(null) }
   var profileImageBase64: String? by remember { mutableStateOf(null) }
@@ -87,26 +95,19 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
       CircularProgressIndicator()
     }
   } else {
-
     LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .imePadding()
-        .padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+            .padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       item {
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
-          text = "Welcome Slidee 👋",
-          fontSize = 32.sp,
-          fontWeight = FontWeight.Bold,
-          fontFamily = SFDisplayFont,
-        )
+          Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
         Text(
           text = "Sign Up and enjoy our community",
           fontWeight = FontWeight.Light,
-          fontFamily = SFDisplayFont,
           fontSize = 18.sp,
           color = Color.Gray,
         )
@@ -114,16 +115,16 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
         Box(
           modifier =
           Modifier
-            .size(100.dp)
-            .clip(CircleShape)
-            .background(Color.Gray)
-            .clickable {
-              launcher.launch(
-                PickVisualMediaRequest(
-                  mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                )
-              )
-            },
+              .size(100.dp)
+              .clip(CircleShape)
+              .background(Color.Gray)
+              .clickable {
+                  launcher.launch(
+                      PickVisualMediaRequest(
+                          mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                      )
+                  )
+              },
           contentAlignment = Alignment.Center,
         ) {
           if (profileImageUri == null) {
@@ -152,13 +153,12 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             Icon(
               painter = painterResource(id = R.drawable.profile_icon),
               contentDescription = "name_icon",
-              tint = LeadingIconColor,
               modifier = Modifier.size(24.dp),
             )
           },
           singleLine = true,
           maxLines = 1,
-          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onSearch),
+            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -170,7 +170,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             Icon(
               painter = painterResource(id = R.drawable.email_icon),
               contentDescription = "email_icon",
-              tint = LeadingIconColor,
               modifier = Modifier.size(24.dp),
             )
           },
@@ -184,15 +183,23 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
           onValueChange = { password = it },
           label = { Text("Password") },
           modifier = Modifier.fillMaxWidth(),
-          visualTransformation = PasswordVisualTransformation(),
+            visualTransformation =
+            if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
           leadingIcon = {
             Icon(
               painter = painterResource(id = R.drawable.password_icon),
               contentDescription = "password_icon",
-              tint = LeadingIconColor,
               modifier = Modifier.size(28.dp),
             )
           },
+            trailingIcon = {
+                val image =
+                    if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, contentDescription = "Toggle password visibility")
+                }
+            },
           singleLine = true,
           maxLines = 1,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
@@ -207,7 +214,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             Icon(
               painter = painterResource(id = R.drawable.username),
               contentDescription = "name_icon",
-              tint = LeadingIconColor,
               modifier = Modifier.size(24.dp),
             )
           },
@@ -224,7 +230,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             Icon(
               painter = painterResource(id = R.drawable.bio),
               contentDescription = "bio",
-              tint = LeadingIconColor,
               modifier = Modifier.size(24.dp),
             )
           },
@@ -245,7 +250,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             Icon(
               painter = painterResource(id = R.drawable.age),
               contentDescription = "age",
-              tint = LeadingIconColor,
               modifier = Modifier.size(24.dp),
             )
           },
@@ -265,15 +269,13 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
             text = "Terms & Conditions & Privacy Policy",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = SFDisplayFont,
           )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-          colors = ButtonDefaults.buttonColors(ButtonColor),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
           onClick = {
             val user =
               UserRequest(
@@ -290,7 +292,6 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
         ) {
           Text(
             "Create Account",
-            fontFamily = SFDisplayFont,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             fontSize = 16.sp,
@@ -300,12 +301,7 @@ fun RegisterScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) 
         Spacer(modifier = Modifier.height(16.dp))
         Row {
           Text(text = "Already Have an Account? ")
-          Text(
-            text = "Sign In",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            color = ButtonColor,
-          )
+            Text(text = "Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
         if (userState.error?.isNotBlank() == true) {

@@ -20,7 +20,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,16 +41,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
-import com.example.project_x.ui.theme.ButtonColor
-import com.example.project_x.ui.theme.LeadingIconColor
-import com.example.project_x.ui.theme.SFDisplayFont
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
+fun LoginScreen(
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+    navController: NavController,
+) {
   val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
@@ -64,10 +64,10 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
   }
 
   Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .imePadding()
-      .padding(16.dp),
+      modifier = Modifier
+          .fillMaxSize()
+          .imePadding()
+          .padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
@@ -80,12 +80,10 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
       text = "Welcome Slidee 👋",
       fontSize = 32.sp,
       fontWeight = FontWeight.Bold,
-      fontFamily = SFDisplayFont,
     )
     Text(
       text = "Enter your Email & Password to Sign in",
       fontWeight = FontWeight.Light,
-      fontFamily = SFDisplayFont,
       fontSize = 18.sp,
       color = Color.Gray,
     )
@@ -99,7 +97,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         Icon(
           painter = painterResource(id = R.drawable.email_icon),
           contentDescription = "email_icon",
-          tint = LeadingIconColor,
           modifier = Modifier.size(24.dp),
         )
       },
@@ -117,7 +114,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         Icon(
           painter = painterResource(id = R.drawable.password_icon),
           contentDescription = "password_icon",
-          tint = LeadingIconColor,
           modifier = Modifier.size(32.dp),
         )
       },
@@ -127,7 +123,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     )
     Spacer(modifier = Modifier.height(16.dp))
     Button(
-      colors = ButtonDefaults.buttonColors(ButtonColor),
       onClick = {
         val user =
           UserRequest(
@@ -138,13 +133,12 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         authViewModel.loginUser(user)
         Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
       },
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
     ) {
       Text(
         "Sign In",
-        fontFamily = SFDisplayFont,
         fontWeight = FontWeight.Bold,
         color = Color.White,
         fontSize = 16.sp,
@@ -170,12 +164,12 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
       border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
       colors =
       ButtonDefaults.outlinedButtonColors(
-        containerColor = Color.Transparent, // Keeps the inside transparent
-        contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
+          containerColor = Color.Transparent, // Keeps the inside transparent
+          contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
       ),
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -193,7 +187,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
           text = "Sign In with Google",
           fontSize = 16.sp,
           fontWeight = FontWeight.Bold,
-          fontFamily = SFDisplayFont,
         )
       }
     }
@@ -201,9 +194,9 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
     Button(
       onClick = { /*TODO*/ },
       shape = RoundedCornerShape(10.dp),
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
       colors = ButtonDefaults.buttonColors(Color.Black),
     ) {
       Row(
@@ -222,8 +215,8 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
           text = "Sign In with Apple",
           fontSize = 16.sp,
           fontWeight = FontWeight.Bold,
-          fontFamily = SFDisplayFont,
-          color = Color.White,
+
+            color = Color.White,
         )
       }
     }
@@ -236,7 +229,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
       Text(
         text = "Don't have an account?",
         fontWeight = FontWeight.Light,
-        fontFamily = SFDisplayFont,
         fontSize = 18.sp,
       )
       Spacer(modifier = Modifier.width(4.dp))
@@ -244,8 +236,6 @@ fun LoginScreen(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
         text = "Sign Up",
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
-        fontFamily = SFDisplayFont,
-        color = ButtonColor,
       )
     }
   }

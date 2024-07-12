@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
 import com.example.project_x.ui.components.CustomAppBar
@@ -34,6 +35,7 @@ fun HomeScreen(
   authViewModel: AuthViewModel,
   profileViewModel: ProfileViewModel,
   courseViewModel: CourseViewModel,
+  navController: NavController,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val profileState by profileViewModel.userProfileState.collectAsState()
@@ -71,9 +73,9 @@ fun HomeScreen(
           }
         }
         LazyColumn(
-          modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           item {
@@ -85,23 +87,32 @@ fun HomeScreen(
               is Resource.Success -> {
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                    CourseItem(course = course!!, modifier = modifier
-                      .fillMaxWidth()
-                      .padding(16.dp))
+                      CourseItem(
+                          course = course!!,
+                          modifier = modifier
+                              .fillMaxWidth()
+                              .padding(16.dp)
+                      )
                   }
                 }
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                    CourseItem(course = course!!, modifier = modifier
-                      .fillMaxWidth()
-                      .padding(16.dp))
+                      CourseItem(
+                          course = course!!,
+                          modifier = modifier
+                              .fillMaxWidth()
+                              .padding(16.dp)
+                      )
                   }
                 }
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                    CourseItem(course = course!!, modifier = modifier
-                      .fillMaxWidth()
-                      .padding(16.dp))
+                      CourseItem(
+                          course = course!!,
+                          modifier = modifier
+                              .fillMaxWidth()
+                              .padding(16.dp)
+                      )
                   }
                 }
               }
@@ -113,7 +124,7 @@ fun HomeScreen(
           }
         }
       } else {
-        LoginScreen(authViewModel = authViewModel)
+          LoginScreen(authViewModel = authViewModel, navController = navController)
       }
     }
   }
