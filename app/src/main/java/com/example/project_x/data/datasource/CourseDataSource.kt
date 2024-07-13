@@ -11,7 +11,7 @@ class CourseDataSource
 @Inject
 constructor(private val authenticatedApiService: AuthenticatedApiService) {
 
-  suspend fun getCourses(): Flow<Resource<CourseResponse>> = flow {
+  suspend fun getCourses(): Flow<Resource<List<CourseResponse>>> = flow {
     emit(Resource.Loading())
     try {
       val response = authenticatedApiService.getCourses()

@@ -14,40 +14,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.project_x.data.model.Course
+import com.example.project_x.data.model.CourseResponse
 
 @Composable
-fun CourseItem(modifier: Modifier = Modifier, course: Course) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .height(350.dp)
-        .padding(10.dp)) {
-        Card(modifier = Modifier
-            .width(300.dp)
-            .height(350.dp)) {
-            AsyncImage(
-                model = course.thumbnail,
-                contentDescription = "course thumbnail",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.FillBounds,
-            )
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = course.name!!,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-                Text(
-                    text = "Rs. ${course.fee}",
-                    fontSize = 16.sp,
+fun CourseItem(modifier: Modifier = Modifier, course: CourseResponse) {
+  Column(modifier = Modifier
+    .fillMaxWidth()
+    .height(350.dp)
+    .padding(5.dp)) {
+    Card(modifier = Modifier
+      .width(300.dp)
+      .height(350.dp)) {
+      AsyncImage(
+        model = course.thumbnail,
+        contentDescription = "course thumbnail",
+        modifier = Modifier
+          .fillMaxWidth()
+          .height(200.dp),
+        contentScale = ContentScale.FillBounds,
+      )
+      Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = course.name!!, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Rs. ${course.fee}", fontSize = 16.sp, fontWeight = FontWeight.Light)
 
-                    fontWeight = FontWeight.Light,
-                )
-                Text(text = "Instructor: ${course.madeBy?.name!!}")
-                Text(text = "Rating: ${course.rating}")
-            }
-        }
+        Text(text = "Instructor: ${course.madeBy?.name!!}")
+        Text(text = "Rating: ${course.rating}")
+      }
     }
+  }
 }
