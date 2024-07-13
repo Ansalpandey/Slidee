@@ -10,16 +10,19 @@ import javax.inject.Inject
 class CourseDataSource
 @Inject
 constructor(private val authenticatedApiService: AuthenticatedApiService) {
-    suspend fun getCourses(): Flow<Resource<CourseResponse>> = flow {
-        emit(Resource.Loading())
-        try {
-            val response = authenticatedApiService.getCourses()
-            if (response.isSuccessful) {
-                response.body()?.let { emit(Resource.Success(it)) }
-                    ?: run { emit(Resource.Error("Failed to fetch courses: Empty response body")) }
-            }
-        } catch (e: Exception) {
-            emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-        }
+
+  suspend fun getCourses(): Flow<Resource<CourseResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.getCourses()
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+          ?: run { emit(Resource.Error("Failed to fetch courses: Empty response body")) }
+      } else {
+        emit(Resource.Error("Error fetching courses: ${response.message()}"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
+  }
 }

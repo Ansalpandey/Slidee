@@ -13,13 +13,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CourseViewModel @Inject constructor(private val courseRepository: CourseRepository) :
-    ViewModel() {
-    private val _courses = MutableStateFlow<Resource<CourseResponse>>(Resource.Loading())
-    val courses: StateFlow<Resource<CourseResponse>> = _courses
+  ViewModel() {
+  private val _courses = MutableStateFlow<Resource<CourseResponse>>(Resource.Loading())
+  val courses: StateFlow<Resource<CourseResponse>> = _courses
 
-    fun getCourses() {
-        viewModelScope.launch {
-            courseRepository.getCourses().collect { resource -> _courses.value = resource }
-        }
+  fun getCourses() {
+    viewModelScope.launch {
+      courseRepository.getCourses().collect { resource -> _courses.value = resource }
     }
+  }
 }

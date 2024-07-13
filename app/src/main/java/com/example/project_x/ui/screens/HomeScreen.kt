@@ -73,9 +73,9 @@ fun HomeScreen(
           }
         }
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+          modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           item {
@@ -87,32 +87,23 @@ fun HomeScreen(
               is Resource.Success -> {
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                      CourseItem(
-                          course = course!!,
-                          modifier = modifier
-                              .fillMaxWidth()
-                              .padding(16.dp)
-                      )
+                    CourseItem(course = course, modifier = modifier
+                      .fillMaxWidth()
+                      .padding(16.dp))
                   }
                 }
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                      CourseItem(
-                          course = course!!,
-                          modifier = modifier
-                              .fillMaxWidth()
-                              .padding(16.dp)
-                      )
+                    CourseItem(course = course, modifier = modifier
+                      .fillMaxWidth()
+                      .padding(16.dp))
                   }
                 }
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
                   items(courses.data?.courses ?: emptyList()) { course ->
-                      CourseItem(
-                          course = course!!,
-                          modifier = modifier
-                              .fillMaxWidth()
-                              .padding(16.dp)
-                      )
+                    CourseItem(course = course, modifier = modifier
+                      .fillMaxWidth()
+                      .padding(16.dp))
                   }
                 }
               }
@@ -124,7 +115,7 @@ fun HomeScreen(
           }
         }
       } else {
-          LoginScreen(authViewModel = authViewModel, navController = navController)
+        LoginScreen(authViewModel = authViewModel, navController = navController)
       }
     }
   }
