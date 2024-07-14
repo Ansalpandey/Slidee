@@ -9,7 +9,7 @@ import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
-import com.example.project_x.ui.viewmodel.CourseViewModel
+import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
@@ -17,7 +17,7 @@ fun NavigationSetup(
     modifier: Modifier = Modifier,
     authViewModel: AuthViewModel,
     profileViewModel: ProfileViewModel,
-    courseViewModel: CourseViewModel,
+    postViewModel: PostViewModel,
     navController: NavHostController,
 ) {
     NavHost(navController = navController, startDestination = LoginScreen) {
@@ -43,7 +43,7 @@ fun NavigationSetup(
                 modifier = modifier,
                 navController = navController,
                 profileViewModel = profileViewModel,
-                courseViewModel = courseViewModel,
+                postViewModel = postViewModel,
             )
         }
     }

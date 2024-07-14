@@ -18,6 +18,7 @@ import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
+import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.ui.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
         val authViewModel: AuthViewModel by viewModels()
         val profileViewModel: ProfileViewModel by viewModels()
         val courseViewModel: CourseViewModel by viewModels()
+        val postViewModel: PostViewModel by viewModels()
         val navController = rememberNavController()
       ProjectXTheme {
           Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
@@ -42,8 +44,8 @@ class MainActivity : ComponentActivity() {
                   modifier = Modifier.fillMaxSize(),
                   authViewModel = authViewModel,
                   profileViewModel = profileViewModel,
-                  courseViewModel = courseViewModel,
                   navController = navController,
+                  postViewModel = postViewModel,
               )
           }
       }
@@ -56,18 +58,18 @@ fun MyApp(
   modifier: Modifier,
   authViewModel: AuthViewModel,
   profileViewModel: ProfileViewModel,
-  courseViewModel: CourseViewModel,
+  postViewModel: PostViewModel,
   navController: NavController,
 ) {
     HomeScreen(
         authViewModel = authViewModel,
         profileViewModel = profileViewModel,
-        courseViewModel = courseViewModel,
+        postViewModel = postViewModel,
         modifier = modifier,
-        navController = navController
+        navController = navController,
     )
     //
     //  RegisterScreen(authViewModel = authViewModel, navController = navController)
 
-//  LoginScreen(authViewModel = authViewModel, navController = navController)
+    //  LoginScreen(authViewModel = authViewModel, navController = navController)
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthInterceptor
 import com.example.project_x.data.api.AuthenticatedApiService
+import com.example.project_x.data.datasource.CourseDataSource
+import com.example.project_x.data.datasource.PostDataSource
 import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.utils.TokenManager
 import dagger.Module
@@ -85,5 +87,17 @@ class AppModule {
     authenticatedApiService: AuthenticatedApiService,
   ): UserDataSource {
     return UserDataSource(apiService, authenticatedApiService)
+  }
+
+  @Singleton
+  @Provides
+  fun provideCourseDataSource(authenticatedApiService: AuthenticatedApiService): CourseDataSource {
+    return CourseDataSource(authenticatedApiService)
+  }
+
+  @Singleton
+  @Provides
+  fun providePostDataSource(authenticatedApiService: AuthenticatedApiService): PostDataSource {
+    return PostDataSource(authenticatedApiService)
   }
 }

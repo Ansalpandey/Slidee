@@ -48,9 +48,9 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-    navController: NavController,
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  navController: NavController,
 ) {
   val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
@@ -64,10 +64,10 @@ fun LoginScreen(
   }
 
   Column(
-      modifier = Modifier
-          .fillMaxSize()
-          .imePadding()
-          .padding(16.dp),
+    modifier = Modifier
+      .fillMaxSize()
+      .imePadding()
+      .padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
@@ -76,11 +76,7 @@ fun LoginScreen(
       contentDescription = "app_icon",
       modifier = Modifier.height(200.dp),
     )
-    Text(
-      text = "Welcome Slidee 👋",
-      fontSize = 32.sp,
-      fontWeight = FontWeight.Bold,
-    )
+    Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
     Text(
       text = "Enter your Email & Password to Sign in",
       fontWeight = FontWeight.Light,
@@ -133,16 +129,11 @@ fun LoginScreen(
         authViewModel.loginUser(user)
         Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
       },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp),
     ) {
-      Text(
-        "Sign In",
-        fontWeight = FontWeight.Bold,
-        color = Color.White,
-        fontSize = 16.sp,
-      )
+      Text("Sign In", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
     }
     Spacer(modifier = Modifier.height(16.dp))
     Text(text = "Forgot Password?", color = Color.LightGray)
@@ -167,9 +158,9 @@ fun LoginScreen(
           containerColor = Color.Transparent, // Keeps the inside transparent
           contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
       ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -183,20 +174,16 @@ fun LoginScreen(
           tint = Color.Unspecified,
         )
         Spacer(modifier = Modifier.width(10.dp))
-        Text(
-          text = "Sign In with Google",
-          fontSize = 16.sp,
-          fontWeight = FontWeight.Bold,
-        )
+        Text(text = "Sign In with Google", fontSize = 16.sp, fontWeight = FontWeight.Bold)
       }
     }
     Spacer(modifier = Modifier.height(20.dp))
     Button(
       onClick = { /*TODO*/ },
       shape = RoundedCornerShape(10.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp),
       colors = ButtonDefaults.buttonColors(Color.Black),
     ) {
       Row(
@@ -215,8 +202,7 @@ fun LoginScreen(
           text = "Sign In with Apple",
           fontSize = 16.sp,
           fontWeight = FontWeight.Bold,
-
-            color = Color.White,
+          color = Color.White,
         )
       }
     }
@@ -226,17 +212,9 @@ fun LoginScreen(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
     ) {
-      Text(
-        text = "Don't have an account?",
-        fontWeight = FontWeight.Light,
-        fontSize = 18.sp,
-      )
+      Text(text = "Don't have an account?", fontWeight = FontWeight.Light, fontSize = 18.sp)
       Spacer(modifier = Modifier.width(4.dp))
-      Text(
-        text = "Sign Up",
-        fontWeight = FontWeight.Bold,
-        fontSize = 18.sp,
-      )
+      Text(text = "Sign Up", fontWeight = FontWeight.Bold, fontSize = 18.sp)
     }
   }
   if (userState.error?.isNotBlank() == true) {

@@ -10,8 +10,8 @@ import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager) : Interceptor {
-    @Inject
-    lateinit var userDataSource: Provider<UserDataSource>
+  @Inject
+  lateinit var userDataSource: Provider<UserDataSource>
 
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request().newBuilder()

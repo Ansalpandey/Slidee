@@ -62,9 +62,9 @@ import java.io.InputStream
 
 @Composable
 fun RegisterScreen(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-    navController: NavController,
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  navController: NavController,
 ) {
   val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
@@ -75,7 +75,7 @@ fun RegisterScreen(
   var username by rememberSaveable { mutableStateOf("") }
   var bio by rememberSaveable { mutableStateOf("") }
 
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
+  var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
   var profileImageUri: Uri? by remember { mutableStateOf(null) }
   var profileImageBase64: String? by remember { mutableStateOf(null) }
@@ -96,15 +96,15 @@ fun RegisterScreen(
     }
   } else {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding()
-            .padding(16.dp),
+      modifier = Modifier
+        .fillMaxSize()
+        .imePadding()
+        .padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       item {
         Spacer(modifier = Modifier.height(20.dp))
-          Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
         Text(
           text = "Sign Up and enjoy our community",
           fontWeight = FontWeight.Light,
@@ -115,16 +115,16 @@ fun RegisterScreen(
         Box(
           modifier =
           Modifier
-              .size(100.dp)
-              .clip(CircleShape)
-              .background(Color.Gray)
-              .clickable {
-                  launcher.launch(
-                      PickVisualMediaRequest(
-                          mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                      )
-                  )
-              },
+            .size(100.dp)
+            .clip(CircleShape)
+            .background(Color.Gray)
+            .clickable {
+              launcher.launch(
+                PickVisualMediaRequest(
+                  mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+              )
+            },
           contentAlignment = Alignment.Center,
         ) {
           if (profileImageUri == null) {
@@ -158,7 +158,7 @@ fun RegisterScreen(
           },
           singleLine = true,
           maxLines = 1,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -183,7 +183,7 @@ fun RegisterScreen(
           onValueChange = { password = it },
           label = { Text("Password") },
           modifier = Modifier.fillMaxWidth(),
-            visualTransformation =
+          visualTransformation =
             if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
           leadingIcon = {
             Icon(
@@ -192,14 +192,14 @@ fun RegisterScreen(
               modifier = Modifier.size(28.dp),
             )
           },
-            trailingIcon = {
-                val image =
-                    if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+          trailingIcon = {
+            val image =
+              if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
 
-                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = "Toggle password visibility")
-                }
-            },
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+              Icon(imageVector = image, contentDescription = "Toggle password visibility")
+            }
+          },
           singleLine = true,
           maxLines = 1,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
@@ -273,9 +273,9 @@ fun RegisterScreen(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
+          modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
           onClick = {
             val user =
               UserRequest(
@@ -301,7 +301,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Row {
           Text(text = "Already Have an Account? ")
-            Text(text = "Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+          Text(text = "Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
         if (userState.error?.isNotBlank() == true) {

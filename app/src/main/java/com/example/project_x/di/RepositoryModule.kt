@@ -1,8 +1,10 @@
 package com.example.project_x.di
 
 import com.example.project_x.data.implementation.CourseRepositoryImplementation
+import com.example.project_x.data.implementation.PostRepositoryImplementation
 import com.example.project_x.data.implementation.UserRepositoryImplementation
 import com.example.project_x.data.repository.CourseRepository
+import com.example.project_x.data.repository.PostRepository
 import com.example.project_x.data.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -19,4 +21,9 @@ abstract class RepositoryModule {
   abstract fun bindCourseRepository(
     courseRepositoryImplementation: CourseRepositoryImplementation
   ): CourseRepository
+
+  @Binds
+  abstract fun bindPostRepository(
+    postRepositoryImplementation: PostRepositoryImplementation
+  ): PostRepository
 }
