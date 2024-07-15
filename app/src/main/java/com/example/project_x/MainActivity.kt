@@ -13,8 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.project_x.ui.screens.HomeScreen
+import com.example.project_x.ui.navigation.NavigationSetup
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
@@ -61,15 +62,10 @@ fun MyApp(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-    HomeScreen(
+    NavigationSetup(
         authViewModel = authViewModel,
         profileViewModel = profileViewModel,
         postViewModel = postViewModel,
-        modifier = modifier,
-        navController = navController,
+        navController = navController as NavHostController
     )
-    //
-    //  RegisterScreen(authViewModel = authViewModel, navController = navController)
-
-    //  LoginScreen(authViewModel = authViewModel, navController = navController)
 }

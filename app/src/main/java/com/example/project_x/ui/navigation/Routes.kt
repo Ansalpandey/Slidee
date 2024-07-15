@@ -10,3 +10,6 @@ object RegisterScreen
 
 @Serializable
 object HomeScreen
+
+@Serializable
+object CreatePostScreen

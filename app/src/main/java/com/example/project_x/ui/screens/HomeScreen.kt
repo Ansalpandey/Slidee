@@ -5,7 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,11 +22,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CustomAppBar
 import com.example.project_x.ui.components.CustomBottomBar
 import com.example.project_x.ui.components.PostItem
+import com.example.project_x.ui.navigation.CreatePostScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -36,7 +43,7 @@ fun HomeScreen(
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val profileState by profileViewModel.userProfileState.collectAsState()
-    val posts by postViewModel.posts.collectAsState()
+  val posts by postViewModel.posts.collectAsState()
   var isProfileFetched by remember { mutableStateOf(false) }
 
   Scaffold(
@@ -48,6 +55,17 @@ fun HomeScreen(
           name = profileState.data?.user?.name,
         )
       }
+    },
+    floatingActionButton = {
+      FloatingActionButton(
+        shape = RoundedCornerShape(20.dp),
+        content = {
+          Icon(imageVector = Icons.Default.Add, contentDescription = "create_post")
+        },
+        onClick = {
+          navController.navigate(CreatePostScreen)
+        }
+      )
     },
     bottomBar = {
       if (userState.isLoggedIn) {
@@ -61,35 +79,35 @@ fun HomeScreen(
       }
     } else {
       if (userState.isLoggedIn) {
-        LaunchedEffect(key1 = userState.isLoggedIn) {
+        LaunchedEffect(key1 = isProfileFetched) {
           if (!isProfileFetched) {
             profileViewModel.fetchUserProfile()
+            postViewModel.getPosts()
             isProfileFetched = true
-              postViewModel.getPosts()
           }
         }
         LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+          modifier = modifier
+            .fillMaxSize()
+            .padding(innerPadding),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            when (val state = profileState) {
-                is Resource.Loading -> {
-                    item { CircularProgressIndicator() }
-                }
+          when (val state = profileState) {
+            is Resource.Loading -> {
+              item { CircularProgressIndicator() }
+            }
 
-                is Resource.Success -> {
-                    val postData = posts.data
-                    if (postData.isNullOrEmpty()) {
-                        item { Text(text = "No posts available") }
-                    } else {
-                        items(postData) { post -> PostItem(post = post) }
-                    }
-                }
+            is Resource.Success -> {
+              val postData = posts.data
+              if (postData.isNullOrEmpty()) {
+                item { Text(text = "No posts available") }
+              } else {
+                items(postData) { post -> PostItem(post = post) }
+              }
+            }
 
-                is Resource.Error -> {
-                    item { Text(text = "Error: ${state.message}") }
+            is Resource.Error -> {
+              item { Text(text = "Error: ${state.message}") }
             }
           }
         }
@@ -99,3 +117,4 @@ fun HomeScreen(
     }
   }
 }
+

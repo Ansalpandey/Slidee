@@ -1,6 +1,5 @@
 package com.example.project_x.ui.screens
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
+import com.example.project_x.ui.navigation.HomeScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -65,9 +65,9 @@ fun LoginScreen(
 
   Column(
     modifier = Modifier
-      .fillMaxSize()
-      .imePadding()
-      .padding(16.dp),
+        .fillMaxSize()
+        .imePadding()
+        .padding(16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
@@ -127,11 +127,11 @@ fun LoginScreen(
             password = password,
           )
         authViewModel.loginUser(user)
-        Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
+          navController.navigate(HomeScreen)
       },
       modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+          .fillMaxWidth()
+          .height(50.dp),
     ) {
       Text("Sign In", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
     }
@@ -159,8 +159,8 @@ fun LoginScreen(
           contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
       ),
       modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+          .fillMaxWidth()
+          .height(50.dp),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -182,8 +182,8 @@ fun LoginScreen(
       onClick = { /*TODO*/ },
       shape = RoundedCornerShape(10.dp),
       modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+          .fillMaxWidth()
+          .height(50.dp),
       colors = ButtonDefaults.buttonColors(Color.Black),
     ) {
       Row(

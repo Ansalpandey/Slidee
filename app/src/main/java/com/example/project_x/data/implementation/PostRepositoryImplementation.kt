@@ -2,6 +2,7 @@ package com.example.project_x.data.implementation
 
 import com.example.project_x.common.Resource
 import com.example.project_x.data.datasource.PostDataSource
+import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
@@ -11,5 +12,9 @@ class PostRepositoryImplementation @Inject constructor(private val postDataSourc
     PostRepository {
     override suspend fun getPosts(): Flow<Resource<List<PostResponse>>> {
         return postDataSource.getPosts()
+    }
+
+    override suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>> {
+        return postDataSource.createPost(postRequest)
     }
 }
