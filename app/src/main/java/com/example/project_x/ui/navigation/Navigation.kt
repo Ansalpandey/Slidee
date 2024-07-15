@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import com.example.project_x.ui.screens.CreatePostScreen
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
+import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
@@ -55,6 +56,10 @@ fun NavigationSetup(
         modifier = modifier,
         navController = navController,
       )
+    }
+
+    composable<ProfileScreen> {
+      ProfileScreen(modifier = modifier, profileViewModel = profileViewModel)
     }
   }
 }

@@ -2,6 +2,7 @@ package com.example.project_x.ui.screens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,6 +47,7 @@ import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.ui.navigation.HomeScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
+import com.example.project_x.utils.validateLoginFields
 
 @Composable
 fun LoginScreen(
@@ -56,6 +59,9 @@ fun LoginScreen(
   val context = LocalContext.current
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
+
+    var emailOrUsernameError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
 
   if (userState.isLoading) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -86,7 +92,10 @@ fun LoginScreen(
     Spacer(modifier = Modifier.height(16.dp))
     OutlinedTextField(
       value = emailOrUsername,
-      onValueChange = { emailOrUsername = it },
+        onValueChange = {
+            emailOrUsername = it
+            emailOrUsernameError = null // Reset error when the user types
+        },
       label = { Text("Email or Username", color = Color.LightGray) },
       modifier = Modifier.fillMaxWidth(),
       leadingIcon = {
@@ -98,12 +107,24 @@ fun LoginScreen(
       },
       singleLine = true,
       maxLines = 1,
+        isError = emailOrUsernameError != null,
       keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
     )
+      if (emailOrUsernameError != null) {
+          Text(
+              text = emailOrUsernameError ?: "",
+              color = MaterialTheme.colorScheme.error,
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.align(Alignment.Start)
+          )
+      }
     Spacer(modifier = Modifier.height(8.dp))
     OutlinedTextField(
       value = password,
-      onValueChange = { password = it },
+        onValueChange = {
+            password = it
+            passwordError = null // Reset error when the user types
+        },
       label = { Text("Password", color = Color.LightGray) },
       modifier = Modifier.fillMaxWidth(),
       leadingIcon = {
@@ -115,19 +136,37 @@ fun LoginScreen(
       },
       singleLine = true,
       maxLines = 1,
+        isError = passwordError != null,
       keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
     )
+      if (passwordError != null) {
+          Text(
+              text = passwordError ?: "",
+              color = MaterialTheme.colorScheme.error,
+              style = MaterialTheme.typography.bodyMedium,
+              modifier = Modifier.align(Alignment.Start)
+          )
+      }
     Spacer(modifier = Modifier.height(16.dp))
     Button(
       onClick = {
-        val user =
-          UserRequest(
-            email = if (emailOrUsername.contains('@')) emailOrUsername else null,
-            username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
-            password = password,
+          val isValid = validateLoginFields(
+              emailOrUsername,
+              password,
+              setEmailOrUsernameError = { emailOrUsernameError = it },
+              setPasswordError = { passwordError = it }
           )
-        authViewModel.loginUser(user)
+
+          if (isValid) {
+              val user =
+                  UserRequest(
+                      email = if (emailOrUsername.contains('@')) emailOrUsername else null,
+                      username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
+                      password = password,
+                  )
+              authViewModel.loginUser(user)
           navController.navigate(HomeScreen)
+          }
       },
       modifier = Modifier
           .fillMaxWidth()
@@ -214,7 +253,12 @@ fun LoginScreen(
     ) {
       Text(text = "Don't have an account?", fontWeight = FontWeight.Light, fontSize = 18.sp)
       Spacer(modifier = Modifier.width(4.dp))
-      Text(text = "Sign Up", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(
+            text = "Sign Up",
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            modifier = Modifier.clickable { navController.navigate("RegisterScreen") }
+        )
     }
   }
   if (userState.error?.isNotBlank() == true) {

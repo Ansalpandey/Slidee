@@ -1,6 +1,7 @@
 package com.example.project_x.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,12 +19,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
+import com.example.project_x.ui.navigation.ProfileScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomAppBar(modifier: Modifier = Modifier, image: String?, name: String?) {
+fun CustomAppBar(
+  modifier: Modifier = Modifier,
+  image: String?,
+  name: String?,
+  navController: NavController, // Add NavController parameter
+) {
   TopAppBar(
     modifier = Modifier.fillMaxWidth(),
     title = {
@@ -31,35 +39,38 @@ fun CustomAppBar(modifier: Modifier = Modifier, image: String?, name: String?) {
         Text(
           text = "Welcome, ",
           fontSize = MaterialTheme.typography.titleLarge.fontSize,
-          fontWeight = FontWeight.Light
+          fontWeight = FontWeight.Light,
         )
         Text(
           text = "$name 👋",
           fontSize = MaterialTheme.typography.titleLarge.fontSize,
-          fontWeight = FontWeight.Bold
+          fontWeight = FontWeight.Bold,
         )
       }
     },
     actions = {
-      if (image.isNullOrEmpty())
+      val profileImageModifier =
+        Modifier
+          .padding(10.dp)
+          .clip(CircleShape)
+          .size(50.dp)
+          .clickable {
+            navController.navigate(ProfileScreen)
+          } // Handle navigation on click
+
+      if (image.isNullOrEmpty()) {
         Image(
           painter = painterResource(id = R.drawable.profile),
           contentDescription = "profile_image",
           contentScale = ContentScale.Crop,
-          modifier = Modifier
-            .padding(10.dp)
-            .clip(CircleShape)
-            .size(50.dp),
+          modifier = profileImageModifier,
         )
-      else {
+      } else {
         AsyncImage(
           model = image,
           contentDescription = "profileImage",
           contentScale = ContentScale.Crop,
-          modifier = Modifier
-            .padding(10.dp)
-            .clip(CircleShape)
-            .size(50.dp),
+          modifier = profileImageModifier,
         )
       }
     },

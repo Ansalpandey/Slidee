@@ -58,6 +58,7 @@ import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.ui.viewmodel.AuthViewModel
+import com.example.project_x.utils.validateFields
 import java.io.InputStream
 
 @Composable
@@ -68,6 +69,7 @@ fun RegisterScreen(
 ) {
   val userState = authViewModel.userStateHolder.collectAsState().value
   val context = LocalContext.current
+
   var email by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
   var age by rememberSaveable { mutableStateOf("") }
@@ -79,6 +81,13 @@ fun RegisterScreen(
 
   var profileImageUri: Uri? by remember { mutableStateOf(null) }
   var profileImageBase64: String? by remember { mutableStateOf(null) }
+
+    // Error state variables
+    var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    var ageError by rememberSaveable { mutableStateOf<String?>(null) }
+    var nameError by rememberSaveable { mutableStateOf<String?>(null) }
+    var usernameError by rememberSaveable { mutableStateOf<String?>(null) }
 
   val launcher =
     rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -96,10 +105,10 @@ fun RegisterScreen(
     }
   } else {
     LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .imePadding()
-        .padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding()
+            .padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       item {
@@ -115,16 +124,16 @@ fun RegisterScreen(
         Box(
           modifier =
           Modifier
-            .size(100.dp)
-            .clip(CircleShape)
-            .background(Color.Gray)
-            .clickable {
-              launcher.launch(
-                PickVisualMediaRequest(
-                  mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                )
-              )
-            },
+              .size(100.dp)
+              .clip(CircleShape)
+              .background(Color.Gray)
+              .clickable {
+                  launcher.launch(
+                      PickVisualMediaRequest(
+                          mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                      )
+                  )
+              },
           contentAlignment = Alignment.Center,
         ) {
           if (profileImageUri == null) {
@@ -146,7 +155,10 @@ fun RegisterScreen(
 
         OutlinedTextField(
           value = name,
-          onValueChange = { name = it },
+            onValueChange = {
+                name = it
+                nameError = null
+            },
           label = { Text("Name") },
           modifier = Modifier.fillMaxWidth(),
           leadingIcon = {
@@ -158,12 +170,20 @@ fun RegisterScreen(
           },
           singleLine = true,
           maxLines = 1,
+            isError = nameError != null,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
+          if (nameError != null) {
+              Text(text = nameError ?: "", color = Color.Red, fontSize = 12.sp)
+          }
         Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
           value = email,
-          onValueChange = { email = it },
+            onValueChange = {
+                email = it.lowercase()
+                emailError = null
+            },
           label = { Text("Email") },
           modifier = Modifier.fillMaxWidth(),
           leadingIcon = {
@@ -175,12 +195,20 @@ fun RegisterScreen(
           },
           singleLine = true,
           maxLines = 1,
+            isError = emailError != null,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
+          if (emailError != null) {
+              Text(text = emailError ?: "", color = Color.Red, fontSize = 12.sp)
+          }
         Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
           value = password,
-          onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                passwordError = null
+            },
           label = { Text("Password") },
           modifier = Modifier.fillMaxWidth(),
           visualTransformation =
@@ -202,12 +230,20 @@ fun RegisterScreen(
           },
           singleLine = true,
           maxLines = 1,
+            isError = passwordError != null,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
+          if (passwordError != null) {
+              Text(text = passwordError ?: "", color = Color.Red, fontSize = 12.sp)
+          }
         Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
           value = username,
-          onValueChange = { username = it },
+            onValueChange = {
+                username = it.lowercase()
+                usernameError = null
+            },
           label = { Text("Username") },
           modifier = Modifier.fillMaxWidth(),
           leadingIcon = {
@@ -219,9 +255,14 @@ fun RegisterScreen(
           },
           singleLine = true,
           maxLines = 1,
+            isError = usernameError != null,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
+          if (usernameError != null) {
+              Text(text = usernameError ?: "", color = Color.Red, fontSize = 12.sp)
+          }
         Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
           value = bio,
           onValueChange = { bio = it },
@@ -242,9 +283,13 @@ fun RegisterScreen(
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
+
+          OutlinedTextField(
           value = age,
-          onValueChange = { age = it },
+              onValueChange = {
+                  age = it
+                  ageError = null
+              },
           label = { Text("Age") },
           leadingIcon = {
             Icon(
@@ -257,10 +302,15 @@ fun RegisterScreen(
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           singleLine = true,
           maxLines = 1,
+              isError = ageError != null,
           keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
         )
+          if (ageError != null) {
+              Text(text = ageError ?: "", color = Color.Red, fontSize = 12.sp)
+          }
         Spacer(modifier = Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+
+          Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
           Text(text = "By continuing you agree to our")
         }
         Row {
@@ -272,22 +322,38 @@ fun RegisterScreen(
           )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
+
+          Button(
+              modifier = Modifier
+                  .fillMaxWidth()
+                  .height(50.dp),
           onClick = {
-            val user =
-              UserRequest(
-                name = name,
-                email = email,
-                age = age.toInt(),
-                username = username,
-                password = password,
-                bio = bio,
-              )
-            authViewModel.registerUser(user)
-            Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+              val isValid =
+                  validateFields(
+                      name = name,
+                      email = email,
+                      password = password,
+                      age = age,
+                      username = username,
+                      setNameError = { nameError = it },
+                      setEmailError = { emailError = it },
+                      setPasswordError = { passwordError = it },
+                      setAgeError = { ageError = it },
+                      setUsernameError = { usernameError = it },
+                  )
+              if (isValid) {
+                  val user =
+                      UserRequest(
+                          name = name,
+                          email = email,
+                          age = age.toInt(),
+                          username = username,
+                          password = password,
+                          bio = bio,
+                      )
+                  authViewModel.registerUser(user)
+                  Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+              }
           },
         ) {
           Text(

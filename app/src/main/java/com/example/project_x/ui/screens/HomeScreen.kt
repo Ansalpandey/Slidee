@@ -53,6 +53,7 @@ fun HomeScreen(
         CustomAppBar(
           image = profileState.data?.user?.profileImage,
           name = profileState.data?.user?.name,
+          navController = navController // Pass navController here
         )
       }
     },
@@ -63,7 +64,7 @@ fun HomeScreen(
           Icon(imageVector = Icons.Default.Add, contentDescription = "create_post")
         },
         onClick = {
-          navController.navigate(CreatePostScreen)
+          navController.navigate(CreatePostScreen) // Use route
         }
       )
     },

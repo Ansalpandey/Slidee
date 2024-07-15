@@ -66,6 +66,6 @@ fun MyApp(
         authViewModel = authViewModel,
         profileViewModel = profileViewModel,
         postViewModel = postViewModel,
-        navController = navController as NavHostController
+        navController = navController as NavHostController,
     )
 }

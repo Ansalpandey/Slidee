@@ -13,3 +13,6 @@ object HomeScreen
 
 @Serializable
 object CreatePostScreen
+
+@Serializable
+object ProfileScreen
