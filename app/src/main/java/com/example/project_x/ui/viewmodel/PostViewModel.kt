@@ -14,25 +14,25 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel @Inject constructor(private val postRepository: PostRepository) : ViewModel() {
-  private val _posts = MutableStateFlow<Resource<List<PostResponse>>>(Resource.Loading())
-  val posts: StateFlow<Resource<List<PostResponse>>> = _posts
+  private val _posts = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
+  val posts: StateFlow<Resource<PostResponse>> = _posts
 
-  val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
+  private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post
 
   fun getPosts() {
     viewModelScope.launch {
       _posts.value = Resource.Loading()
-      postRepository.getPosts().collect { resource -> _posts.value = resource }
+      postRepository.getPosts(page = 1, pageSize = 10).collect { resource ->
+        _posts.value = resource
+      }
     }
   }
 
   fun createPost(postRequest: PostRequest) {
     viewModelScope.launch {
-      _post.value = Resource.Loading()  // Set loading state
-      postRepository.createPost(postRequest).collect { resource ->
-        _post.value = resource
-      }
+      _post.value = Resource.Loading() // Set loading state
+      postRepository.createPost(postRequest).collect { resource -> _post.value = resource }
     }
   }
 }

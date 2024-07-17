@@ -41,14 +41,22 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.project_x.R
-import com.example.project_x.data.model.PostResponse
+import com.example.project_x.data.model.Post
 import com.example.project_x.utils.getRelativeTimeSpanString
+import kotlinx.coroutines.delay
 
 @Composable
-fun PostItem(modifier: Modifier = Modifier, post: PostResponse) {
-    val timeAgo = remember { getRelativeTimeSpanString(post.createdAt!!) }
+fun PostItem(modifier: Modifier = Modifier, post: Post) {
+    val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post.createdAt!!)) }
     val showDialog = remember { mutableStateOf(false) }
     val dialogImageUrl = remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(post.createdAt) {
+        while (true) {
+            timeAgo.value = getRelativeTimeSpanString(post.createdAt!!)
+            delay(60000) // Update every minute
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -91,7 +99,11 @@ fun PostItem(modifier: Modifier = Modifier, post: PostResponse) {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(text = " $timeAgo", fontSize = 12.sp, fontWeight = FontWeight.Light)
+                    Text(
+                        text = " ${timeAgo.value}",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Light
+                    )
                 }
                 Text(text = "@${post.createdBy?.username!!}")
                 Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
@@ -118,20 +130,7 @@ fun PostItem(modifier: Modifier = Modifier, post: PostResponse) {
     // Image Popup Dialog
     if (showDialog.value && dialogImageUrl.value != null) {
         Dialog(onDismissRequest = { showDialog.value = false }) {
-            Column {
-                ZoomableImage(imageUrl = dialogImageUrl.value)
-                //        Button(
-                //          onClick = { showDialog.value = false },
-                //          modifier = Modifier.align(Alignment.CenterHorizontally),
-                //          colors = ButtonDefaults.buttonColors(Color.Transparent),
-                //        ) {
-                //          Icon(
-                //            imageVector = Icons.Default.Close,
-                //            contentDescription = "close_btn",
-                //            tint = MaterialTheme.colorScheme.primary,
-                //          )
-                //        }
-            }
+            Column { ZoomableImage(imageUrl = dialogImageUrl.value) }
         }
     }
     HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)

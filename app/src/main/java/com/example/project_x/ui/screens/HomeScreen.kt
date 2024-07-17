@@ -53,19 +53,17 @@ fun HomeScreen(
         CustomAppBar(
           image = profileState.data?.user?.profileImage,
           name = profileState.data?.user?.name,
-          navController = navController // Pass navController here
+          navController = navController, // Pass navController here
         )
       }
     },
     floatingActionButton = {
       FloatingActionButton(
         shape = RoundedCornerShape(20.dp),
-        content = {
-          Icon(imageVector = Icons.Default.Add, contentDescription = "create_post")
-        },
+        content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
         onClick = {
           navController.navigate(CreatePostScreen) // Use route
-        }
+        },
       )
     },
     bottomBar = {
@@ -99,7 +97,7 @@ fun HomeScreen(
             }
 
             is Resource.Success -> {
-              val postData = posts.data
+              val postData = posts.data?.posts
               if (postData.isNullOrEmpty()) {
                 item { Text(text = "No posts available") }
               } else {
@@ -118,4 +116,3 @@ fun HomeScreen(
     }
   }
 }
-

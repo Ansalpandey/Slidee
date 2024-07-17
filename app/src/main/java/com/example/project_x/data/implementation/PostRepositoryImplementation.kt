@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class PostRepositoryImplementation @Inject constructor(private val postDataSource: PostDataSource) :
-    PostRepository {
-    override suspend fun getPosts(): Flow<Resource<List<PostResponse>>> {
-        return postDataSource.getPosts()
-    }
+  PostRepository {
+  override suspend fun getPosts(page: Int, pageSize: Int): Flow<Resource<PostResponse>> {
+    return postDataSource.getPosts(page, pageSize)
+  }
 
-    override suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>> {
-        return postDataSource.createPost(postRequest)
-    }
+  override suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>> {
+    return postDataSource.createPost(postRequest)
+  }
 }

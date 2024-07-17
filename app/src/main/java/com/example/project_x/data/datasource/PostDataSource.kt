@@ -11,15 +11,16 @@ import javax.inject.Inject
 class PostDataSource
 @Inject
 constructor(private val authenticatedApiService: AuthenticatedApiService) {
-  suspend fun getPosts(): Flow<Resource<List<PostResponse>>> = flow {
+
+  suspend fun getPosts(page: Int, pageSize: Int): Flow<Resource<PostResponse>> = flow {
     emit(Resource.Loading())
     try {
-      val response = authenticatedApiService.getPosts()
+      val response = authenticatedApiService.getPosts(page, pageSize)
       if (response.isSuccessful) {
         response.body()?.let { emit(Resource.Success(it)) }
-          ?: run { emit(Resource.Error("Failed to fetch courses: Empty response body")) }
+          ?: run { emit(Resource.Error("Failed to fetch posts: Empty response body")) }
       } else {
-        emit(Resource.Error("Error fetching courses: ${response.message()}"))
+        emit(Resource.Error("Error fetching posts: ${response.message()}"))
       }
     } catch (e: Exception) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
@@ -31,10 +32,10 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
     try {
       val response = authenticatedApiService.createPost(postRequest)
       if (response.isSuccessful) {
-        val userResponse = response.body()
-        emit(Resource.Success(userResponse))
+        response.body()?.let { emit(Resource.Success(it)) }
+          ?: run { emit(Resource.Error("Failed to create post: Empty response body")) }
       } else {
-        emit(Resource.Error("Post Creation Failed failed"))
+        emit(Resource.Error("Error creating post: ${response.message()}"))
       }
     } catch (e: Exception) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
