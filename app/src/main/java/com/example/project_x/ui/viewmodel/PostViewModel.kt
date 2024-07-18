@@ -22,10 +22,8 @@ class PostViewModel @Inject constructor(private val postRepository: PostReposito
 
   fun getPosts() {
     viewModelScope.launch {
-      _posts.value = Resource.Loading()
-      postRepository.getPosts(page = 1, pageSize = 10).collect { resource ->
-        _posts.value = resource
-      }
+      _posts.value = Resource.Loading() // Set loading state
+      postRepository.getPosts(1, 10).collect { resource -> _posts.value = resource }
     }
   }
 

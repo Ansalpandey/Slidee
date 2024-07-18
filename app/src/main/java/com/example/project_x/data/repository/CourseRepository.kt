@@ -5,5 +5,8 @@ import com.example.project_x.data.model.CourseResponse
 import kotlinx.coroutines.flow.Flow
 
 interface CourseRepository {
-  suspend fun getCourses(): Flow<Resource<List<CourseResponse>>>
+  suspend fun getCourses(
+    page: Int,
+    pageSize: Int
+  ): Flow<Resource<CourseResponse>>
 }

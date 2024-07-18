@@ -13,6 +13,7 @@ import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
+import com.example.project_x.ui.viewmodel.CourseViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 
@@ -23,6 +24,7 @@ fun NavigationSetup(
   profileViewModel: ProfileViewModel,
   postViewModel: PostViewModel,
   navController: NavHostController,
+  courseViewModel: CourseViewModel
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val startDestination = if (userState.isLoggedIn) HomeScreen else LoginScreen
@@ -59,7 +61,12 @@ fun NavigationSetup(
     }
 
     composable<ProfileScreen> {
-      ProfileScreen(modifier = modifier, profileViewModel = profileViewModel)
+      ProfileScreen(
+        modifier = modifier,
+        profileViewModel = profileViewModel,
+        postViewModel = postViewModel,
+        courseViewModel = courseViewModel
+      )
     }
   }
 }

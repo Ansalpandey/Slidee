@@ -46,7 +46,8 @@ class AppModule {
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+//      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+        .baseUrl("http://192.168.1.7:3000/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
   }
 

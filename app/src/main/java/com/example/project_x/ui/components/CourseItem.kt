@@ -14,10 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.project_x.data.model.CourseResponse
+import com.example.project_x.data.model.Course
 
 @Composable
-fun CourseItem(modifier: Modifier = Modifier, course: CourseResponse) {
+fun CourseItem(modifier: Modifier = Modifier, course: Course) {
   Column(modifier = Modifier
     .fillMaxWidth()
     .height(350.dp)
@@ -37,7 +37,7 @@ fun CourseItem(modifier: Modifier = Modifier, course: CourseResponse) {
         Text(text = course.name!!, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(text = "Rs. ${course.fee}", fontSize = 16.sp, fontWeight = FontWeight.Light)
 
-        Text(text = "Instructor: ${course.madeBy?.name!!}")
+        Text(text = "Instructor: ${course.madeBy}")
         Text(text = "Rating: ${course.rating}")
       }
     }

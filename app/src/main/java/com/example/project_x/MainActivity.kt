@@ -13,9 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.project_x.ui.navigation.NavigationSetup
+import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
@@ -47,6 +46,7 @@ class MainActivity : ComponentActivity() {
                   profileViewModel = profileViewModel,
                   navController = navController,
                   postViewModel = postViewModel,
+                  courseViewModel = courseViewModel,
               )
           }
       }
@@ -60,12 +60,19 @@ fun MyApp(
   authViewModel: AuthViewModel,
   profileViewModel: ProfileViewModel,
   postViewModel: PostViewModel,
+  courseViewModel: CourseViewModel,
   navController: NavController,
 ) {
-    NavigationSetup(
-        authViewModel = authViewModel,
+    //    NavigationSetup(
+    //        authViewModel = authViewModel,
+    //        profileViewModel = profileViewModel,
+    //        postViewModel = postViewModel,
+    //        navController = navController as NavHostController,
+    //    )
+
+    ProfileScreen(
         profileViewModel = profileViewModel,
         postViewModel = postViewModel,
-        navController = navController as NavHostController,
+        courseViewModel = courseViewModel,
     )
 }

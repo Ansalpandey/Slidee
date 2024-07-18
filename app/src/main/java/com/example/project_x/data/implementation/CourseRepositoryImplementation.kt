@@ -11,7 +11,13 @@ class CourseRepositoryImplementation
 @Inject
 constructor(private val courseDataSource: CourseDataSource) : CourseRepository {
   // Implementation of CourseRepository
-  override suspend fun getCourses(): Flow<Resource<List<CourseResponse>>> {
-    return courseDataSource.getCourses()
+  override suspend fun getCourses(
+    page: Int,
+    pageSize: Int
+  ): Flow<Resource<CourseResponse>> {
+    return courseDataSource.getCourses(
+      page,
+      pageSize
+    )
   }
 }
