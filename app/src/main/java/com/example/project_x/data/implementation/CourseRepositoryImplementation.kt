@@ -20,4 +20,8 @@ constructor(private val courseDataSource: CourseDataSource) : CourseRepository {
       pageSize
     )
   }
+
+  override suspend fun getUserCourses(): Flow<Resource<CourseResponse>> {
+    return courseDataSource.getUserCourses()
+  }
 }

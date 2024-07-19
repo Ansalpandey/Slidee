@@ -17,9 +17,18 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
   private val _courses = MutableStateFlow<Resource<CourseResponse>>(Resource.Loading())
   val courses: StateFlow<Resource<CourseResponse>> = _courses
 
+  private val _userCourses = MutableStateFlow<Resource<CourseResponse>>(Resource.Loading())
+  val userCourses: StateFlow<Resource<CourseResponse>> = _userCourses
+
   fun getCourses() {
     viewModelScope.launch {
       courseRepository.getCourses(1, 10).collect { resource -> _courses.value = resource }
+    }
+  }
+
+  fun getUserCourses() {
+    viewModelScope.launch {
+      courseRepository.getUserCourses().collect { resource -> _userCourses.value = resource }
     }
   }
 }

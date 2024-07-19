@@ -5,7 +5,7 @@ data class UserX(
   val _id: String?, // 668c1f5a581f526bfd9fe40c
   val age: Int?, // 19
   val bio: String?, // this is my bio
-  val courses: List<Course?>?,
+  val courses: List<Course>?,
   val createdAt: String?, // 2024-07-08T17:18:18.464Z
   val email: String?, // pandeyansal77@gmail.com
   val enrolledCourses: List<Any?>?,

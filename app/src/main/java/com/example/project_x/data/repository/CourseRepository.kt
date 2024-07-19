@@ -9,4 +9,6 @@ interface CourseRepository {
     page: Int,
     pageSize: Int
   ): Flow<Resource<CourseResponse>>
+
+  suspend fun getUserCourses() : Flow<Resource<CourseResponse>>
 }

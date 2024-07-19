@@ -57,6 +57,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
+import com.example.project_x.ui.navigation.LoginScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.utils.validateFields
 import java.io.InputStream
@@ -352,7 +353,7 @@ fun RegisterScreen(
                           bio = bio,
                       )
                   authViewModel.registerUser(user)
-                  Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                  navController.navigate(LoginScreen)
               }
           },
         ) {

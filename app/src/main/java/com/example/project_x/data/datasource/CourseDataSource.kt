@@ -25,4 +25,20 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
+
+  suspend fun getUserCourses() : Flow<Resource<CourseResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.getUserCourses()
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+          ?: run { emit(Resource.Error("Failed to fetch courses: Empty response body")) }
+      }
+      else {
+        emit(Resource.Error("Error fetching courses: ${response.message()}"))
+      }
+    }catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error."))
+    }
+  }
 }

@@ -23,7 +23,6 @@ fun CourseItem(modifier: Modifier = Modifier, course: Course) {
     .height(350.dp)
     .padding(5.dp)) {
     Card(modifier = Modifier
-      .width(300.dp)
       .height(350.dp)) {
       AsyncImage(
         model = course.thumbnail,
@@ -37,7 +36,7 @@ fun CourseItem(modifier: Modifier = Modifier, course: Course) {
         Text(text = course.name!!, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(text = "Rs. ${course.fee}", fontSize = 16.sp, fontWeight = FontWeight.Light)
 
-        Text(text = "Instructor: ${course.madeBy}")
+        Text(text = "Instructor: ${course.madeBy?.name}")
         Text(text = "Rating: ${course.rating}")
       }
     }

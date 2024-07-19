@@ -22,6 +22,9 @@ interface AuthenticatedApiService {
     @Query("pageSize") pageSize: Int
   ): Response<CourseResponse>
 
+  @GET("users/courses")
+  suspend fun getUserCourses() : Response<CourseResponse>
+
   @POST("users/refresh-token")
   suspend fun refreshToken(@Body refreshToken: String): Response<TokenResponse>
 
