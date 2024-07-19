@@ -17,7 +17,7 @@ import coil.compose.AsyncImage
 import com.example.project_x.data.model.Course
 
 @Composable
-fun CourseItem(modifier: Modifier = Modifier, course: Course) {
+fun CourseItem(modifier: Modifier = Modifier, course: Course?) {
   Column(modifier = Modifier
     .fillMaxWidth()
     .height(350.dp)
@@ -25,7 +25,7 @@ fun CourseItem(modifier: Modifier = Modifier, course: Course) {
     Card(modifier = Modifier
       .height(350.dp)) {
       AsyncImage(
-        model = course.thumbnail,
+        model = course?.thumbnail,
         contentDescription = "course thumbnail",
         modifier = Modifier
           .fillMaxWidth()
@@ -33,7 +33,7 @@ fun CourseItem(modifier: Modifier = Modifier, course: Course) {
         contentScale = ContentScale.FillBounds,
       )
       Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = course.name!!, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(text = course?.name!!, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Text(text = "Rs. ${course.fee}", fontSize = 16.sp, fontWeight = FontWeight.Light)
 
         Text(text = "Instructor: ${course.madeBy?.name}")

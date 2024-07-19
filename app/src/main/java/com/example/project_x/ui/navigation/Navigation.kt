@@ -64,8 +64,6 @@ fun NavigationSetup(
       ProfileScreen(
         modifier = modifier,
         profileViewModel = profileViewModel,
-        postViewModel = postViewModel,
-        courseViewModel = courseViewModel
       )
     }
   }

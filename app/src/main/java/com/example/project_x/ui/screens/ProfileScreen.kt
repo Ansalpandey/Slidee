@@ -62,12 +62,8 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel,
-    postViewModel: PostViewModel,
-    courseViewModel: CourseViewModel,
 ) {
   val profileState by profileViewModel.userProfileState.collectAsState()
-  val postState by postViewModel.posts.collectAsState()
-  val courseState by courseViewModel.userCourses.collectAsState()
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
   val tabTitles = listOf("Posts", "Courses")
@@ -75,7 +71,6 @@ fun ProfileScreen(
 
   LaunchedEffect(key1 = true) {
     profileViewModel.fetchUserProfile()
-    postViewModel.getPosts()
   }
 
   when (val state = profileState) {
@@ -214,7 +209,6 @@ fun ProfileScreen(
                         coroutineScope.launch {
                           pagerState.scrollToPage(index)
                           if (index == 1 && !coursesFetched) {
-                            courseViewModel.getUserCourses()
                             coursesFetched = true
                           }
                         }
@@ -234,7 +228,7 @@ fun ProfileScreen(
                           modifier = Modifier.fillMaxSize(),
                           horizontalAlignment = Alignment.CenterHorizontally,
                       ) {
-                        postState.data?.posts?.let { posts ->
+                        profileState.data?.user?.posts?.let { posts ->
                           items(posts) { post -> PostItem(post = post) }
                         } ?: run { item { Text("No posts available") } }
                       }
@@ -244,7 +238,7 @@ fun ProfileScreen(
                           modifier = Modifier.fillMaxSize(),
                           horizontalAlignment = Alignment.CenterHorizontally,
                       ) {
-                        courseState.data?.courses?.let { courses ->
+                        profileState.data?.user?.courses?.let { courses ->
                           items(courses) { course ->
                             CourseItem(course = course, modifier = Modifier.fillMaxWidth())
                           }

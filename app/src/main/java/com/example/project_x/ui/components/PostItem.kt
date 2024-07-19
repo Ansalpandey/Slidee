@@ -46,14 +46,14 @@ import com.example.project_x.utils.getRelativeTimeSpanString
 import kotlinx.coroutines.delay
 
 @Composable
-fun PostItem(modifier: Modifier = Modifier, post: Post) {
-    val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post.createdAt!!)) }
+fun PostItem(modifier: Modifier = Modifier, post: Post?) {
+    val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
     val showDialog = remember { mutableStateOf(false) }
     val dialogImageUrl = remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(post.createdAt) {
+    LaunchedEffect(post?.createdAt) {
         while (true) {
-            timeAgo.value = getRelativeTimeSpanString(post.createdAt!!)
+            timeAgo.value = getRelativeTimeSpanString(post?.createdAt!!)
             delay(60000) // Update every minute
         }
     }
@@ -66,7 +66,7 @@ fun PostItem(modifier: Modifier = Modifier, post: Post) {
         colors = CardDefaults.cardColors(Color.Transparent),
     ) {
         Row {
-            if (post.createdBy?.profileImage.isNullOrEmpty()) {
+            if (post?.createdBy?.profileImage.isNullOrEmpty()) {
                 Image(
                     painter = painterResource(id = R.drawable.profile),
                     contentDescription = "profile_image",
@@ -78,7 +78,7 @@ fun PostItem(modifier: Modifier = Modifier, post: Post) {
                 )
             } else {
                 AsyncImage(
-                    model = post.createdBy?.profileImage,
+                    model = post?.createdBy?.profileImage,
                     contentDescription = "profileImage",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -95,7 +95,7 @@ fun PostItem(modifier: Modifier = Modifier, post: Post) {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = post.createdBy?.name!!,
+                        text = post?.createdBy?.name!!,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -105,7 +105,7 @@ fun PostItem(modifier: Modifier = Modifier, post: Post) {
                         fontWeight = FontWeight.Light
                     )
                 }
-                Text(text = "@${post.createdBy?.username!!}")
+                Text(text = "@${post?.createdBy?.username!!}")
                 Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
                 if (!post.imageUrl.isNullOrEmpty()) {
                     AsyncImage(

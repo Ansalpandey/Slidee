@@ -1,5 +1,6 @@
 package com.example.project_x.data.model
 
+
 data class Post(
     val __v: Int?, // 1
     val _id: String?, // 66966f354a66a76146037e41
