@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -49,8 +50,6 @@ import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
 import com.example.project_x.ui.components.PostItem
-import com.example.project_x.ui.viewmodel.CourseViewModel
-import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -69,14 +68,12 @@ fun ProfileScreen(
   val tabTitles = listOf("Posts", "Courses")
   var coursesFetched by remember { mutableStateOf(false) }
 
-  LaunchedEffect(key1 = true) {
-    profileViewModel.fetchUserProfile()
-  }
+  LaunchedEffect(key1 = true) { profileViewModel.fetchUserProfile() }
 
   when (val state = profileState) {
     is Resource.Loading -> {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+        CircularProgressIndicator()
       }
     }
 
@@ -103,13 +100,13 @@ fun ProfileScreen(
                 },
                 actions = {
                   IconButton(onClick = { /*TODO*/ }) {
-                    Icon(imageVector = Icons.Default.Settings, contentDescription = "back")
+                    Icon(imageVector = Icons.Default.Settings, contentDescription = "settings")
                   }
                 },
             )
           },
       ) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues)) {
+        LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
           item {
             Row {
               Column(modifier = Modifier.padding(start = 30.dp)) {
@@ -196,6 +193,7 @@ fun ProfileScreen(
                 }
               }
             }
+            Spacer(modifier = Modifier.height(10.dp))
             Column {
               TabRow(
                   selectedTabIndex = pagerState.currentPage,
@@ -220,32 +218,32 @@ fun ProfileScreen(
               HorizontalPager(
                   count = tabTitles.size,
                   state = pagerState,
-                  modifier = Modifier.fillMaxWidth().height(400.dp), // adjust height as needed
-              ) { page ->
-                when (page) {
-                  0 ->
-                      LazyColumn(
-                          modifier = Modifier.fillMaxSize(),
-                          horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        profileState.data?.user?.posts?.let { posts ->
-                          items(posts) { post -> PostItem(post = post) }
-                        } ?: run { item { Text("No posts available") } }
-                      }
-
-                  1 ->
-                      LazyColumn(
-                          modifier = Modifier.fillMaxSize(),
-                          horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        profileState.data?.user?.courses?.let { courses ->
-                          items(courses) { course ->
-                            CourseItem(course = course, modifier = Modifier.fillMaxWidth())
+                  modifier = Modifier.fillMaxWidth().height(700.dp) // Set a fixed height
+                  ) { page ->
+                    when (page) {
+                      0 ->
+                          LazyColumn(
+                              modifier = Modifier.fillMaxSize(),
+                              horizontalAlignment = Alignment.CenterHorizontally,
+                          ) {
+                            profileState.data?.user?.posts?.let { posts ->
+                              items(posts) { post -> PostItem(post = post) }
+                            } ?: run { item { Text("No posts available") } }
                           }
-                        } ?: run { item { Text("No courses available") } }
-                      }
-                }
-              }
+
+                      1 ->
+                          LazyColumn(
+                              modifier = Modifier.fillMaxSize(),
+                              horizontalAlignment = Alignment.CenterHorizontally,
+                          ) {
+                            profileState.data?.user?.courses?.let { courses ->
+                              items(courses) { course ->
+                                CourseItem(course = course, modifier = Modifier.fillMaxWidth())
+                              }
+                            } ?: run { item { Text("No courses available") } }
+                          }
+                    }
+                  }
             }
           }
         }

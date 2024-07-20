@@ -47,133 +47,109 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun PostItem(modifier: Modifier = Modifier, post: Post?) {
-    val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
-    val showDialog = remember { mutableStateOf(false) }
-    val dialogImageUrl = remember { mutableStateOf<String?>(null) }
+  val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
+  val showDialog = remember { mutableStateOf(false) }
+  val dialogImageUrl = remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(post?.createdAt) {
-        while (true) {
-            timeAgo.value = getRelativeTimeSpanString(post?.createdAt!!)
-            delay(60000) // Update every minute
-        }
+  LaunchedEffect(post?.createdAt) {
+    while (true) {
+      timeAgo.value = getRelativeTimeSpanString(post?.createdAt!!)
+      delay(60000) // Update every minute
     }
+  }
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        shape = RectangleShape,
-        colors = CardDefaults.cardColors(Color.Transparent),
-    ) {
-        Row {
-            if (post?.createdBy?.profileImage.isNullOrEmpty()) {
-                Image(
-                    painter = painterResource(id = R.drawable.profile),
-                    contentDescription = "profile_image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .clip(CircleShape)
-                        .size(50.dp),
-                )
-            } else {
-                AsyncImage(
-                    model = post?.createdBy?.profileImage,
-                    contentDescription = "profileImage",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .clip(CircleShape)
-                        .size(50.dp),
-                )
-            }
+  Card(
+      modifier = Modifier.fillMaxWidth().padding(10.dp),
+      shape = RectangleShape,
+      colors = CardDefaults.cardColors(Color.Transparent),
+  ) {
+    Row {
+      if (post?.createdBy?.profileImage.isNullOrEmpty()) {
+        Image(
+            painter = painterResource(id = R.drawable.profile),
+            contentDescription = "profile_image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+        )
+      } else {
+        AsyncImage(
+            model = post?.createdBy?.profileImage,
+            contentDescription = "profileImage",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+        )
+      }
 
-            Column(modifier = Modifier.padding(bottom = 5.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = post?.createdBy?.name!!,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = " ${timeAgo.value}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Light
-                    )
-                }
-                Text(text = "@${post?.createdBy?.username!!}")
-                Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
-                if (!post.imageUrl.isNullOrEmpty()) {
-                    AsyncImage(
-                        model = post.imageUrl,
-                        contentDescription = "post_image",
-                        contentScale = ContentScale.Crop,
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 5.dp, bottom = 10.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable {
-                                dialogImageUrl.value = post.imageUrl
-                                showDialog.value = true
-                            },
-                    )
-                }
-            }
+      Column(modifier = Modifier.padding(bottom = 5.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(text = post?.createdBy?.name!!, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+          Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
         }
-    }
-
-    // Image Popup Dialog
-    if (showDialog.value && dialogImageUrl.value != null) {
-        Dialog(onDismissRequest = { showDialog.value = false }) {
-            Column { ZoomableImage(imageUrl = dialogImageUrl.value) }
+        Text(text = "@${post?.createdBy?.username!!}")
+        Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
+        if (!post.imageUrl.isNullOrEmpty()) {
+          AsyncImage(
+              model = post.imageUrl,
+              contentDescription = "post_image",
+              contentScale = ContentScale.Crop,
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .padding(top = 5.dp, bottom = 10.dp)
+                      .clip(RoundedCornerShape(12.dp))
+                      .clickable {
+                        dialogImageUrl.value = post.imageUrl
+                        showDialog.value = true
+                      },
+          )
         }
+      }
     }
-    HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)
+  }
+
+  // Image Popup Dialog
+  if (showDialog.value && dialogImageUrl.value != null) {
+    Dialog(onDismissRequest = { showDialog.value = false }) {
+      Column { ZoomableImage(imageUrl = dialogImageUrl.value) }
+    }
+  }
+  HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)
 }
 
 @Composable
 fun ZoomableImage(imageUrl: String?) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    val animatedScale = remember { Animatable(1f) }
+  var scale by remember { mutableFloatStateOf(1f) }
+  val animatedScale = remember { Animatable(1f) }
 
-    LaunchedEffect(scale) {
-        animatedScale.snapTo(scale) // Update the animated scale
-    }
+  LaunchedEffect(scale) {
+    animatedScale.snapTo(scale) // Update the animated scale
+  }
 
-    Box(
-        modifier =
-        Modifier
-            .pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
-            .graphicsLayer(
-                scaleX = animatedScale.value,
-                scaleY = animatedScale.value,
-                translationX = 0f, // Keep the image centered
-                translationY = 0f, // Keep the image centered
-            )
-    ) {
+  Box(
+      modifier =
+          Modifier.pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
+              .graphicsLayer(
+                  scaleX = animatedScale.value,
+                  scaleY = animatedScale.value,
+                  translationX = 0f, // Keep the image centered
+                  translationY = 0f, // Keep the image centered
+              )) {
         AsyncImage(
             model = imageUrl,
             contentDescription = "popup_post_image",
             contentScale = ContentScale.Inside,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp),
+            modifier = Modifier.fillMaxWidth().height(400.dp),
         )
 
         // Reset scale when not interacting
         LaunchedEffect(scale) {
-            if (scale != 1f) {
-                animatedScale.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 800)
-                )
-                scale = 1f // Reset scale after animation
-            }
+          if (scale != 1f) {
+            animatedScale.animateTo(targetValue = 1f, animationSpec = tween(durationMillis = 800))
+            scale = 1f // Reset scale after animation
+          }
         }
-    }
+      }
 }

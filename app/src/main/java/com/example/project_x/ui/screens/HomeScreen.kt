@@ -2,9 +2,9 @@ package com.example.project_x.ui.screens
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,7 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.project_x.common.Resource
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.project_x.ui.components.CustomAppBar
 import com.example.project_x.ui.components.CustomBottomBar
 import com.example.project_x.ui.components.PostItem
@@ -35,42 +36,42 @@ import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
 fun HomeScreen(
-  modifier: Modifier = Modifier,
-  authViewModel: AuthViewModel,
-  profileViewModel: ProfileViewModel,
-  postViewModel: PostViewModel,
-  navController: NavController,
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
+    postViewModel: PostViewModel,
+    navController: NavController,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val profileState by profileViewModel.userProfileState.collectAsState()
-  val posts by postViewModel.posts.collectAsState()
+  val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
 
   Scaffold(
-    modifier = Modifier.fillMaxSize(),
-    topBar = {
-      if (userState.isLoggedIn) {
-        CustomAppBar(
-          image = profileState.data?.user?.profileImage,
-          name = profileState.data?.user?.name,
-          navController = navController, // Pass navController here
+      modifier = Modifier.fillMaxSize(),
+      topBar = {
+        if (userState.isLoggedIn) {
+          CustomAppBar(
+              image = profileState.data?.user?.profileImage,
+              name = profileState.data?.user?.name,
+              navController = navController, // Pass navController here
+          )
+        }
+      },
+      floatingActionButton = {
+        FloatingActionButton(
+            shape = RoundedCornerShape(20.dp),
+            content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
+            onClick = {
+              navController.navigate(CreatePostScreen) // Use route
+            },
         )
-      }
-    },
-    floatingActionButton = {
-      FloatingActionButton(
-        shape = RoundedCornerShape(20.dp),
-        content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
-        onClick = {
-          navController.navigate(CreatePostScreen) // Use route
-        },
-      )
-    },
-    bottomBar = {
-      if (userState.isLoggedIn) {
-        CustomBottomBar(authViewModel = authViewModel)
-      }
-    },
+      },
+      bottomBar = {
+        if (userState.isLoggedIn) {
+          CustomBottomBar(authViewModel = authViewModel)
+        }
+      },
   ) { innerPadding ->
     if (userState.isLoading) {
       Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -86,27 +87,46 @@ fun HomeScreen(
           }
         }
         LazyColumn(
-          modifier = modifier
-            .fillMaxSize()
-            .padding(innerPadding),
-          horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.fillMaxSize().padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          when (val state = profileState) {
-            is Resource.Loading -> {
-              item { CircularProgressIndicator() }
-            }
-
-            is Resource.Success -> {
-              val postData = posts.data?.posts
-              if (postData.isNullOrEmpty()) {
-                item { Text(text = "No posts available") }
-              } else {
-                items(postData) { post -> PostItem(post = post) }
+          items(posts.itemCount) { index -> posts[index]?.let { post -> PostItem(post = post) } }
+          posts.apply {
+            when {
+              loadState.refresh is LoadState.Loading -> {
+                // Initial load
+                item {
+                  Box(
+                      modifier = Modifier.fillParentMaxSize(),
+                      contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                      }
+                }
               }
-            }
-
-            is Resource.Error -> {
-              item { Text(text = "Error: ${state.message}") }
+              loadState.append is LoadState.Loading -> {
+                // Pagination load
+                item {
+                  Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                  }
+                }
+              }
+              loadState.append is LoadState.Error -> {
+                item {
+                  Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(text = "Error loading more posts")
+                  }
+                }
+              }
+              loadState.refresh is LoadState.Error -> {
+                item {
+                  Box(
+                      modifier = Modifier.fillParentMaxSize(),
+                      contentAlignment = Alignment.Center) {
+                        Text(text = "Error refreshing posts")
+                      }
+                }
+              }
             }
           }
         }

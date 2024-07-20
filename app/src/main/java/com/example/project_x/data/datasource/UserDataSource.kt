@@ -14,8 +14,8 @@ import javax.inject.Inject
 class UserDataSource
 @Inject
 constructor(
-  private val apiService: ApiService,
-  private val authenticatedApiService: AuthenticatedApiService,
+    private val apiService: ApiService,
+    private val authenticatedApiService: AuthenticatedApiService,
 ) {
 
   suspend fun registerUser(user: UserRequest): Flow<Resource<UserResponse>> = flow {
@@ -67,7 +67,7 @@ constructor(
       val response = authenticatedApiService.getUserProfile()
       if (response.isSuccessful) {
         response.body()?.let { emit(Resource.Success(it)) }
-          ?: run { emit(Resource.Error("Failed to fetch user profile: Empty response body")) }
+            ?: run { emit(Resource.Error("Failed to fetch user profile: Empty response body")) }
       } else {
         val errorMessage = response.errorBody()?.string() ?: "Unknown error"
         emit(Resource.Error("Failed to fetch user profile: $errorMessage"))
@@ -77,16 +77,16 @@ constructor(
     }
   }
 
-    suspend fun refreshToken(refreshToken: String): Resource<TokenResponse> {
-        return try {
-            val response = authenticatedApiService.refreshToken(refreshToken)
-            if (response.isSuccessful) {
-                Resource.Success(response.body()!!)
-            } else {
-                Resource.Error("Failed to refresh token")
-            }
-        } catch (e: Exception) {
-            Resource.Error(e.localizedMessage ?: "Unknown error")
-        }
+  suspend fun refreshToken(refreshToken: String): Resource<TokenResponse> {
+    return try {
+      val response = authenticatedApiService.refreshToken(refreshToken)
+      if (response.isSuccessful) {
+        Resource.Success(response.body()!!)
+      } else {
+        Resource.Error("Failed to refresh token")
+      }
+    } catch (e: Exception) {
+      Resource.Error(e.localizedMessage ?: "Unknown error")
     }
+  }
 }

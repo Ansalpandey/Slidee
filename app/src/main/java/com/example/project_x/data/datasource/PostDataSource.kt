@@ -12,19 +12,8 @@ class PostDataSource
 @Inject
 constructor(private val authenticatedApiService: AuthenticatedApiService) {
 
-  suspend fun getPosts(page: Int, pageSize: Int): Flow<Resource<PostResponse>> = flow {
-    emit(Resource.Loading())
-    try {
-      val response = authenticatedApiService.getPosts(page, pageSize)
-      if (response.isSuccessful) {
-        response.body()?.let { emit(Resource.Success(it)) }
-          ?: run { emit(Resource.Error("Failed to fetch posts: Empty response body")) }
-      } else {
-        emit(Resource.Error("Error fetching posts: ${response.message()}"))
-      }
-    } catch (e: Exception) {
-      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-    }
+  suspend fun getPosts(page: Int, pageSize: Int): PostResponse {
+    return authenticatedApiService.getPosts(page, pageSize)
   }
 
   suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>> = flow {
@@ -33,7 +22,7 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
       val response = authenticatedApiService.createPost(postRequest)
       if (response.isSuccessful) {
         response.body()?.let { emit(Resource.Success(it)) }
-          ?: run { emit(Resource.Error("Failed to create post: Empty response body")) }
+            ?: run { emit(Resource.Error("Failed to create post: Empty response body")) }
       } else {
         emit(Resource.Error("Error creating post: ${response.message()}"))
       }

@@ -17,11 +17,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -36,9 +40,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,9 +62,9 @@ fun LoginScreen(
     navController: NavController,
 ) {
   val userState = authViewModel.userStateHolder.collectAsState().value
-  val context = LocalContext.current
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
+  var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
   var emailOrUsernameError by remember { mutableStateOf<String?>(null) }
   var passwordError by remember { mutableStateOf<String?>(null) }
@@ -120,28 +125,33 @@ fun LoginScreen(
         value = password,
         onValueChange = {
           password = it
-          passwordError = null // Reset error when the user types
+          passwordError = null
         },
-        label = { Text("Password", color = Color.LightGray) },
+        label = { Text("Password") },
         modifier = Modifier.fillMaxWidth(),
+        visualTransformation =
+            if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         leadingIcon = {
           Icon(
               painter = painterResource(id = R.drawable.password_icon),
               contentDescription = "password_icon",
-              modifier = Modifier.size(32.dp),
+              modifier = Modifier.size(28.dp),
           )
+        },
+        trailingIcon = {
+          val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+
+          IconButton(onClick = { passwordVisible = !passwordVisible }) {
+            Icon(imageVector = image, contentDescription = "Toggle password visibility")
+          }
         },
         singleLine = true,
         maxLines = 1,
         isError = passwordError != null,
-        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
     )
     if (passwordError != null) {
-      Text(
-          text = passwordError ?: "",
-          color = MaterialTheme.colorScheme.error,
-          style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.align(Alignment.Start))
+      Text(text = passwordError ?: "", color = Color.Red, fontSize = 12.sp)
     }
     Spacer(modifier = Modifier.height(16.dp))
     Button(

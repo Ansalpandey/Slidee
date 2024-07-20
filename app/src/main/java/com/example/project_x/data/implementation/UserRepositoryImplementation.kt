@@ -26,40 +26,39 @@ import javax.inject.Inject
 class UserRepositoryImplementation
 @Inject
 constructor(
-  private val userDataSource: UserDataSource,
-  @ApplicationContext private val context: Context,
-  private val tokenManager: TokenManager,
+    private val userDataSource: UserDataSource,
+    @ApplicationContext private val context: Context,
+    private val tokenManager: TokenManager,
 ) : UserRepository {
   private val dataStore = context.dataStore
 
   override val userStateHolder: Flow<UserStateHolder> =
-    dataStore.data.map { preferences ->
-      val isLoggedIn = preferences[UserPreferences.IS_LOGGED_IN] ?: false
-      if (isLoggedIn) {
-        UserStateHolder(
-          isLoading = false,
-          data =
-          flowOf(
-            UserResponse(
-              message = "",
-              user =
-              User(
-                id = preferences[UserPreferences.USER_ID] ?: "",
-                name = preferences[UserPreferences.USER_NAME] ?: "",
-                email = preferences[UserPreferences.USER_EMAIL] ?: "",
-                age = preferences[UserPreferences.USER_AGE] ?: 0,
-                username = preferences[UserPreferences.USER_USERNAME] ?: "",
-                bio = preferences[UserPreferences.USER_BIO] ?: "",
-              ),
-            )
-          ),
-          error = "",
-          isLoggedIn = isLoggedIn,
-        )
-      } else {
-        UserStateHolder()
+      dataStore.data.map { preferences ->
+        val isLoggedIn = preferences[UserPreferences.IS_LOGGED_IN] ?: false
+        if (isLoggedIn) {
+          UserStateHolder(
+              isLoading = false,
+              data =
+                  flowOf(
+                      UserResponse(
+                          message = "",
+                          user =
+                              User(
+                                  id = preferences[UserPreferences.USER_ID] ?: "",
+                                  name = preferences[UserPreferences.USER_NAME] ?: "",
+                                  email = preferences[UserPreferences.USER_EMAIL] ?: "",
+                                  age = preferences[UserPreferences.USER_AGE] ?: 0,
+                                  username = preferences[UserPreferences.USER_USERNAME] ?: "",
+                                  bio = preferences[UserPreferences.USER_BIO] ?: "",
+                              ),
+                      )),
+              error = "",
+              isLoggedIn = isLoggedIn,
+          )
+        } else {
+          UserStateHolder()
+        }
       }
-    }
 
   override suspend fun registerUser(user: UserRequest): Flow<Resource<UserResponse>> {
     return userDataSource.registerUser(user)

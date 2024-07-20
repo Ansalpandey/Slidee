@@ -10,8 +10,7 @@ import okhttp3.Response
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager) : Interceptor {
-  @Inject
-  lateinit var userDataSource: Provider<UserDataSource>
+  @Inject lateinit var userDataSource: Provider<UserDataSource>
 
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request().newBuilder()
@@ -29,7 +28,7 @@ class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager
         if (newToken != null) {
           // Retry the original request with the new token
           val newRequest =
-            chain.request().newBuilder().header("Authorization", "Bearer $newToken").build()
+              chain.request().newBuilder().header("Authorization", "Bearer $newToken").build()
           response.close()
           return chain.proceed(newRequest)
         }

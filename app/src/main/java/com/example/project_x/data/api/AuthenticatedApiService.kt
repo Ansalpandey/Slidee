@@ -13,27 +13,21 @@ import retrofit2.http.Query
 
 interface AuthenticatedApiService {
 
-  @GET("users/profile")
-  suspend fun getUserProfile(): Response<ProfileResponse>
+  @GET("users/profile") suspend fun getUserProfile(): Response<ProfileResponse>
 
   @GET("courses")
   suspend fun getCourses(
-    @Query("page") page: Int,
-    @Query("pageSize") pageSize: Int
+      @Query("page") page: Int,
+      @Query("pageSize") pageSize: Int
   ): Response<CourseResponse>
 
-  @GET("users/courses")
-  suspend fun getUserCourses() : Response<CourseResponse>
+  @GET("users/courses") suspend fun getUserCourses(): Response<CourseResponse>
 
   @POST("users/refresh-token")
   suspend fun refreshToken(@Body refreshToken: String): Response<TokenResponse>
 
   @GET("posts")
-  suspend fun getPosts(
-    @Query("page") page: Int,
-    @Query("pageSize") pageSize: Int
-  ): Response<PostResponse>
+  suspend fun getPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int): PostResponse
 
-  @POST("posts/create")
-  suspend fun createPost(@Body post: PostRequest): Response<PostResponse>
+  @POST("posts/create") suspend fun createPost(@Body post: PostRequest): Response<PostResponse>
 }

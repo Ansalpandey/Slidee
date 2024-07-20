@@ -18,27 +18,21 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
 fun CustomBottomBar(modifier: Modifier = Modifier, authViewModel: AuthViewModel) {
-    BottomAppBar(modifier = modifier, containerColor = Color.Transparent) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
-            }
+  BottomAppBar(modifier = modifier, containerColor = Color.Transparent) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+      IconButton(onClick = { /*TODO*/ }) {
+        Icon(imageVector = Icons.Default.Home, contentDescription = "Home")
+      }
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.Explore, contentDescription = "Explore")
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Default.Notifications,
-                    contentDescription = "Notifications"
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Message,
-                    contentDescription = "Message"
-                )
-            }
-        }
+      IconButton(onClick = { /*TODO*/ }) {
+        Icon(imageVector = Icons.Default.Explore, contentDescription = "Explore")
+      }
+      IconButton(onClick = { /*TODO*/ }) {
+        Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications")
+      }
+      IconButton(onClick = { /*TODO*/ }) {
+        Icon(imageVector = Icons.AutoMirrored.Filled.Message, contentDescription = "Message")
+      }
     }
+  }
 }

@@ -19,11 +19,11 @@ abstract class RepositoryModule {
 
   @Binds
   abstract fun bindCourseRepository(
-    courseRepositoryImplementation: CourseRepositoryImplementation
+      courseRepositoryImplementation: CourseRepositoryImplementation
   ): CourseRepository
 
   @Binds
   abstract fun bindPostRepository(
-    postRepositoryImplementation: PostRepositoryImplementation
+      postRepositoryImplementation: PostRepositoryImplementation
   ): PostRepository
 }

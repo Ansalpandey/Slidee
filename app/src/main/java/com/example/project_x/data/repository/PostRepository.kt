@@ -6,10 +6,7 @@ import com.example.project_x.data.model.PostResponse
 import kotlinx.coroutines.flow.Flow
 
 interface PostRepository {
-  suspend fun getPosts(
-    page: Int,
-    pageSize: Int
-  ): Flow<Resource<PostResponse>>
+  suspend fun getPosts(page: Int, pageSize: Int): PostResponse
 
   suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>>
 }

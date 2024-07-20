@@ -33,74 +33,64 @@ fun CreatePostScreen(
     postViewModel: PostViewModel,
     navController: NavController
 ) {
-    val postState by postViewModel.post.collectAsState()
-    val context = LocalContext.current
-    var content by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+  val postState by postViewModel.post.collectAsState()
+  val context = LocalContext.current
+  var content by remember { mutableStateOf("") }
+  var isLoading by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-          .fillMaxWidth()
-          .padding(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(8.dp))
+  Column(modifier = modifier.fillMaxWidth().padding(16.dp)) {
+    Spacer(modifier = Modifier.height(8.dp))
 
-        TextField(
-            value = content,
-            onValueChange = { content = it },
-            label = { Text("Content") },
-            modifier = Modifier
-              .fillMaxWidth()
-              .height(200.dp),
-            maxLines = 10
-        )
+    TextField(
+        value = content,
+        onValueChange = { content = it },
+        label = { Text("Content") },
+        modifier = Modifier.fillMaxWidth().height(200.dp),
+        maxLines = 10)
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                val postRequest = PostRequest(content, "", "")
-                postViewModel.createPost(postRequest)
-                isLoading = true
-            },
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Create Post")
+    Button(
+        onClick = {
+          val postRequest = PostRequest(content, "", "")
+          postViewModel.createPost(postRequest)
+          isLoading = true
+        },
+        modifier = Modifier.align(Alignment.End)) {
+          Text("Create Post")
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-        when (postState) {
-            is Resource.Loading -> {
-                if (isLoading) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is Resource.Success -> {
-                LaunchedEffect(Unit) {
-                    Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
-                    isLoading = false
-                    navController.navigate(HomeScreen) {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
-                        }
-                    }
-                }
-            }
-
-            is Resource.Error -> {
-                Toast.makeText(
-                    context,
-                    "Failed to create post: ${(postState as Resource.Error).message}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                isLoading = false
-            }
-
-            else -> {
-                isLoading = false
-            }
+    when (postState) {
+      is Resource.Loading -> {
+        if (isLoading) {
+          CircularProgressIndicator()
         }
+      }
+
+      is Resource.Success -> {
+        LaunchedEffect(Unit) {
+          Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
+          isLoading = false
+          navController.navigate(HomeScreen) {
+            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+          }
+        }
+      }
+
+      is Resource.Error -> {
+        Toast.makeText(
+                context,
+                "Failed to create post: ${(postState as Resource.Error).message}",
+                Toast.LENGTH_SHORT)
+            .show()
+        isLoading = false
+      }
+
+      else -> {
+        isLoading = false
+      }
     }
+  }
 }
