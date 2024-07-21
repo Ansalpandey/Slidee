@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -46,6 +47,7 @@ fun HomeScreen(
   val profileState by profileViewModel.userProfileState.collectAsState()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
+  val lifecycleOwner = LocalLifecycleOwner.current
 
   Scaffold(
       modifier = Modifier.fillMaxSize(),
@@ -64,6 +66,16 @@ fun HomeScreen(
             content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
             onClick = {
               navController.navigate(CreatePostScreen) // Use route
+              // After navigating to create post screen, set a callback to refresh the profile
+              navController.currentBackStackEntry
+                  ?.savedStateHandle
+                  ?.getLiveData<Boolean>("refreshProfile")
+                  ?.observe(lifecycleOwner) { shouldRefresh ->
+                    if (shouldRefresh) {
+                      profileViewModel.refreshProfile()
+                      postViewModel.getPosts() // Refetch posts if needed
+                    }
+                  }
             },
         )
       },
@@ -90,6 +102,13 @@ fun HomeScreen(
             modifier = modifier.fillMaxSize().padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+          if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
+            item {
+              Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "No posts found")
+              }
+            }
+          }
           items(posts.itemCount) { index -> posts[index]?.let { post -> PostItem(post = post) } }
           posts.apply {
             when {

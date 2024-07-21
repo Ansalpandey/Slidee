@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.PostRequest
-import com.example.project_x.ui.navigation.HomeScreen
 import com.example.project_x.ui.viewmodel.PostViewModel
 
 @Composable
@@ -73,9 +72,8 @@ fun CreatePostScreen(
         LaunchedEffect(Unit) {
           Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
           isLoading = false
-          navController.navigate(HomeScreen) {
-            popUpTo(navController.graph.startDestinationId) { inclusive = true }
-          }
+          navController.previousBackStackEntry?.savedStateHandle?.set("shouldRefresh", true)
+          navController.popBackStack()
         }
       }
 

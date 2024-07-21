@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -67,8 +68,9 @@ fun ProfileScreen(
   val coroutineScope = rememberCoroutineScope()
   val tabTitles = listOf("Posts", "Courses")
   var coursesFetched by remember { mutableStateOf(false) }
+  var refreshTrigger by remember { mutableStateOf(false) }
 
-  LaunchedEffect(key1 = true) { profileViewModel.fetchUserProfile() }
+  LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
   when (val state = profileState) {
     is Resource.Loading -> {
@@ -91,7 +93,7 @@ fun ProfileScreen(
                       Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "back")
                     }
                     Text(
-                        text = "@${profileState.data?.user?.username ?: ""}",
+                        text = "@${state.data?.user?.username ?: ""}",
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
@@ -111,7 +113,7 @@ fun ProfileScreen(
             Row {
               Column(modifier = Modifier.padding(start = 30.dp)) {
                 AsyncImage(
-                    model = profileState.data?.user?.profileImage,
+                    model = state.data?.user?.profileImage,
                     contentDescription = "profileImage",
                     modifier = Modifier.clip(CircleShape).size(100.dp),
                     placeholder = painterResource(id = R.drawable.profile),
@@ -121,13 +123,13 @@ fun ProfileScreen(
               }
               Column(modifier = Modifier.padding(start = 10.dp)) {
                 Text(
-                    text = profileState.data?.user?.name ?: "",
+                    text = state.data?.user?.name ?: "",
                     fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                     fontWeight = FontWeight.Bold,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   Text(
-                      text = "${profileState.data?.user?.followersCount ?: 0}",
+                      text = "${state.data?.user?.followersCount ?: 0}",
                       fontSize = MaterialTheme.typography.headlineLarge.fontSize,
                       fontWeight = FontWeight.Light,
                       color = MaterialTheme.colorScheme.primary,
@@ -145,7 +147,7 @@ fun ProfileScreen(
                   )
 
                   Text(
-                      text = "${profileState.data?.user?.followingCount ?: 0}",
+                      text = "${state.data?.user?.followingCount ?: 0}",
                       fontSize = MaterialTheme.typography.headlineLarge.fontSize,
                       fontWeight = FontWeight.Light,
                       color = MaterialTheme.colorScheme.primary,
@@ -159,9 +161,10 @@ fun ProfileScreen(
                 }
               }
             }
+            Spacer(modifier = Modifier.height(10.dp))
             Column {
               Text(
-                  text = profileState.data?.user?.bio ?: "",
+                  text = state.data?.user?.bio ?: "",
                   modifier = Modifier.fillMaxWidth().padding(start = 30.dp),
               )
               Row(
@@ -221,27 +224,41 @@ fun ProfileScreen(
                   modifier = Modifier.fillMaxWidth().height(700.dp) // Set a fixed height
                   ) { page ->
                     when (page) {
-                      0 ->
+                      0 -> {
+                        val posts = state.data?.user?.posts
+                        if (posts.isNullOrEmpty()) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.post_stack),
+                              contentDescription = "posts_not_found",
+                              modifier = Modifier.size(200.dp))
+                        } else {
                           LazyColumn(
                               modifier = Modifier.fillMaxSize(),
                               horizontalAlignment = Alignment.CenterHorizontally,
                           ) {
-                            profileState.data?.user?.posts?.let { posts ->
-                              items(posts) { post -> PostItem(post = post) }
-                            } ?: run { item { Text("No posts available") } }
+                            items(posts) { post -> PostItem(post = post!!) }
                           }
-
-                      1 ->
+                        }
+                      }
+                      1 -> {
+                        val courses = state.data?.user?.courses
+                        if (courses.isNullOrEmpty()) {
+                          Icon(
+                              painter = painterResource(id = R.drawable.courses),
+                              contentDescription = "courses_not_found",
+                              tint = MaterialTheme.colorScheme.primary,
+                              modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f))
+                        } else {
                           LazyColumn(
                               modifier = Modifier.fillMaxSize(),
                               horizontalAlignment = Alignment.CenterHorizontally,
                           ) {
-                            profileState.data?.user?.courses?.let { courses ->
-                              items(courses) { course ->
-                                CourseItem(course = course, modifier = Modifier.fillMaxWidth())
-                              }
-                            } ?: run { item { Text("No courses available") } }
+                            items(courses) { course ->
+                              CourseItem(course = course!!, modifier = Modifier.fillMaxWidth())
+                            }
                           }
+                        }
+                      }
                     }
                   }
             }
