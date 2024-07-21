@@ -8,4 +8,5 @@ data class UserStateHolder(
   val data: Flow<UserResponse>? = null,
   val error: String? = "",
   val isLoggedIn: Boolean = false,
+  val isRegistered: Boolean = false,
 )

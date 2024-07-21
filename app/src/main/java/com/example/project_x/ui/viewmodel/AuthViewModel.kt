@@ -8,16 +8,16 @@ import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val userRepository: UserRepositoryImplementation) :
-  ViewModel() {
+    ViewModel() {
 
   private val _userStateHolder = MutableStateFlow(UserStateHolder())
   val userStateHolder: StateFlow<UserStateHolder> = _userStateHolder.asStateFlow()
@@ -30,13 +30,22 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
 
   fun registerUser(user: UserRequest) {
     viewModelScope.launch {
-      userRepository.registerUser(user).collect { resource -> handleResource(resource) }
+      userRepository.registerUser(user).collect { resource ->
+        handleResource(resource)
+        if (resource is Resource.Success) {
+          // If registration is successful, set isRegistered to true
+          _userStateHolder.value = _userStateHolder.value.copy(isRegistered = true)
+        }
+      }
     }
   }
 
   fun loginUser(user: UserRequest) {
     viewModelScope.launch {
-      userRepository.loginUser(user).collect { resource -> handleResource(resource) }
+      userRepository.loginUser(user).collect { resource ->
+        handleResource(resource)
+        // Handle additional logic if needed for login
+      }
     }
   }
 
@@ -47,15 +56,20 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
       }
       is Resource.Success -> {
         _userStateHolder.value =
-          _userStateHolder.value.copy(
-            isLoading = false,
-            data = flowOf(resource.data!!),
-            isLoggedIn = true,
-          )
+            _userStateHolder.value.copy(
+                isLoading = false,
+                data = flowOf(resource.data!!),
+                isLoggedIn = true,
+                isRegistered = true // Set registration status here
+                )
       }
       is Resource.Error -> {
         _userStateHolder.value =
-          _userStateHolder.value.copy(isLoading = false, error = resource.message)
+            _userStateHolder.value.copy(
+                isLoading = false,
+                error = resource.message,
+                isRegistered = false // Reset registration status on error
+                )
       }
     }
   }

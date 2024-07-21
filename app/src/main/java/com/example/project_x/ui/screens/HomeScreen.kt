@@ -30,7 +30,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.project_x.ui.components.CustomAppBar
 import com.example.project_x.ui.components.CustomBottomBar
 import com.example.project_x.ui.components.PostItem
-import com.example.project_x.ui.navigation.CreatePostScreen
+import com.example.project_x.ui.navigation.LoginScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -56,8 +56,7 @@ fun HomeScreen(
           CustomAppBar(
               image = profileState.data?.user?.profileImage,
               name = profileState.data?.user?.name,
-              navController = navController, // Pass navController here
-          )
+              navController = navController)
         }
       },
       floatingActionButton = {
@@ -65,8 +64,8 @@ fun HomeScreen(
             shape = RoundedCornerShape(20.dp),
             content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
             onClick = {
-              navController.navigate(CreatePostScreen) // Use route
-              // After navigating to create post screen, set a callback to refresh the profile
+              navController.navigate(
+                  "create_post_screen") // Ensure this route matches your nav graph
               navController.currentBackStackEntry
                   ?.savedStateHandle
                   ?.getLiveData<Boolean>("refreshProfile")
@@ -113,7 +112,6 @@ fun HomeScreen(
           posts.apply {
             when {
               loadState.refresh is LoadState.Loading -> {
-                // Initial load
                 item {
                   Box(
                       modifier = Modifier.fillParentMaxSize(),
@@ -123,7 +121,6 @@ fun HomeScreen(
                 }
               }
               loadState.append is LoadState.Loading -> {
-                // Pagination load
                 item {
                   Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -150,7 +147,7 @@ fun HomeScreen(
           }
         }
       } else {
-        LoginScreen(authViewModel = authViewModel, navController = navController)
+        navController.navigate(LoginScreen)
       }
     }
   }
