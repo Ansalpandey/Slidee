@@ -17,13 +17,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -39,7 +38,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -57,21 +55,21 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(
-    modifier: Modifier = Modifier,
-    profileViewModel: ProfileViewModel,
-) {
+fun UserProfileScreen(modifier: Modifier = Modifier, profileViewModel: ProfileViewModel) {
   val profileState by profileViewModel.userProfileState.collectAsState()
-
+  val isFollowing by profileViewModel.isFollowing.collectAsState()
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
   val tabTitles = listOf("Posts", "Courses")
   var coursesFetched by remember { mutableStateOf(false) }
   var refreshTrigger by remember { mutableStateOf(false) }
 
-  LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
+  LaunchedEffect(refreshTrigger) {
+    profileViewModel.fetchUserProfileById()
+    profileViewModel.checkIfFollowing()
+  }
 
   when (val state = profileState) {
     is Resource.Loading -> {
@@ -137,7 +135,7 @@ fun ProfileScreen(
                       modifier = Modifier.padding(end = 5.dp),
                   )
                   Text(
-                      text = "Followers",
+                      text = if (state.data?.user?.followersCount == 1) "Follower" else "Followers",
                       fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                       fontWeight = FontWeight.Light,
                   )
@@ -173,19 +171,26 @@ fun ProfileScreen(
                       Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp, end = 30.dp),
                   verticalAlignment = Alignment.CenterVertically,
               ) {
-                Button(
-                    onClick = { /*TODO*/ },
+                OutlinedIconToggleButton(
                     modifier = Modifier.weight(1f),
-                    colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary),
-                ) {
-                  Text(
-                      text = "Edit Profile",
-                      fontWeight = FontWeight.Bold,
-                      fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                  )
-                }
+                    checked = isFollowing,
+                    onCheckedChange = { profileViewModel.toggleFollowUser() }) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (isFollowing) {
+                          Text(
+                              text = "Following",
+                              fontWeight = FontWeight.Bold,
+                              fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                          )
+                        } else {
+                          Text(
+                              text = "Follow",
+                              fontWeight = FontWeight.Bold,
+                              fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                          )
+                        }
+                      }
+                    }
 
                 IconButton(onClick = { /*TODO*/ }) {
                   Icon(
@@ -247,8 +252,7 @@ fun ProfileScreen(
                           Icon(
                               painter = painterResource(id = R.drawable.courses),
                               contentDescription = "courses_not_found",
-                              tint = MaterialTheme.colorScheme.primary,
-                              modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f))
+                              modifier = Modifier.size(200.dp))
                         } else {
                           LazyColumn(
                               modifier = Modifier.fillMaxSize(),

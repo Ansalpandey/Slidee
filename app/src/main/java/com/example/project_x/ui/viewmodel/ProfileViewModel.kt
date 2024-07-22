@@ -3,6 +3,7 @@ package com.example.project_x.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,12 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
 
+  private val _followState = MutableStateFlow<Resource<FollowMessage>>(Resource.Loading())
+  val followState: StateFlow<Resource<FollowMessage>> = _followState.asStateFlow()
+
+  private val _isFollowing = MutableStateFlow(false)
+  val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
+
   private var isProfileFetched = false
 
   fun fetchUserProfile() {
@@ -28,6 +35,55 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
           _profileState.value = resource
           isProfileFetched = true
         }
+      }
+    }
+  }
+
+  fun fetchUserProfileById() {
+    if (!isProfileFetched) {
+      viewModelScope.launch {
+        userRepository.getUserProfileById("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+          _profileState.value = resource
+          isProfileFetched = true
+        }
+      }
+    }
+  }
+
+  fun checkIfFollowing() {
+    viewModelScope.launch {
+      userRepository.isFollowingUser("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+        if (resource is Resource.Success) {
+          _isFollowing.value = resource.data?.isFollowing ?: false
+        }
+      }
+    }
+  }
+
+  fun toggleFollowUser() {
+    viewModelScope.launch {
+      userRepository.followUser("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+        if (resource is Resource.Success) {
+          // Update isFollowing based on the API response
+          _isFollowing.value = !_isFollowing.value
+
+          // Update followers count locally
+          _profileState.value =
+              _profileState.value.data
+                  ?.let { profile ->
+                    val updatedFollowersCount =
+                        if (_isFollowing.value) {
+                          profile.user?.followersCount?.plus(1)
+                        } else {
+                          profile.user?.followersCount?.minus(1)
+                        }
+                    profile.copy(user = profile.user?.copy(followersCount = updatedFollowersCount))
+                  }
+                  ?.let { Resource.Success(it) } ?: _profileState.value
+
+          fetchUserProfileById() // Optionally refresh the profile from the server
+        }
+        _followState.value = resource
       }
     }
   }

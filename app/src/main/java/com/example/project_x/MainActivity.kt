@@ -16,7 +16,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.project_x.ui.navigation.NavigationSetup
-import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
@@ -35,22 +34,22 @@ class MainActivity : ComponentActivity() {
     splashScreen.setKeepOnScreenCondition { splashViewModel.isSplashShow.value }
     enableEdgeToEdge()
     setContent {
-        val authViewModel: AuthViewModel by viewModels()
-        val profileViewModel: ProfileViewModel by viewModels()
-        val courseViewModel: CourseViewModel by viewModels()
-        val postViewModel: PostViewModel by viewModels()
-        val navController = rememberNavController()
+      val authViewModel: AuthViewModel by viewModels()
+      val profileViewModel: ProfileViewModel by viewModels()
+      val courseViewModel: CourseViewModel by viewModels()
+      val postViewModel: PostViewModel by viewModels()
+      val navController = rememberNavController()
       ProjectXTheme {
-          Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-              MyApp(
-                  modifier = Modifier.fillMaxSize(),
-                  authViewModel = authViewModel,
-                  profileViewModel = profileViewModel,
-                  navController = navController,
-                  postViewModel = postViewModel,
-                  courseViewModel = courseViewModel,
-              )
-          }
+        Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+          MyApp(
+              modifier = Modifier.fillMaxSize(),
+              authViewModel = authViewModel,
+              profileViewModel = profileViewModel,
+              navController = navController,
+              postViewModel = postViewModel,
+              courseViewModel = courseViewModel,
+          )
+        }
       }
     }
   }
@@ -58,24 +57,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(
-  modifier: Modifier,
-  authViewModel: AuthViewModel,
-  profileViewModel: ProfileViewModel,
-  postViewModel: PostViewModel,
-  courseViewModel: CourseViewModel,
-  navController: NavController,
+    modifier: Modifier,
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
+    postViewModel: PostViewModel,
+    courseViewModel: CourseViewModel,
+    navController: NavController,
 ) {
-        NavigationSetup(
-            authViewModel = authViewModel,
-            profileViewModel = profileViewModel,
-            postViewModel = postViewModel,
-            navController = navController as NavHostController,
-            courseViewModel = courseViewModel
-        )
-
-//    ProfileScreen(
-//        profileViewModel = profileViewModel,
-//        postViewModel = postViewModel,
-//        courseViewModel = courseViewModel,
-//    )
+  NavigationSetup(
+      authViewModel = authViewModel,
+      profileViewModel = profileViewModel,
+      postViewModel = postViewModel,
+      navController = navController as NavHostController,
+      courseViewModel = courseViewModel)
 }

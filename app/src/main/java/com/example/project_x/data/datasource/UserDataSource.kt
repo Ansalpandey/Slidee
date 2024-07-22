@@ -3,13 +3,14 @@ package com.example.project_x.data.datasource
 import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
+import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 class UserDataSource
 @Inject
@@ -71,6 +72,54 @@ constructor(
       } else {
         val errorMessage = response.errorBody()?.string() ?: "Unknown error"
         emit(Resource.Error("Failed to fetch user profile: $errorMessage"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun getUserProfileById(id: String): Flow<Resource<ProfileResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.getUserProfileById(id)
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+            ?: run { emit(Resource.Error("Failed to fetch user profile: Empty response body")) }
+      } else {
+        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+        emit(Resource.Error("Failed to fetch user profile: $errorMessage"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun followUser(id: String): Flow<Resource<FollowMessage>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.followUser(id)
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+            ?: run { emit(Resource.Error("Failed to follow user: Empty response body")) }
+      } else {
+        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+        emit(Resource.Error("Failed to follow user: $errorMessage"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.isFollowingUser(id)
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+            ?: run { emit(Resource.Error("Failed to follow user: Empty response body")) }
+      } else {
+        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+        emit(Resource.Error("Failed to follow user: $errorMessage"))
       }
     } catch (e: Exception) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))

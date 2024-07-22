@@ -16,3 +16,6 @@ object CreatePostScreen
 
 @Serializable
 object ProfileScreen
+
+@Serializable
+object UserProfileScreen

@@ -1,6 +1,7 @@
 package com.example.project_x.data.repository
 
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
@@ -18,6 +19,12 @@ interface UserRepository {
   suspend fun logoutUser()
 
   suspend fun getUserProfile(): Flow<Resource<ProfileResponse>>
+
+  suspend fun getUserProfileById(id: String): Flow<Resource<ProfileResponse>>
+
+  suspend fun followUser(id: String): Flow<Resource<FollowMessage>>
+
+  suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>>
 
   suspend fun refreshToken(refreshToken: String): Resource<TokenResponse>
 }

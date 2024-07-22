@@ -1,6 +1,7 @@
 package com.example.project_x.data.api
 
 import com.example.project_x.data.model.CourseResponse
+import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.model.ProfileResponse
@@ -9,11 +10,20 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AuthenticatedApiService {
 
   @GET("users/profile") suspend fun getUserProfile(): Response<ProfileResponse>
+
+  @GET("users/profile/{id}")
+  suspend fun getUserProfileById(@Path("id") id: String): Response<ProfileResponse>
+
+  @POST("users/follow/{id}") suspend fun followUser(@Path("id") id: String): Response<FollowMessage>
+
+  @GET("users/is-following/{id}")
+  suspend fun isFollowingUser(@Path("id") id: String): Response<FollowMessage>
 
   @GET("courses")
   suspend fun getCourses(

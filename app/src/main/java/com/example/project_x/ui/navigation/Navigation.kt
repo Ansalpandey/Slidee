@@ -12,6 +12,7 @@ import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.screens.RegisterScreen
+import com.example.project_x.ui.screens.UserProfileScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
@@ -19,12 +20,12 @@ import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
 fun NavigationSetup(
-  modifier: Modifier = Modifier,
-  authViewModel: AuthViewModel,
-  profileViewModel: ProfileViewModel,
-  postViewModel: PostViewModel,
-  navController: NavHostController,
-  courseViewModel: CourseViewModel
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel,
+    profileViewModel: ProfileViewModel,
+    postViewModel: PostViewModel,
+    navController: NavHostController,
+    courseViewModel: CourseViewModel
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val startDestination = if (userState.isLoggedIn) HomeScreen else LoginScreen
@@ -36,34 +37,41 @@ fun NavigationSetup(
 
     composable<RegisterScreen> {
       RegisterScreen(
-        authViewModel = authViewModel,
-        modifier = modifier,
-        navController = navController,
+          authViewModel = authViewModel,
+          modifier = modifier,
+          navController = navController,
       )
     }
 
     composable<HomeScreen> {
       HomeScreen(
-        authViewModel = authViewModel,
-        modifier = modifier,
-        navController = navController,
-        profileViewModel = profileViewModel,
-        postViewModel = postViewModel,
+          authViewModel = authViewModel,
+          modifier = modifier,
+          navController = navController,
+          profileViewModel = profileViewModel,
+          postViewModel = postViewModel,
       )
     }
 
     composable<CreatePostScreen> {
       CreatePostScreen(
-        postViewModel = postViewModel,
-        modifier = modifier,
-        navController = navController,
+          postViewModel = postViewModel,
+          modifier = modifier,
+          navController = navController,
       )
     }
 
     composable<ProfileScreen> {
       ProfileScreen(
-        modifier = modifier,
-        profileViewModel = profileViewModel,
+          modifier = modifier,
+          profileViewModel = profileViewModel,
+      )
+    }
+
+    composable<UserProfileScreen> {
+      UserProfileScreen(
+          modifier = modifier,
+          profileViewModel = profileViewModel,
       )
     }
   }

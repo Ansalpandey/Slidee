@@ -18,11 +18,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,6 +54,8 @@ fun PostItem(modifier: Modifier = Modifier, post: Post?) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
+  val likeCount = remember { mutableIntStateOf(post?.likes ?: 0) }
+  val isLiked = remember { mutableStateOf(false) }
 
   LaunchedEffect(post?.createdAt) {
     while (true) {
@@ -80,7 +86,7 @@ fun PostItem(modifier: Modifier = Modifier, post: Post?) {
         )
       }
 
-      Column(modifier = Modifier.padding(bottom = 5.dp)) {
+      Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -105,6 +111,49 @@ fun PostItem(modifier: Modifier = Modifier, post: Post?) {
                         showDialog.value = true
                       },
           )
+        }
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          IconButton(
+              onClick = {
+                isLiked.value = !isLiked.value
+                likeCount.intValue += if (isLiked.value) 1 else -1
+              }) {
+                Icon(
+                    painter =
+                        painterResource(
+                            id = if (isLiked.value) R.drawable.like_filled else R.drawable.like),
+                    modifier = Modifier.size(24.dp),
+                    contentDescription = "like_btn",
+                    tint = if (isLiked.value) Color.Red else Color.Gray)
+              }
+          Text(
+              text = "${likeCount.intValue}",
+              fontSize = MaterialTheme.typography.titleLarge.fontSize,
+              color = Color.Gray)
+
+          IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                painter = painterResource(id = R.drawable.comment),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "comment_btn")
+          }
+          Text(
+              text = "${post.commentsCount}",
+              fontSize = MaterialTheme.typography.titleLarge.fontSize)
+
+          IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                painter = painterResource(id = R.drawable.share),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "share_btn")
+          }
+
+          IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                painter = painterResource(id = R.drawable.more),
+                modifier = Modifier.size(24.dp),
+                contentDescription = "more_btn")
+          }
         }
       }
     }

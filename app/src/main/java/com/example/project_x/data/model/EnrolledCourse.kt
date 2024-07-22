@@ -10,7 +10,7 @@ data class EnrolledCourse(
   val fee: Double?, // 375.96
   val id: String?, // 669a67317511e30cbaa75860
   val lessons: List<Any?>?,
-  val madeBy: String?, // 669a66fd7511e30cbaa7585c
+  val madeBy: MadeBy?, // 669a66fd7511e30cbaa7585c
   val name: String?, // Mindy Sawayn
   val rating: Double?, // 4.7
   val thumbnail: String?,

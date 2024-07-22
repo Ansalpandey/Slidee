@@ -1,6 +1,9 @@
 package com.example.project_x.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +14,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,14 +27,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.example.project_x.R
 import com.example.project_x.ui.components.CustomAppBar
 import com.example.project_x.ui.components.CustomBottomBar
 import com.example.project_x.ui.components.PostItem
+import com.example.project_x.ui.navigation.CreatePostScreen
 import com.example.project_x.ui.navigation.LoginScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
@@ -64,8 +73,7 @@ fun HomeScreen(
             shape = RoundedCornerShape(20.dp),
             content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
             onClick = {
-              navController.navigate(
-                  "create_post_screen") // Ensure this route matches your nav graph
+              navController.navigate(CreatePostScreen)
               navController.currentBackStackEntry
                   ?.savedStateHandle
                   ?.getLiveData<Boolean>("refreshProfile")
@@ -103,9 +111,29 @@ fun HomeScreen(
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
             item {
-              Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "No posts found")
-              }
+              Box(
+                  modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                  contentAlignment = Alignment.Center) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceEvenly) {
+                          Image(
+                              painter = painterResource(id = R.drawable.page_not_found),
+                              contentDescription = "posts_not_found")
+                          Text(
+                              text = "Error 404! Posts not found",
+                              fontWeight = FontWeight.Bold,
+                              fontSize = MaterialTheme.typography.titleLarge.fontSize)
+
+                          OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                            Text(
+                                text = "Reload Posts",
+                                fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                                fontWeight = FontWeight.Medium)
+                          }
+                        }
+                  }
             }
           }
           items(posts.itemCount) { index -> posts[index]?.let { post -> PostItem(post = post) } }

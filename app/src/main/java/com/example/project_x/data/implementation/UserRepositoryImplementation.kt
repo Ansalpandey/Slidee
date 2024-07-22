@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import com.example.project_x.common.Resource
 import com.example.project_x.data.datasource.UserDataSource
+import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.User
@@ -97,6 +98,27 @@ constructor(
 
   override suspend fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
     userDataSource.getUserProfile().collect { resource ->
+      Log.d("UserRepository", "getUserProfile: $resource")
+      emit(resource)
+    }
+  }
+
+  override suspend fun getUserProfileById(id: String): Flow<Resource<ProfileResponse>> = flow {
+    userDataSource.getUserProfileById(id).collect { resource ->
+      Log.d("UserRepository", "getUserProfile: $resource")
+      emit(resource)
+    }
+  }
+
+  override suspend fun followUser(id: String): Flow<Resource<FollowMessage>> = flow {
+    userDataSource.followUser(id).collect { resource ->
+      Log.d("UserRepository", "getUserProfile: $resource")
+      emit(resource)
+    }
+  }
+
+  override suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>> = flow {
+    userDataSource.isFollowingUser(id).collect { resource ->
       Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
