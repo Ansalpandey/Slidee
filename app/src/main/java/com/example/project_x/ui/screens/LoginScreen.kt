@@ -50,8 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
-import com.example.project_x.ui.navigation.HomeScreen
-import com.example.project_x.ui.navigation.RegisterScreen
+import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.utils.validateLoginFields
 
@@ -171,7 +170,7 @@ fun LoginScreen(
                     password = password,
                 )
             authViewModel.loginUser(user)
-            navController.navigate(HomeScreen)
+            navController.navigate(Route.HomeScreen)
           }
         },
         modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -257,7 +256,7 @@ fun LoginScreen(
           text = "Sign Up",
           fontWeight = FontWeight.Bold,
           fontSize = 18.sp,
-          modifier = Modifier.clickable { navController.navigate(RegisterScreen) })
+          modifier = Modifier.clickable { navController.navigate(Route.RegisterScreen) })
     }
   }
   if (userState.error?.isNotBlank() == true) {

@@ -57,7 +57,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
-import com.example.project_x.ui.navigation.LoginScreen
+import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.utils.validateFields
 import java.io.InputStream
@@ -103,7 +103,7 @@ fun RegisterScreen(
   LaunchedEffect(userState.isRegistered) {
     if (userState.isRegistered) {
       // Navigate to LoginScreen only after successful registration
-      navController.navigate(LoginScreen)
+      navController.navigate(Route.LoginScreen)
     }
   }
 

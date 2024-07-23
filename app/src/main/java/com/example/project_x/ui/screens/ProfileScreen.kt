@@ -46,11 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
 import com.example.project_x.ui.components.PostItem
+import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -62,6 +64,7 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel,
+    navController: NavController
 ) {
   val profileState by profileViewModel.userProfileState.collectAsState()
 
@@ -237,7 +240,15 @@ fun ProfileScreen(
                               modifier = Modifier.fillMaxSize(),
                               horizontalAlignment = Alignment.CenterHorizontally,
                           ) {
-                            items(posts) { post -> PostItem(post = post!!) }
+                            items(posts) { post ->
+                              PostItem(
+                                  post = post!!,
+                                  navController = navController,
+                                  onClick = {
+                                    navController.navigate(
+                                        Route.UserProfileScreen(post.createdBy?._id!!))
+                                  })
+                            }
                           }
                         }
                       }

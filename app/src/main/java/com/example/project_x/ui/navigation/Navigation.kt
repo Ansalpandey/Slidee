@@ -1,5 +1,6 @@
 package com.example.project_x.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,14 +29,14 @@ fun NavigationSetup(
     courseViewModel: CourseViewModel
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
-  val startDestination = if (userState.isLoggedIn) HomeScreen else LoginScreen
+  val startDestination = if (userState.isLoggedIn) Route.HomeScreen else Route.LoginScreen
 
   NavHost(navController = navController, startDestination = startDestination) {
-    composable<LoginScreen> {
+    composable<Route.LoginScreen> {
       LoginScreen(authViewModel = authViewModel, modifier = modifier, navController = navController)
     }
 
-    composable<RegisterScreen> {
+    composable<Route.RegisterScreen> {
       RegisterScreen(
           authViewModel = authViewModel,
           modifier = modifier,
@@ -43,7 +44,7 @@ fun NavigationSetup(
       )
     }
 
-    composable<HomeScreen> {
+    composable<Route.HomeScreen> {
       HomeScreen(
           authViewModel = authViewModel,
           modifier = modifier,
@@ -53,7 +54,7 @@ fun NavigationSetup(
       )
     }
 
-    composable<CreatePostScreen> {
+    composable<Route.CreatePostScreen> {
       CreatePostScreen(
           postViewModel = postViewModel,
           modifier = modifier,
@@ -61,17 +62,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<ProfileScreen> {
+    composable<Route.ProfileScreen> {
       ProfileScreen(
           modifier = modifier,
           profileViewModel = profileViewModel,
+          navController = navController
       )
     }
 
-    composable<UserProfileScreen> {
+    composable<Route.UserProfileScreen> { backStackEntry ->
       UserProfileScreen(
           modifier = modifier,
           profileViewModel = profileViewModel,
+          userId = backStackEntry.arguments?.getString("userId") ?: "",
+          navController = navController
       )
     }
   }

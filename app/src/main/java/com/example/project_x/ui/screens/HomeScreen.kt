@@ -38,8 +38,7 @@ import com.example.project_x.R
 import com.example.project_x.ui.components.CustomAppBar
 import com.example.project_x.ui.components.CustomBottomBar
 import com.example.project_x.ui.components.PostItem
-import com.example.project_x.ui.navigation.CreatePostScreen
-import com.example.project_x.ui.navigation.LoginScreen
+import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -73,7 +72,7 @@ fun HomeScreen(
             shape = RoundedCornerShape(20.dp),
             content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
             onClick = {
-              navController.navigate(CreatePostScreen)
+              navController.navigate(Route.CreatePostScreen)
               navController.currentBackStackEntry
                   ?.savedStateHandle
                   ?.getLiveData<Boolean>("refreshProfile")
@@ -136,7 +135,11 @@ fun HomeScreen(
                   }
             }
           }
-          items(posts.itemCount) { index -> posts[index]?.let { post -> PostItem(post = post) } }
+          items(posts.itemCount) { index ->
+            posts[index]?.let { post -> PostItem(post = post, navController = navController, onClick = {
+                navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
+            }) }
+          }
           posts.apply {
             when {
               loadState.refresh is LoadState.Loading -> {
@@ -175,7 +178,7 @@ fun HomeScreen(
           }
         }
       } else {
-        navController.navigate(LoginScreen)
+        navController.navigate(Route.LoginScreen)
       }
     }
   }

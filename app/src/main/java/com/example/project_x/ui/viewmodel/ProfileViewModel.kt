@@ -39,10 +39,10 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     }
   }
 
-  fun fetchUserProfileById() {
+  fun fetchUserProfileById(userId: String) {
     if (!isProfileFetched) {
       viewModelScope.launch {
-        userRepository.getUserProfileById("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+        userRepository.getUserProfileById(userId).collect { resource ->
           _profileState.value = resource
           isProfileFetched = true
         }
@@ -60,9 +60,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     }
   }
 
-  fun toggleFollowUser() {
+  fun toggleFollowUser(userId: String) {
     viewModelScope.launch {
-      userRepository.followUser("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+      userRepository.followUser(userId).collect { resource ->
         if (resource is Resource.Success) {
           // Update isFollowing based on the API response
           _isFollowing.value = !_isFollowing.value
@@ -81,7 +81,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
                   }
                   ?.let { Resource.Success(it) } ?: _profileState.value
 
-          fetchUserProfileById() // Optionally refresh the profile from the server
+          fetchUserProfileById(userId) // Optionally refresh the profile from the server
         }
         _followState.value = resource
       }

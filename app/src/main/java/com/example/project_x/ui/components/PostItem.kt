@@ -1,5 +1,6 @@
 package com.example.project_x.ui.components
 
+import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -43,14 +44,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.Post
+import com.example.project_x.ui.navigation.Route
 import com.example.project_x.utils.getRelativeTimeSpanString
 import kotlinx.coroutines.delay
 
 @Composable
-fun PostItem(modifier: Modifier = Modifier, post: Post?) {
+fun PostItem(modifier: Modifier = Modifier, post: Post?, navController: NavController, onClick: () -> Unit) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
@@ -92,7 +95,14 @@ fun PostItem(modifier: Modifier = Modifier, post: Post?) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-          Text(text = post?.createdBy?.name!!, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+          Text(
+              text = post?.createdBy?.name!!,
+              fontSize = 18.sp,
+              fontWeight = FontWeight.Bold,
+              modifier =
+                  Modifier.clickable {
+                      onClick.invoke()
+                  })
           Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
         }
         Text(text = "@${post?.createdBy?.username!!}")

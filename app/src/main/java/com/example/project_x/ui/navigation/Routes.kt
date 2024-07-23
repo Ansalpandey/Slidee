@@ -2,20 +2,23 @@ package com.example.project_x.ui.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-object LoginScreen
+sealed class Route {
 
-@Serializable
-object RegisterScreen
+    @Serializable
+    data object LoginScreen : Route()
 
-@Serializable
-object HomeScreen
+    @Serializable
+    data object RegisterScreen : Route()
 
-@Serializable
-object CreatePostScreen
+    @Serializable
+    data object HomeScreen : Route()
 
-@Serializable
-object ProfileScreen
+    @Serializable
+    data object CreatePostScreen : Route()
 
-@Serializable
-object UserProfileScreen
+    @Serializable
+    data object ProfileScreen : Route()
+
+    @Serializable
+    data class UserProfileScreen(val userId: String) : Route()
+}
