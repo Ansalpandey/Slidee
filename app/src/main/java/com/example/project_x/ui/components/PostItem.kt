@@ -1,6 +1,5 @@
 package com.example.project_x.ui.components
 
-import android.util.Log
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -53,7 +52,12 @@ import com.example.project_x.utils.getRelativeTimeSpanString
 import kotlinx.coroutines.delay
 
 @Composable
-fun PostItem(modifier: Modifier = Modifier, post: Post?, navController: NavController, onClick: () -> Unit) {
+fun PostItem(
+  modifier: Modifier = Modifier,
+  post: Post?,
+  navController: NavController,
+  onClick: () -> Unit,
+) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
@@ -68,101 +72,110 @@ fun PostItem(modifier: Modifier = Modifier, post: Post?, navController: NavContr
   }
 
   Card(
-      modifier = Modifier.fillMaxWidth().padding(10.dp),
-      shape = RectangleShape,
-      colors = CardDefaults.cardColors(Color.Transparent),
+    modifier = Modifier.fillMaxWidth().padding(10.dp),
+    shape = RectangleShape,
+    colors = CardDefaults.cardColors(Color.Transparent),
   ) {
     Row {
       if (post?.createdBy?.profileImage.isNullOrEmpty()) {
         Image(
-            painter = painterResource(id = R.drawable.profile),
-            contentDescription = "profile_image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+          painter = painterResource(id = R.drawable.profile),
+          contentDescription = "profile_image",
+          contentScale = ContentScale.Crop,
+          modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
         )
       } else {
         AsyncImage(
-            model = post?.createdBy?.profileImage,
-            contentDescription = "profileImage",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+          model = post?.createdBy?.profileImage,
+          contentDescription = "profileImage",
+          contentScale = ContentScale.Crop,
+          modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
         )
       }
 
       Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-              text = post?.createdBy?.name!!,
-              fontSize = 18.sp,
-              fontWeight = FontWeight.Bold,
-              modifier =
-                  Modifier.clickable {
-                      onClick.invoke()
-                  })
+            text = post?.createdBy?.name!!,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier =
+              Modifier.clickable {
+                navController.navigate(Route.UserProfileScreen(post.createdBy._id!!))
+              },
+          )
           Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
         }
         Text(text = "@${post?.createdBy?.username!!}")
         Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
         if (!post.imageUrl.isNullOrEmpty()) {
           AsyncImage(
-              model = post.imageUrl,
-              contentDescription = "post_image",
-              contentScale = ContentScale.Crop,
-              modifier =
-                  Modifier.fillMaxWidth()
-                      .padding(top = 5.dp, bottom = 10.dp)
-                      .clip(RoundedCornerShape(12.dp))
-                      .clickable {
-                        dialogImageUrl.value = post.imageUrl
-                        showDialog.value = true
-                      },
+            model = post.imageUrl,
+            contentDescription = "post_image",
+            contentScale = ContentScale.Crop,
+            modifier =
+              Modifier.fillMaxWidth()
+                .padding(top = 5.dp, bottom = 10.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable {
+                  dialogImageUrl.value = post.imageUrl
+                  showDialog.value = true
+                },
           )
         }
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           IconButton(
-              onClick = {
-                isLiked.value = !isLiked.value
-                likeCount.intValue += if (isLiked.value) 1 else -1
-              }) {
-                Icon(
-                    painter =
-                        painterResource(
-                            id = if (isLiked.value) R.drawable.like_filled else R.drawable.like),
-                    modifier = Modifier.size(24.dp),
-                    contentDescription = "like_btn",
-                    tint = if (isLiked.value) Color.Red else Color.Gray)
-              }
-          Text(
-              text = "${likeCount.intValue}",
-              fontSize = MaterialTheme.typography.titleLarge.fontSize,
-              color = Color.Gray)
-
-          IconButton(onClick = { /*TODO*/ }) {
+            onClick = {
+              isLiked.value = !isLiked.value
+              likeCount.intValue += if (isLiked.value) 1 else -1
+            }
+          ) {
             Icon(
-                painter = painterResource(id = R.drawable.comment),
-                modifier = Modifier.size(24.dp),
-                contentDescription = "comment_btn")
+              painter =
+                painterResource(
+                  id = if (isLiked.value) R.drawable.like_filled else R.drawable.like
+                ),
+              modifier = Modifier.size(24.dp),
+              contentDescription = "like_btn",
+              tint = if (isLiked.value) Color.Red else Color.Gray,
+            )
           }
           Text(
-              text = "${post.commentsCount}",
-              fontSize = MaterialTheme.typography.titleLarge.fontSize)
+            text = "${likeCount.intValue}",
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            color = Color.Gray,
+          )
 
           IconButton(onClick = { /*TODO*/ }) {
             Icon(
-                painter = painterResource(id = R.drawable.share),
-                modifier = Modifier.size(24.dp),
-                contentDescription = "share_btn")
+              painter = painterResource(id = R.drawable.comment),
+              modifier = Modifier.size(24.dp),
+              contentDescription = "comment_btn",
+            )
+          }
+          Text(
+            text = "${post.commentsCount}",
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
+          )
+
+          IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+              painter = painterResource(id = R.drawable.share),
+              modifier = Modifier.size(24.dp),
+              contentDescription = "share_btn",
+            )
           }
 
           IconButton(onClick = { /*TODO*/ }) {
             Icon(
-                painter = painterResource(id = R.drawable.more),
-                modifier = Modifier.size(24.dp),
-                contentDescription = "more_btn")
+              painter = painterResource(id = R.drawable.more),
+              modifier = Modifier.size(24.dp),
+              contentDescription = "more_btn",
+            )
           }
         }
       }
@@ -188,27 +201,28 @@ fun ZoomableImage(imageUrl: String?) {
   }
 
   Box(
-      modifier =
-          Modifier.pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
-              .graphicsLayer(
-                  scaleX = animatedScale.value,
-                  scaleY = animatedScale.value,
-                  translationX = 0f, // Keep the image centered
-                  translationY = 0f, // Keep the image centered
-              )) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "popup_post_image",
-            contentScale = ContentScale.Inside,
-            modifier = Modifier.fillMaxWidth().height(400.dp),
+    modifier =
+      Modifier.pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
+        .graphicsLayer(
+          scaleX = animatedScale.value,
+          scaleY = animatedScale.value,
+          translationX = 0f, // Keep the image centered
+          translationY = 0f, // Keep the image centered
         )
+  ) {
+    AsyncImage(
+      model = imageUrl,
+      contentDescription = "popup_post_image",
+      contentScale = ContentScale.Inside,
+      modifier = Modifier.fillMaxWidth().height(400.dp),
+    )
 
-        // Reset scale when not interacting
-        LaunchedEffect(scale) {
-          if (scale != 1f) {
-            animatedScale.animateTo(targetValue = 1f, animationSpec = tween(durationMillis = 800))
-            scale = 1f // Reset scale after animation
-          }
-        }
+    // Reset scale when not interacting
+    LaunchedEffect(scale) {
+      if (scale != 1f) {
+        animatedScale.animateTo(targetValue = 1f, animationSpec = tween(durationMillis = 800))
+        scale = 1f // Reset scale after animation
       }
+    }
+  }
 }

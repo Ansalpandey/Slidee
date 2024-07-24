@@ -1,6 +1,5 @@
 package com.example.project_x.ui.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,12 +20,12 @@ import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
 fun NavigationSetup(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-    profileViewModel: ProfileViewModel,
-    postViewModel: PostViewModel,
-    navController: NavHostController,
-    courseViewModel: CourseViewModel
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  profileViewModel: ProfileViewModel,
+  postViewModel: PostViewModel,
+  navController: NavHostController,
+  courseViewModel: CourseViewModel,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val startDestination = if (userState.isLoggedIn) Route.HomeScreen else Route.LoginScreen
@@ -38,44 +37,44 @@ fun NavigationSetup(
 
     composable<Route.RegisterScreen> {
       RegisterScreen(
-          authViewModel = authViewModel,
-          modifier = modifier,
-          navController = navController,
+        authViewModel = authViewModel,
+        modifier = modifier,
+        navController = navController,
       )
     }
 
     composable<Route.HomeScreen> {
       HomeScreen(
-          authViewModel = authViewModel,
-          modifier = modifier,
-          navController = navController,
-          profileViewModel = profileViewModel,
-          postViewModel = postViewModel,
+        authViewModel = authViewModel,
+        modifier = modifier,
+        navController = navController,
+        profileViewModel = profileViewModel,
+        postViewModel = postViewModel,
       )
     }
 
     composable<Route.CreatePostScreen> {
       CreatePostScreen(
-          postViewModel = postViewModel,
-          modifier = modifier,
-          navController = navController,
+        postViewModel = postViewModel,
+        modifier = modifier,
+        navController = navController,
       )
     }
 
     composable<Route.ProfileScreen> {
       ProfileScreen(
-          modifier = modifier,
-          profileViewModel = profileViewModel,
-          navController = navController
+        modifier = modifier,
+        profileViewModel = profileViewModel,
+        navController = navController,
       )
     }
 
     composable<Route.UserProfileScreen> { backStackEntry ->
       UserProfileScreen(
-          modifier = modifier,
-          profileViewModel = profileViewModel,
-          userId = backStackEntry.arguments?.getString("userId") ?: "",
-          navController = navController
+        modifier = modifier,
+        profileViewModel = profileViewModel,
+        userId = backStackEntry.arguments?.getString("userId") ?: "",
+        navController = navController,
       )
     }
   }

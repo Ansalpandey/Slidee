@@ -7,15 +7,15 @@ import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(private val userRepository: UserRepository) :
-    ViewModel() {
+  ViewModel() {
 
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
@@ -40,12 +40,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun fetchUserProfileById(userId: String) {
-    if (!isProfileFetched) {
-      viewModelScope.launch {
-        userRepository.getUserProfileById(userId).collect { resource ->
-          _profileState.value = resource
-          isProfileFetched = true
-        }
+    viewModelScope.launch {
+      userRepository.getUserProfileById(userId).collect { resource ->
+        _profileState.value = resource
       }
     }
   }
@@ -69,17 +66,17 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
 
           // Update followers count locally
           _profileState.value =
-              _profileState.value.data
-                  ?.let { profile ->
-                    val updatedFollowersCount =
-                        if (_isFollowing.value) {
-                          profile.user?.followersCount?.plus(1)
-                        } else {
-                          profile.user?.followersCount?.minus(1)
-                        }
-                    profile.copy(user = profile.user?.copy(followersCount = updatedFollowersCount))
+            _profileState.value.data
+              ?.let { profile ->
+                val updatedFollowersCount =
+                  if (_isFollowing.value) {
+                    profile.user?.followersCount?.plus(1)
+                  } else {
+                    profile.user?.followersCount?.minus(1)
                   }
-                  ?.let { Resource.Success(it) } ?: _profileState.value
+                profile.copy(user = profile.user?.copy(followersCount = updatedFollowersCount))
+              }
+              ?.let { Resource.Success(it) } ?: _profileState.value
 
           fetchUserProfileById(userId) // Optionally refresh the profile from the server
         }
