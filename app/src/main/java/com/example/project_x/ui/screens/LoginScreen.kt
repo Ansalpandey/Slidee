@@ -75,7 +75,7 @@ fun LoginScreen(
   }
 
   Column(
-      modifier = Modifier.fillMaxSize().imePadding().padding(16.dp),
+      modifier = Modifier.fillMaxSize().padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Top,
   ) {
@@ -84,7 +84,7 @@ fun LoginScreen(
         contentDescription = "app_icon",
         modifier = Modifier.height(200.dp),
     )
-    Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+    Text(text = "Welcome to Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
     Text(
         text = "Enter your Email & Password to Sign in",
         fontWeight = FontWeight.Light,

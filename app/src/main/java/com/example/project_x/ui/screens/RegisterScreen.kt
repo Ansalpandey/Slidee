@@ -64,9 +64,9 @@ import java.io.InputStream
 
 @Composable
 fun RegisterScreen(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-    navController: NavController,
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  navController: NavController,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val context = LocalContext.current
@@ -90,14 +90,14 @@ fun RegisterScreen(
   var usernameError by rememberSaveable { mutableStateOf<String?>(null) }
 
   val launcher =
-      rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        profileImageUri = uri
-        uri?.let {
-          context.contentResolver.openInputStream(it)?.use { inputStream ->
-            profileImageBase64 = inputStream.toBase64()
-          }
+    rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+      profileImageUri = uri
+      uri?.let {
+        context.contentResolver.openInputStream(it)?.use { inputStream ->
+          profileImageBase64 = inputStream.toBase64()
         }
       }
+    }
 
   // Observe registration status
   LaunchedEffect(userState.isRegistered) {
@@ -113,64 +113,66 @@ fun RegisterScreen(
     }
   } else {
     LazyColumn(
-        modifier = Modifier.fillMaxSize().imePadding().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxSize().imePadding().padding(16.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       item {
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Welcome Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
+        Text(text = "Welcome To Slidee 👋", fontSize = 32.sp, fontWeight = FontWeight.Bold)
         Text(
-            text = "Sign Up and enjoy our community",
-            fontWeight = FontWeight.Light,
-            fontSize = 18.sp,
-            color = Color.Gray,
+          text = "Sign Up and enjoy our community",
+          fontWeight = FontWeight.Light,
+          fontSize = 18.sp,
+          color = Color.Gray,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Box(
-            modifier =
-                Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
-                  launcher.launch(
-                      PickVisualMediaRequest(
-                          mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
-                },
-            contentAlignment = Alignment.Center,
+          modifier =
+            Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
+              launcher.launch(
+                PickVisualMediaRequest(
+                  mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+              )
+            },
+          contentAlignment = Alignment.Center,
         ) {
           if (profileImageUri == null) {
             Image(
-                painter = painterResource(id = R.drawable.profile),
-                contentDescription = "profile_image",
-                modifier = Modifier.fillMaxSize(),
+              painter = painterResource(id = R.drawable.profile),
+              contentDescription = "profile_image",
+              modifier = Modifier.fillMaxSize(),
             )
           } else {
             AsyncImage(
-                model = profileImageUri,
-                contentDescription = "profile_image",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
+              model = profileImageUri,
+              contentDescription = "profile_image",
+              modifier = Modifier.fillMaxSize(),
+              contentScale = ContentScale.Crop,
             )
           }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = name,
-            onValueChange = {
-              name = it
-              nameError = null
-            },
-            label = { Text("Name") },
-            modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.profile_icon),
-                  contentDescription = "name_icon",
-                  modifier = Modifier.size(24.dp),
-              )
-            },
-            singleLine = true,
-            maxLines = 1,
-            isError = nameError != null,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+          value = name,
+          onValueChange = {
+            name = it
+            nameError = null
+          },
+          label = { Text("Name") },
+          modifier = Modifier.fillMaxWidth(),
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.profile_icon),
+              contentDescription = "name_icon",
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          singleLine = true,
+          maxLines = 1,
+          isError = nameError != null,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         if (nameError != null) {
           Text(text = nameError ?: "", color = Color.Red, fontSize = 12.sp)
@@ -178,24 +180,24 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = {
-              email = it.lowercase()
-              emailError = null
-            },
-            label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.email_icon),
-                  contentDescription = "email_icon",
-                  modifier = Modifier.size(24.dp),
-              )
-            },
-            singleLine = true,
-            maxLines = 1,
-            isError = emailError != null,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+          value = email,
+          onValueChange = {
+            email = it.lowercase()
+            emailError = null
+          },
+          label = { Text("Email") },
+          modifier = Modifier.fillMaxWidth(),
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.email_icon),
+              contentDescription = "email_icon",
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          singleLine = true,
+          maxLines = 1,
+          isError = emailError != null,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         if (emailError != null) {
           Text(text = emailError ?: "", color = Color.Red, fontSize = 12.sp)
@@ -203,34 +205,34 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = password,
-            onValueChange = {
-              password = it
-              passwordError = null
-            },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation =
-                if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.password_icon),
-                  contentDescription = "password_icon",
-                  modifier = Modifier.size(28.dp),
-              )
-            },
-            trailingIcon = {
-              val image =
-                  if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+          value = password,
+          onValueChange = {
+            password = it
+            passwordError = null
+          },
+          label = { Text("Password") },
+          modifier = Modifier.fillMaxWidth(),
+          visualTransformation =
+            if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.password_icon),
+              contentDescription = "password_icon",
+              modifier = Modifier.size(28.dp),
+            )
+          },
+          trailingIcon = {
+            val image =
+              if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
 
-              IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(imageVector = image, contentDescription = "Toggle password visibility")
-              }
-            },
-            singleLine = true,
-            maxLines = 1,
-            isError = passwordError != null,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+              Icon(imageVector = image, contentDescription = "Toggle password visibility")
+            }
+          },
+          singleLine = true,
+          maxLines = 1,
+          isError = passwordError != null,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         if (passwordError != null) {
           Text(text = passwordError ?: "", color = Color.Red, fontSize = 12.sp)
@@ -238,24 +240,24 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = username,
-            onValueChange = {
-              username = it.lowercase()
-              usernameError = null
-            },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.username),
-                  contentDescription = "username_icon",
-                  modifier = Modifier.size(24.dp),
-              )
-            },
-            singleLine = true,
-            maxLines = 1,
-            isError = usernameError != null,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+          value = username,
+          onValueChange = {
+            username = it.lowercase()
+            usernameError = null
+          },
+          label = { Text("Username") },
+          modifier = Modifier.fillMaxWidth(),
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.username),
+              contentDescription = "username_icon",
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          singleLine = true,
+          maxLines = 1,
+          isError = usernameError != null,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         if (usernameError != null) {
           Text(text = usernameError ?: "", color = Color.Red, fontSize = 12.sp)
@@ -263,46 +265,46 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = bio,
-            onValueChange = { bio = it },
-            label = { Text("Bio") },
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.bio),
-                  contentDescription = "bio",
-                  modifier = Modifier.size(24.dp),
-              )
-            },
-            placeholder = {
-              Text(text = "Tell us something about yourself", fontSize = 12.sp, color = Color.Gray)
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            maxLines = 1,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
+          value = bio,
+          onValueChange = { bio = it },
+          label = { Text("Bio") },
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.bio),
+              contentDescription = "bio",
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          placeholder = {
+            Text(text = "Tell us something about yourself", fontSize = 12.sp, color = Color.Gray)
+          },
+          modifier = Modifier.fillMaxWidth(),
+          singleLine = true,
+          maxLines = 1,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onNext),
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = age,
-            onValueChange = {
-              age = it
-              ageError = null
-            },
-            label = { Text("Age") },
-            leadingIcon = {
-              Icon(
-                  painter = painterResource(id = R.drawable.age),
-                  contentDescription = "age_icon",
-                  modifier = Modifier.size(24.dp),
-              )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true,
-            maxLines = 1,
-            isError = ageError != null,
-            keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
+          value = age,
+          onValueChange = {
+            age = it
+            ageError = null
+          },
+          label = { Text("Age") },
+          leadingIcon = {
+            Icon(
+              painter = painterResource(id = R.drawable.age),
+              contentDescription = "age_icon",
+              modifier = Modifier.size(24.dp),
+            )
+          },
+          modifier = Modifier.fillMaxWidth(),
+          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          singleLine = true,
+          maxLines = 1,
+          isError = ageError != null,
+          keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
         )
         if (ageError != null) {
           Text(text = ageError ?: "", color = Color.Red, fontSize = 12.sp)
@@ -315,48 +317,48 @@ fun RegisterScreen(
         Row {
           Text(text = "and ")
           Text(
-              text = "Terms & Conditions & Privacy Policy",
-              fontSize = 18.sp,
-              fontWeight = FontWeight.Bold,
+            text = "Terms & Conditions & Privacy Policy",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
           )
         }
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            modifier = Modifier.fillMaxWidth().height(50.dp),
-            onClick = {
-              val isValid =
-                  validateFields(
-                      name = name,
-                      email = email,
-                      password = password,
-                      age = age,
-                      username = username,
-                      setNameError = { nameError = it },
-                      setEmailError = { emailError = it },
-                      setPasswordError = { passwordError = it },
-                      setAgeError = { ageError = it },
-                      setUsernameError = { usernameError = it },
-                  )
-              if (isValid) {
-                val user =
-                    UserRequest(
-                        name = name,
-                        email = email,
-                        age = age.toInt(),
-                        username = username,
-                        password = password,
-                        bio = bio,
-                    )
-                authViewModel.registerUser(user)
-              }
-            },
+          modifier = Modifier.fillMaxWidth().height(50.dp),
+          onClick = {
+            val isValid =
+              validateFields(
+                name = name,
+                email = email,
+                password = password,
+                age = age,
+                username = username,
+                setNameError = { nameError = it },
+                setEmailError = { emailError = it },
+                setPasswordError = { passwordError = it },
+                setAgeError = { ageError = it },
+                setUsernameError = { usernameError = it },
+              )
+            if (isValid) {
+              val user =
+                UserRequest(
+                  name = name,
+                  email = email,
+                  age = age.toInt(),
+                  username = username,
+                  password = password,
+                  bio = bio,
+                )
+              authViewModel.registerUser(user)
+            }
+          },
         ) {
           Text(
-              "Create Account",
-              fontWeight = FontWeight.Bold,
-              color = Color.White,
-              fontSize = 16.sp,
+            "Create Account",
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            fontSize = 16.sp,
           )
         }
 
