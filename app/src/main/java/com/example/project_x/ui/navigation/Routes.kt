@@ -21,4 +21,7 @@ sealed class Route {
 
     @Serializable
     data class UserProfileScreen(val userId: String) : Route()
+
+    @Serializable
+    data object SettingsScreen : Route()
 }

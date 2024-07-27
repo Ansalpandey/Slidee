@@ -93,7 +93,7 @@ fun ProfileScreen(
                       horizontalArrangement = Arrangement.Center,
                       verticalAlignment = Alignment.CenterVertically,
                   ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                       Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "back")
                     }
                     Text(
@@ -105,7 +105,7 @@ fun ProfileScreen(
                   }
                 },
                 actions = {
-                  IconButton(onClick = { /*TODO*/ }) {
+                  IconButton(onClick = { navController.navigate(Route.SettingsScreen) }) {
                     Icon(imageVector = Icons.Default.Settings, contentDescription = "settings")
                   }
                 },

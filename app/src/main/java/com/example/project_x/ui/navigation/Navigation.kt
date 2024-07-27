@@ -12,6 +12,7 @@ import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.screens.RegisterScreen
+import com.example.project_x.ui.screens.SettingsScreen
 import com.example.project_x.ui.screens.UserProfileScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
@@ -76,6 +77,12 @@ fun NavigationSetup(
         userId = backStackEntry.arguments?.getString("userId") ?: "",
         navController = navController,
       )
+    }
+
+    composable<Route.SettingsScreen> {
+      SettingsScreen(
+        modifier = modifier,
+        navController = navController)
     }
   }
 }
