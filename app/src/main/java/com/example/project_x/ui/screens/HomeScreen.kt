@@ -45,51 +45,52 @@ import com.example.project_x.ui.viewmodel.ProfileViewModel
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel,
-    profileViewModel: ProfileViewModel,
-    postViewModel: PostViewModel,
-    navController: NavController,
+  modifier: Modifier = Modifier,
+  authViewModel: AuthViewModel,
+  profileViewModel: ProfileViewModel,
+  postViewModel: PostViewModel,
+  navController: NavController,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
-  val profileState by profileViewModel.userProfileState.collectAsState()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
 
   Scaffold(
-      modifier = Modifier.fillMaxSize(),
-      topBar = {
-        if (userState.isLoggedIn) {
-          CustomAppBar(
-              image = profileState.data?.user?.profileImage,
-              name = profileState.data?.user?.name,
-              navController = navController)
-        }
-      },
-      floatingActionButton = {
-        FloatingActionButton(
-            shape = RoundedCornerShape(20.dp),
-            content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
-            onClick = {
-              navController.navigate(Route.CreatePostScreen)
-              navController.currentBackStackEntry
-                  ?.savedStateHandle
-                  ?.getLiveData<Boolean>("refreshProfile")
-                  ?.observe(lifecycleOwner) { shouldRefresh ->
-                    if (shouldRefresh) {
-                      profileViewModel.refreshProfile()
-                      postViewModel.getPosts() // Refetch posts if needed
-                    }
-                  }
-            },
+    modifier = Modifier.fillMaxSize(),
+    topBar = {
+      if (userState.isLoggedIn) {
+        CustomAppBar(
+          image = profileState.data?.user?.profileImage,
+          name = profileState.data?.user?.name,
+          navController = navController,
         )
-      },
-      bottomBar = {
-        if (userState.isLoggedIn) {
-          CustomBottomBar(authViewModel = authViewModel)
-        }
-      },
+      }
+    },
+    floatingActionButton = {
+      FloatingActionButton(
+        shape = RoundedCornerShape(20.dp),
+        content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
+        onClick = {
+          navController.navigate(Route.CreatePostScreen)
+          navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<Boolean>("refreshProfile")
+            ?.observe(lifecycleOwner) { shouldRefresh ->
+              if (shouldRefresh) {
+                profileViewModel.refreshProfile()
+                postViewModel.getPosts() // Refetch posts if needed
+              }
+            }
+        },
+      )
+    },
+    bottomBar = {
+      if (userState.isLoggedIn) {
+        CustomBottomBar(authViewModel = authViewModel)
+      }
+    },
   ) { innerPadding ->
     if (userState.isLoading) {
       Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -105,50 +106,66 @@ fun HomeScreen(
           }
         }
         LazyColumn(
-            modifier = modifier.fillMaxSize().padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = modifier.fillMaxSize().padding(innerPadding),
+          horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
             item {
               Box(
-                  modifier = Modifier.fillParentMaxSize().padding(30.dp),
-                  contentAlignment = Alignment.Center) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly) {
-                          Image(
-                              painter = painterResource(id = R.drawable.page_not_found),
-                              contentDescription = "posts_not_found")
-                          Text(
-                              text = "Error 404! Posts not found",
-                              fontWeight = FontWeight.Bold,
-                              fontSize = MaterialTheme.typography.titleLarge.fontSize)
+                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                contentAlignment = Alignment.Center,
+              ) {
+                Column(
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  modifier = Modifier.fillMaxSize(),
+                  verticalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                  Image(
+                    painter = painterResource(id = R.drawable.page_not_found),
+                    contentDescription = "posts_not_found",
+                  )
+                  Text(
+                    text = "Error 404! Posts not found",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                  )
 
-                          OutlinedButton(onClick = { postViewModel.getPosts() }) {
-                            Text(
-                                text = "Reload Posts",
-                                fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                                fontWeight = FontWeight.Medium)
-                          }
-                        }
+                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                    Text(
+                      text = "Reload Posts",
+                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                      fontWeight = FontWeight.Medium,
+                    )
                   }
+                }
+              }
             }
           }
           items(posts.itemCount) { index ->
-            posts[index]?.let { post -> PostItem(post = post, navController = navController, onClick = {
-                navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
-            }) }
+            posts[index]?.let { post ->
+              PostItem(
+                post = post,
+                navController = navController,
+                onClick = {
+                  if (post.createdBy?._id == profileState.data?.user?._id) {
+                    navController.navigate(Route.ProfileScreen)
+                  } else {
+                    navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
+                  }
+                },
+              )
+            }
           }
           posts.apply {
             when {
               loadState.refresh is LoadState.Loading -> {
                 item {
                   Box(
-                      modifier = Modifier.fillParentMaxSize(),
-                      contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                      }
+                    modifier = Modifier.fillParentMaxSize(),
+                    contentAlignment = Alignment.Center,
+                  ) {
+                    CircularProgressIndicator()
+                  }
                 }
               }
               loadState.append is LoadState.Loading -> {
@@ -168,10 +185,11 @@ fun HomeScreen(
               loadState.refresh is LoadState.Error -> {
                 item {
                   Box(
-                      modifier = Modifier.fillParentMaxSize(),
-                      contentAlignment = Alignment.Center) {
-                        Text(text = "Error refreshing posts")
-                      }
+                    modifier = Modifier.fillParentMaxSize(),
+                    contentAlignment = Alignment.Center,
+                  ) {
+                    Text(text = "Error refreshing posts")
+                  }
                 }
               }
             }

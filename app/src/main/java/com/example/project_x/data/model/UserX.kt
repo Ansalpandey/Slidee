@@ -9,9 +9,9 @@ data class UserX(
   val createdAt: String?, // 2024-07-19T13:27:29.415Z
   val email: String?, // rohit@gmail.com
   val enrolledCourses: List<EnrolledCourse?>?,
-  val followers: List<User?>?,
+  val followers: List<FollowerResponse?>?,
   val followersCount: Int?, // 0
-  val following: List<User?>?,
+  val following: List<FollowingResponse?>?,
   val followingCount: Int?, // 0
   val name: String?, // Rohit
   val password: String?, // $2b$10$m2SjycPrjrKTnAj18U1XqeX3YAIo5yRRt8z9PC3dXHcQyLEQyU72a

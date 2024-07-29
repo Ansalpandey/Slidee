@@ -20,6 +20,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
 
+  private val _loggedInUserProfileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
+  val loggedInUserProfileState: StateFlow<Resource<ProfileResponse>> = _loggedInUserProfileState.asStateFlow()
+
   private val _followState = MutableStateFlow<Resource<FollowMessage>>(Resource.Loading())
   val followState: StateFlow<Resource<FollowMessage>> = _followState.asStateFlow()
 
@@ -32,7 +35,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     if (!isProfileFetched) {
       viewModelScope.launch {
         userRepository.getUserProfile().collect { resource ->
-          _profileState.value = resource
+          _loggedInUserProfileState.value = resource
           isProfileFetched = true
         }
       }

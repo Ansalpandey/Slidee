@@ -66,7 +66,7 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     navController: NavController
 ) {
-  val profileState by profileViewModel.userProfileState.collectAsState()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
 
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()

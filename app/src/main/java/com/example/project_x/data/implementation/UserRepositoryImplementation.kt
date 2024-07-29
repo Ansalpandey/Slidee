@@ -98,28 +98,24 @@ constructor(
 
   override suspend fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
     userDataSource.getUserProfile().collect { resource ->
-      Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
   }
 
   override suspend fun getUserProfileById(id: String): Flow<Resource<ProfileResponse>> = flow {
     userDataSource.getUserProfileById(id).collect { resource ->
-      Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
   }
 
   override suspend fun followUser(id: String): Flow<Resource<FollowMessage>> = flow {
     userDataSource.followUser(id).collect { resource ->
-      Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
   }
 
   override suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>> = flow {
     userDataSource.isFollowingUser(id).collect { resource ->
-      Log.d("UserRepository", "getUserProfile: $resource")
       emit(resource)
     }
   }

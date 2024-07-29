@@ -9,9 +9,11 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager) : Interceptor {
-  @Inject lateinit var userDataSource: Provider<UserDataSource>
+class AuthInterceptor @Inject constructor(
+  private val tokenManager: TokenManager
+) : Interceptor {
 
+  @Inject lateinit var userDataSourceProvider: Provider<UserDataSource>
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request().newBuilder()
     val token = tokenManager.getToken()
@@ -27,8 +29,9 @@ class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager
         val newToken = refreshAccessToken()
         if (newToken != null) {
           // Retry the original request with the new token
-          val newRequest =
-              chain.request().newBuilder().header("Authorization", "Bearer $newToken").build()
+          val newRequest = chain.request().newBuilder()
+            .header("Authorization", "Bearer $newToken")
+            .build()
           response.close()
           return chain.proceed(newRequest)
         }
@@ -43,12 +46,13 @@ class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager
 
     return try {
       val refreshResponse = runBlocking {
-        userDataSource.get().refreshToken(refreshToken)
-      } // Use value
+        userDataSourceProvider.get().refreshToken(refreshToken)
+      }
       if (refreshResponse is Resource.Success) {
         val newToken = refreshResponse.data?.token
         if (newToken != null) {
           tokenManager.saveToken(newToken)
+          tokenManager.saveRefreshToken(refreshResponse.data.token)
         }
         newToken
       } else {
@@ -62,3 +66,4 @@ class AuthInterceptor @Inject constructor(private val tokenManager: TokenManager
     }
   }
 }
+
