@@ -8,6 +8,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.Post
+import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.pagination.PostPagingSource
@@ -23,6 +24,9 @@ import javax.inject.Inject
 class PostViewModel @Inject constructor(private val postRepository: PostRepository, private val postPagingSource: PostPagingSource) : ViewModel() {
   private val _posts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
+
+  private val _likePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
+  val likePost: StateFlow<Resource<PostLikeResponse>> = _likePost.asStateFlow()
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post
@@ -47,6 +51,14 @@ class PostViewModel @Inject constructor(private val postRepository: PostReposito
     viewModelScope.launch {
       _post.value = Resource.Loading() // Set loading state
       postRepository.createPost(postRequest).collect { resource -> _post.value = resource }
+    }
+  }
+
+  fun likePost(postId: String) {
+    viewModelScope.launch {
+      postRepository.likePost(postId).collect {resource ->
+        _likePost.value = resource
+      }
     }
   }
 }

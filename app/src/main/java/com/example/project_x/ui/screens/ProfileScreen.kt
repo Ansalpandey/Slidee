@@ -53,6 +53,7 @@ import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
 import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
+import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -64,6 +65,7 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel,
+    postViewModel: PostViewModel,
     navController: NavController
 ) {
   val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
@@ -244,9 +246,11 @@ fun ProfileScreen(
                               PostItem(
                                   post = post!!,
                                   navController = navController,
+                                  likePost = {
+                                      postViewModel.likePost(post._id!!)
+                                  },
                                   onClick = {
-                                    navController.navigate(
-                                        Route.UserProfileScreen(post.createdBy?._id!!))
+                                      /*TODO*/
                                   })
                             }
                           }

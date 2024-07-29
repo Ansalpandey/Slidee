@@ -57,6 +57,7 @@ fun PostItem(
   post: Post?,
   navController: NavController,
   onClick: () -> Unit,
+  likePost: () -> Unit
 ) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
@@ -105,7 +106,7 @@ fun PostItem(
             fontWeight = FontWeight.Bold,
             modifier =
               Modifier.clickable {
-                navController.navigate(Route.UserProfileScreen(post.createdBy._id!!))
+                onClick.invoke()
               },
           )
           Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
@@ -130,6 +131,7 @@ fun PostItem(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           IconButton(
             onClick = {
+              likePost.invoke()
               isLiked.value = !isLiked.value
               likeCount.intValue += if (isLiked.value) 1 else -1
             }

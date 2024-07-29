@@ -2,6 +2,7 @@ package com.example.project_x.data.api
 
 import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.model.FollowMessage
+import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.model.ProfileResponse
@@ -27,8 +28,8 @@ interface AuthenticatedApiService {
 
   @GET("courses")
   suspend fun getCourses(
-      @Query("page") page: Int,
-      @Query("pageSize") pageSize: Int
+    @Query("page") page: Int,
+    @Query("pageSize") pageSize: Int,
   ): Response<CourseResponse>
 
   @GET("users/courses") suspend fun getUserCourses(): Response<CourseResponse>
@@ -40,4 +41,6 @@ interface AuthenticatedApiService {
   suspend fun getPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int): PostResponse
 
   @POST("posts/create") suspend fun createPost(@Body post: PostRequest): Response<PostResponse>
+
+  @POST("posts/{id}/like") suspend fun likePost(@Path("id") id: String): Response<PostLikeResponse>
 }

@@ -50,9 +50,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     }
   }
 
-  fun checkIfFollowing() {
+  fun checkIfFollowing(userId: String) {
     viewModelScope.launch {
-      userRepository.isFollowingUser("669ca5b27a6ccd3f389bd0a1").collect { resource ->
+      userRepository.isFollowingUser(userId).collect { resource ->
         if (resource is Resource.Success) {
           _isFollowing.value = resource.data?.isFollowing ?: false
         }

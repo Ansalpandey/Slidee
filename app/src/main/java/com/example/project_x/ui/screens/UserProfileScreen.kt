@@ -51,6 +51,7 @@ import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
 import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
+import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -63,6 +64,7 @@ fun UserProfileScreen(
   modifier: Modifier = Modifier,
   profileViewModel: ProfileViewModel,
   userId: String,
+  postViewModel: PostViewModel,
   navController: NavController,
 ) {
   val profileState by profileViewModel.userProfileState.collectAsState()
@@ -71,9 +73,9 @@ fun UserProfileScreen(
   val coroutineScope = rememberCoroutineScope()
   val tabTitles = listOf("Posts", "Courses")
   var coursesFetched by remember { mutableStateOf(false) }
-  var refreshTrigger by remember { mutableStateOf(false) }
+  val refreshTrigger by remember { mutableStateOf(false) }
 
-  LaunchedEffect(refreshTrigger) { profileViewModel.checkIfFollowing() }
+  LaunchedEffect(refreshTrigger) { profileViewModel.checkIfFollowing(userId) }
 
   LaunchedEffect(key1 = userId) { profileViewModel.fetchUserProfileById(userId) }
 
@@ -253,6 +255,9 @@ fun UserProfileScreen(
                           PostItem(
                             post = post!!,
                             navController = navController,
+                            likePost = {
+                              postViewModel.likePost(post._id!!)
+                            },
                             onClick = {
                               navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
                             },

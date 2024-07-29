@@ -67,6 +67,7 @@ fun NavigationSetup(
         modifier = modifier,
         profileViewModel = profileViewModel,
         navController = navController,
+        postViewModel = postViewModel
       )
     }
 
@@ -76,6 +77,7 @@ fun NavigationSetup(
         profileViewModel = profileViewModel,
         userId = backStackEntry.arguments?.getString("userId") ?: "",
         navController = navController,
+        postViewModel = postViewModel
       )
     }
 
