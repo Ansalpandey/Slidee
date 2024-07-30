@@ -38,11 +38,9 @@ Slidee is more than just a platform; it's a community of learners and educators 
 
 ## Screenshots
 
-![Screenshot_1722326060](https://github.com/user-attachments/assets/433bec36-62e0-493b-87a4-568e534e8895)
-![Screenshot_1722326106](https://github.com/user-attachments/assets/d9b60e3b-2be4-4fdd-b8d2-4161de9fcae9)
-![Screenshot_1722326101](https://github.com/user-attachments/assets/a8758dd3-66d8-4e63-882b-0782c38dedc0)
-![Screenshot_1722326074](https://github.com/user-attachments/assets/03bc9fd2-80a0-4496-bacc-d3c6a20e8a2d)
-![Screenshot_1722326065](https://github.com/user-attachments/assets/04ed1183-6e15-4bd6-9d07-265e19e314f8)
+| Splash Screen | Profile Screen | Home Screen | Register Screen | Login Screen
+|---|---|---|---|---|
+| ![Screenshot_1722326060](https://github.com/user-attachments/assets/433bec36-62e0-493b-87a4-568e534e8895) | ![Screenshot_1722326106](https://github.com/user-attachments/assets/d9b60e3b-2be4-4fdd-b8d2-4161de9fcae9) | ![Screenshot_1722326101](https://github.com/user-attachments/assets/a8758dd3-66d8-4e63-882b-0782c38dedc0) | ![Screenshot_1722326074](https://github.com/user-attachments/assets/03bc9fd2-80a0-4496-bacc-d3c6a20e8a2d) | ![Screenshot_1722326065](https://github.com/user-attachments/assets/04ed1183-6e15-4bd6-9d07-265e19e314f8)
 
 ## Contributing to Slidee
 
