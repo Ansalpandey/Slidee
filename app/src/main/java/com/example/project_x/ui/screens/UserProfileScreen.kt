@@ -255,9 +255,9 @@ fun UserProfileScreen(
                           PostItem(
                             post = post!!,
                             navController = navController,
-                            likePost = {
-                              postViewModel.likePost(post._id!!)
-                            },
+                            likePost = { postViewModel.likePost(post._id!!) },
+                            unlikePost = { postViewModel.unLikePost(post._id!!) },
+                            profileViewModel = profileViewModel,
                             onClick = {
                               navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
                             },

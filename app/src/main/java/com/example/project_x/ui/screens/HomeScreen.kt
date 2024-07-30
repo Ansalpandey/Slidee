@@ -54,7 +54,6 @@ fun HomeScreen(
   val userState by authViewModel.userStateHolder.collectAsState()
   val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
-  var likedPosts = postViewModel.likePost.collectAsState()
   var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -81,7 +80,7 @@ fun HomeScreen(
             ?.observe(lifecycleOwner) { shouldRefresh ->
               if (shouldRefresh) {
                 profileViewModel.refreshProfile()
-                postViewModel.getPosts() // Re fetch posts if needed
+                postViewModel.getPosts() // Re-fetch posts if needed
               }
             }
         },
@@ -147,9 +146,9 @@ fun HomeScreen(
               PostItem(
                 post = post,
                 navController = navController,
-                likePost = {
-                  postViewModel.likePost(post._id!!)
-                },
+                likePost = { postViewModel.likePost(post._id!!) },
+                unlikePost = { postViewModel.unLikePost(post._id!!) },
+                profileViewModel = profileViewModel,
                 onClick = {
                   val loggedInUserId = profileState.data?.user?._id
                   if (post.createdBy?._id == loggedInUserId) {

@@ -11,7 +11,7 @@ data class Post(
     val createdBy: CreatedBy?,
     val imageUrl: String?,
     val likedBy: List<String>?,
-    val likes: Int?, // 1
+    var likes: Int?, // 1
     val updatedAt: String?, // 2024-07-17T06:49:02.879Z
-    val videoUrl: String?
+    val videoUrl: String?,
 )

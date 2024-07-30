@@ -12,4 +12,5 @@ interface PostRepository {
   suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>>
 
   suspend fun likePost(postId: String): Flow<Resource<PostLikeResponse>>
+  suspend fun unLikePost(postId: String): Flow<Resource<PostLikeResponse>>
 }

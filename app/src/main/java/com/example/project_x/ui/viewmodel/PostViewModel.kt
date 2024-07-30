@@ -21,12 +21,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PostViewModel @Inject constructor(private val postRepository: PostRepository, private val postPagingSource: PostPagingSource) : ViewModel() {
+class PostViewModel
+@Inject
+constructor(
+  private val postRepository: PostRepository,
+  private val postPagingSource: PostPagingSource,
+) : ViewModel() {
   private val _posts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
 
   private val _likePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
   val likePost: StateFlow<Resource<PostLikeResponse>> = _likePost.asStateFlow()
+
+  private val _unlikePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
+  val unlikePost: StateFlow<Resource<PostLikeResponse>> = _likePost.asStateFlow()
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post
@@ -34,16 +42,18 @@ class PostViewModel @Inject constructor(private val postRepository: PostReposito
   fun getPosts() {
     viewModelScope.launch {
       Pager(
-        config = PagingConfig(
-          pageSize = 30, // Larger page size to reduce the number of API calls
-          enablePlaceholders = false,
-          initialLoadSize = 30 // Load a larger initial page size
-        )
-      ) {
-        postPagingSource
-      }.flow.cachedIn(viewModelScope).collect {
-        _posts.value = it
-      }
+          config =
+            PagingConfig(
+              pageSize = 30, // Larger page size to reduce the number of API calls
+              enablePlaceholders = false,
+              initialLoadSize = 30, // Load a larger initial page size
+            )
+        ) {
+          postPagingSource
+        }
+        .flow
+        .cachedIn(viewModelScope)
+        .collect { _posts.value = it }
     }
   }
 
@@ -56,9 +66,13 @@ class PostViewModel @Inject constructor(private val postRepository: PostReposito
 
   fun likePost(postId: String) {
     viewModelScope.launch {
-      postRepository.likePost(postId).collect {resource ->
-        _likePost.value = resource
-      }
+      postRepository.likePost(postId).collect { resource -> _likePost.value = resource }
+    }
+  }
+
+  fun unLikePost(postId: String) {
+    viewModelScope.launch {
+      postRepository.unLikePost(postId).collect { resource -> _likePost.value = resource }
     }
   }
 }

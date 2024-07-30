@@ -48,9 +48,9 @@ class AppModule {
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-//              .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
-        .baseUrl("http://192.168.1.7:3000/api/v1/")
-        .addConverterFactory(GsonConverterFactory.create())
+      //              .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+      .baseUrl("http://192.168.1.7:3000/api/v1/")
+      .addConverterFactory(GsonConverterFactory.create())
   }
 
   @Singleton
@@ -62,8 +62,8 @@ class AppModule {
   @Singleton
   @Provides
   fun provideAuthenticatedApiService(
-      retrofitBuilder: Retrofit.Builder,
-      okHttpClient: OkHttpClient,
+    retrofitBuilder: Retrofit.Builder,
+    okHttpClient: OkHttpClient,
   ): AuthenticatedApiService {
     return retrofitBuilder.client(okHttpClient).build().create(AuthenticatedApiService::class.java)
   }
@@ -77,8 +77,8 @@ class AppModule {
   @Singleton
   @Provides
   fun provideUserDataSourceProvider(
-      apiService: ApiService,
-      authenticatedApiService: AuthenticatedApiService,
+    apiService: ApiService,
+    authenticatedApiService: AuthenticatedApiService,
   ): Provider<UserDataSource> {
     return Provider { UserDataSource(apiService, authenticatedApiService) }
   }
@@ -86,8 +86,8 @@ class AppModule {
   @Singleton
   @Provides
   fun provideDataSource(
-      apiService: ApiService,
-      authenticatedApiService: AuthenticatedApiService,
+    apiService: ApiService,
+    authenticatedApiService: AuthenticatedApiService,
   ): UserDataSource {
     return UserDataSource(apiService, authenticatedApiService)
   }

@@ -43,4 +43,6 @@ interface AuthenticatedApiService {
   @POST("posts/create") suspend fun createPost(@Body post: PostRequest): Response<PostResponse>
 
   @POST("posts/{id}/like") suspend fun likePost(@Path("id") id: String): Response<PostLikeResponse>
+
+  @POST("posts/{id}/unlike") suspend fun unLikePost(@Path("id") id: String): Response<PostLikeResponse>
 }

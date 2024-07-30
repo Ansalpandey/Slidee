@@ -99,4 +99,8 @@ dependencies {
 
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pager.indicators)
+
+  implementation (libs.androidx.room.runtime)
+  kapt (libs.androidx.room.compiler)
+  implementation (libs.androidx.room.ktx)
 }

@@ -45,4 +45,18 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
+
+  suspend fun unLikePost(postId: String): Flow<Resource<PostLikeResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.unLikePost(postId)
+      if (response.isSuccessful) {
+        response.body()?.let { emit(Resource.Success(it)) }
+          ?: run { emit(Resource.Error("Failed to like post: Empty response body")) }
+      }
+    }
+    catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
 }

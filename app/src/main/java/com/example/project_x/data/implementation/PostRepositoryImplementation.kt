@@ -22,4 +22,8 @@ class PostRepositoryImplementation @Inject constructor(private val postDataSourc
   override suspend fun likePost(postId: String): Flow<Resource<PostLikeResponse>> {
     return postDataSource.likeUserPost(postId)
   }
+
+  override suspend fun unLikePost(postId: String): Flow<Resource<PostLikeResponse>> {
+    return postDataSource.unLikePost(postId)
+  }
 }

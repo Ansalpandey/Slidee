@@ -47,7 +47,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.Post
-import com.example.project_x.ui.navigation.Route
+import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.utils.getRelativeTimeSpanString
 import kotlinx.coroutines.delay
 
@@ -57,13 +57,16 @@ fun PostItem(
   post: Post?,
   navController: NavController,
   onClick: () -> Unit,
-  likePost: () -> Unit
+  profileViewModel: ProfileViewModel,
+  likePost: (String) -> Unit,
+  unlikePost: (String) -> Unit,
 ) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
-  val likeCount = remember { mutableIntStateOf(post?.likes ?: 0) }
-  val isLiked = remember { mutableStateOf(false) }
+  val userId = remember { profileViewModel.loggedInUserProfileState.value.data?.user?._id }
+  val isLiked = remember(post) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
+  val likeCount = remember(post) { mutableIntStateOf(post?.likes ?: 0) }
 
   LaunchedEffect(post?.createdAt) {
     while (true) {
@@ -104,10 +107,7 @@ fun PostItem(
             text = post?.createdBy?.name!!,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            modifier =
-              Modifier.clickable {
-                onClick.invoke()
-              },
+            modifier = Modifier.clickable { onClick.invoke() },
           )
           Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
         }
@@ -131,9 +131,15 @@ fun PostItem(
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           IconButton(
             onClick = {
-              likePost.invoke()
-              isLiked.value = !isLiked.value
-              likeCount.intValue += if (isLiked.value) 1 else -1
+              if (isLiked.value) {
+                unlikePost(post._id!!)
+                isLiked.value = false
+                likeCount.intValue -= 1
+              } else {
+                likePost(post._id!!)
+                isLiked.value = true
+                likeCount.intValue += 1
+              }
             }
           ) {
             Icon(
