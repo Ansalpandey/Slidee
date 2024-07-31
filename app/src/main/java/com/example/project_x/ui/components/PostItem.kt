@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,9 +65,9 @@ fun PostItem(
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
-  val userId = remember { profileViewModel.loggedInUserProfileState.value.data?.user?._id }
-  val isLiked = remember(post) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
-  val likeCount = remember(post) { mutableIntStateOf(post?.likes ?: 0) }
+  val userId = rememberSaveable { profileViewModel.loggedInUserProfileState.value.data?.user?._id.toString() }
+  val isLiked = rememberSaveable(post?._id) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
+  val likeCount = rememberSaveable(post?._id) { mutableIntStateOf(post?.likes ?: 0) }
 
   LaunchedEffect(post?.createdAt) {
     while (true) {
@@ -76,7 +77,9 @@ fun PostItem(
   }
 
   Card(
-    modifier = Modifier.fillMaxWidth().padding(10.dp),
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(10.dp),
     shape = RectangleShape,
     colors = CardDefaults.cardColors(Color.Transparent),
   ) {
@@ -86,14 +89,20 @@ fun PostItem(
           painter = painterResource(id = R.drawable.profile),
           contentDescription = "profile_image",
           contentScale = ContentScale.Crop,
-          modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+          modifier = Modifier
+            .padding(10.dp)
+            .clip(CircleShape)
+            .size(50.dp),
         )
       } else {
         AsyncImage(
           model = post?.createdBy?.profileImage,
           contentDescription = "profileImage",
           contentScale = ContentScale.Crop,
-          modifier = Modifier.padding(10.dp).clip(CircleShape).size(50.dp),
+          modifier = Modifier
+            .padding(10.dp)
+            .clip(CircleShape)
+            .size(50.dp),
         )
       }
 
@@ -119,13 +128,14 @@ fun PostItem(
             contentDescription = "post_image",
             contentScale = ContentScale.Crop,
             modifier =
-              Modifier.fillMaxWidth()
-                .padding(top = 5.dp, bottom = 10.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable {
-                  dialogImageUrl.value = post.imageUrl
-                  showDialog.value = true
-                },
+            Modifier
+              .fillMaxWidth()
+              .padding(top = 5.dp, bottom = 10.dp)
+              .clip(RoundedCornerShape(12.dp))
+              .clickable {
+                dialogImageUrl.value = post.imageUrl
+                showDialog.value = true
+              },
           )
         }
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -210,19 +220,22 @@ fun ZoomableImage(imageUrl: String?) {
 
   Box(
     modifier =
-      Modifier.pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
-        .graphicsLayer(
-          scaleX = animatedScale.value,
-          scaleY = animatedScale.value,
-          translationX = 0f, // Keep the image centered
-          translationY = 0f, // Keep the image centered
-        )
+    Modifier
+      .pointerInput(Unit) { detectTransformGestures { _, _, zoom, _ -> scale *= zoom } }
+      .graphicsLayer(
+        scaleX = animatedScale.value,
+        scaleY = animatedScale.value,
+        translationX = 0f, // Keep the image centered
+        translationY = 0f, // Keep the image centered
+      )
   ) {
     AsyncImage(
       model = imageUrl,
       contentDescription = "popup_post_image",
       contentScale = ContentScale.Inside,
-      modifier = Modifier.fillMaxWidth().height(400.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(400.dp),
     )
 
     // Reset scale when not interacting
