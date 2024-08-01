@@ -9,7 +9,7 @@ data class Post(
     val content: String?, // Hello everyone 👋👋
     val createdAt: String?, // 2024-07-16T13:01:41.645Z
     val createdBy: CreatedBy?,
-    val imageUrl: String?,
+    val imageUrl: List<String>?,
     val likedBy: List<String>?,
     var likes: Int?, // 1
     val updatedAt: String?, // 2024-07-17T06:49:02.879Z

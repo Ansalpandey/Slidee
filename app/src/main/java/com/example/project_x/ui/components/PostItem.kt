@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -123,20 +125,29 @@ fun PostItem(
         Text(text = "@${post?.createdBy?.username!!}")
         Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
         if (!post.imageUrl.isNullOrEmpty()) {
-          AsyncImage(
-            model = post.imageUrl,
-            contentDescription = "post_image",
-            contentScale = ContentScale.Crop,
-            modifier =
-            Modifier
+          LazyRow(
+            modifier = Modifier
               .fillMaxWidth()
-              .padding(top = 5.dp, bottom = 10.dp)
-              .clip(RoundedCornerShape(12.dp))
-              .clickable {
-                dialogImageUrl.value = post.imageUrl
-                showDialog.value = true
-              },
-          )
+              .height(300.dp)
+              .padding(top = 5.dp, bottom = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+          ) {
+            items(post.imageUrl) { imageUrl ->
+              AsyncImage(
+                model = imageUrl,
+                contentDescription = "post_image",
+                contentScale = ContentScale.Crop,
+                modifier =
+                Modifier
+                  .size(300.dp)
+                  .clip(RoundedCornerShape(12.dp))
+                  .clickable {
+                    dialogImageUrl.value = imageUrl
+                    showDialog.value = true
+                  },
+              )
+            }
+          }
         }
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           IconButton(
@@ -154,9 +165,9 @@ fun PostItem(
           ) {
             Icon(
               painter =
-                painterResource(
-                  id = if (isLiked.value) R.drawable.like_filled else R.drawable.like
-                ),
+              painterResource(
+                id = if (isLiked.value) R.drawable.like_filled else R.drawable.like
+              ),
               modifier = Modifier.size(24.dp),
               contentDescription = "like_btn",
               tint = if (isLiked.value) Color.Red else Color.Gray,

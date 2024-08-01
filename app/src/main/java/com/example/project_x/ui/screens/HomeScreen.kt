@@ -98,7 +98,7 @@ fun HomeScreen(
       }
     } else {
       if (userState.isLoggedIn) {
-        LaunchedEffect(key1 = isProfileFetched) {
+        LaunchedEffect(key1 = userState.isLoggedIn) {
           if (!isProfileFetched) {
             profileViewModel.fetchUserProfile()
             postViewModel.getPosts()
@@ -205,3 +205,4 @@ fun HomeScreen(
     }
   }
 }
+

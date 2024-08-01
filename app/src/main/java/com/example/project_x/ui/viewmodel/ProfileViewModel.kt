@@ -24,7 +24,6 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   val loggedInUserProfileState: StateFlow<Resource<ProfileResponse>> = _loggedInUserProfileState.asStateFlow()
 
   private val _followState = MutableStateFlow<Resource<FollowMessage>>(Resource.Loading())
-  val followState: StateFlow<Resource<FollowMessage>> = _followState.asStateFlow()
 
   private val _isFollowing = MutableStateFlow(false)
   val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()

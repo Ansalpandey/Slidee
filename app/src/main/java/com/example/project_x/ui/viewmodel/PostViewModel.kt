@@ -31,10 +31,6 @@ constructor(
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
 
   private val _likePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
-  val likePost: StateFlow<Resource<PostLikeResponse>> = _likePost.asStateFlow()
-
-  private val _unlikePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
-  val unlikePost: StateFlow<Resource<PostLikeResponse>> = _likePost.asStateFlow()
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post

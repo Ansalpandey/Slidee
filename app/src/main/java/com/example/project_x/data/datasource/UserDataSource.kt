@@ -63,7 +63,6 @@ constructor(
   }
 
   suspend fun getUserProfile(): Flow<Resource<ProfileResponse>> = flow {
-    emit(Resource.Loading())
     try {
       val response = authenticatedApiService.getUserProfile()
       if (response.isSuccessful) {
