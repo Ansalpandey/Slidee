@@ -1,6 +1,13 @@
 package com.example.project_x
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp class ProjectApplication : Application() {}
+@HiltAndroidApp
+class ProjectApplication : Application() {
+  override fun onCreate() {
+    super.onCreate()
+    FirebaseApp.initializeApp(this)
+  }
+}
