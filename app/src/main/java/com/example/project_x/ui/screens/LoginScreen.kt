@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -65,15 +64,7 @@ fun LoginScreen(
   var password by rememberSaveable { mutableStateOf("") }
   var passwordVisible by rememberSaveable { mutableStateOf(false) }
   var emailOrUsernameError by remember { mutableStateOf<String?>(null) }
-  val context = LocalContext.current
   var passwordError by remember { mutableStateOf<String?>(null) }
-  //  var user by remember { mutableStateOf(Firebase.auth.currentUser) }
-  //  val launcher =
-  //    rememberFirebaseAuthLauncher(
-  //      onAuthComplete = { result -> user = result.user },
-  //      onAuthError = { user = null },
-  //    )
-  //  val token = stringResource(id = R.string.client_id)
 
   if (userState.isLoading) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -202,16 +193,6 @@ fun LoginScreen(
     Spacer(modifier = Modifier.height(20.dp))
     OutlinedButton(
       onClick = {
-        //        val gso =
-        //          GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        //            .requestIdToken(token)
-        //            .requestEmail()
-        //            .build()
-        //        val googleSignInClient = GoogleSignIn.getClient(context, gso)
-        //        launcher.launch(googleSignInClient.signInIntent)
-        //        if (user != null){
-        //          navController.navigate(Route.HomeScreen)
-        //      }
         /*TODO*/
       },
       shape = RoundedCornerShape(10.dp),
@@ -286,27 +267,3 @@ fun LoginScreen(
     Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
   }
 }
-
-// @Composable
-// fun rememberFirebaseAuthLauncher(
-//  onAuthComplete: (AuthResult) -> Unit,
-//  onAuthError: (ApiException) -> Unit,
-// ): ManagedActivityResultLauncher<Intent, ActivityResult> {
-//  val scope = rememberCoroutineScope()
-//  return rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-//    result ->
-//    val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-//    try {
-//      val account = task.getResult(ApiException::class.java)!!
-//      Log.d("GoogleAuth", "account $account")
-//      val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-//      scope.launch {
-//        val authResult = Firebase.auth.signInWithCredential(credential).await()
-//        onAuthComplete(authResult)
-//      }
-//    } catch (e: ApiException) {
-//      Log.d("GoogleAuth", e.toString())
-//      onAuthError(e)
-//    }
-//  }
-// }

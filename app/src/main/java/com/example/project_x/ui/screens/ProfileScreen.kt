@@ -72,7 +72,8 @@ fun ProfileScreen(
 
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
-  val tabTitles = listOf("Posts", "Courses")
+  val tabIcons =
+    listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
   var refreshTrigger by remember { mutableStateOf(false) }
 
@@ -206,9 +207,16 @@ fun ProfileScreen(
                 selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.fillMaxWidth(),
               ) {
-                tabTitles.forEachIndexed { index, title ->
+                tabIcons.forEachIndexed { index, icon ->
                   Tab(
-                    text = { Text(title) },
+                    icon = {
+                      Icon(
+                        painter = icon,
+                        contentDescription = "icons",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp),
+                      )
+                    },
                     selected = pagerState.currentPage == index,
                     onClick = {
                       coroutineScope.launch {
@@ -221,58 +229,58 @@ fun ProfileScreen(
                   )
                 }
               }
+            }
 
-              HorizontalPager(
-                count = tabTitles.size,
-                state = pagerState,
-                modifier = Modifier.fillMaxWidth().height(700.dp), // Set a fixed height
-              ) { page ->
-                when (page) {
-                  0 -> {
-                    val posts = state.data?.user?.posts
-                    if (posts.isNullOrEmpty()) {
-                      Icon(
-                        painter = painterResource(id = R.drawable.post_stack),
-                        contentDescription = "posts_not_found",
-                        modifier = Modifier.size(200.dp),
-                      )
-                    } else {
-                      LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        items(posts) { post ->
-                          PostItem(
-                            post = post!!,
-                            navController = navController,
-                            likePost = { postViewModel.likePost(post._id!!) },
-                            unlikePost = { postViewModel.unLikePost(post._id!!) },
-                            profileViewModel = profileViewModel,
-                            onClick = {
-                              /*TODO*/
-                            },
-                          )
-                        }
+            HorizontalPager(
+              count = tabIcons.size,
+              state = pagerState,
+              modifier = Modifier.fillMaxWidth().height(700.dp), // Set a fixed height
+            ) { page ->
+              when (page) {
+                0 -> {
+                  val posts = state.data?.user?.posts
+                  if (posts.isNullOrEmpty()) {
+                    Icon(
+                      painter = painterResource(id = R.drawable.post_stack),
+                      contentDescription = "posts_not_found",
+                      modifier = Modifier.size(200.dp),
+                    )
+                  } else {
+                    LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      items(posts) { post ->
+                        PostItem(
+                          post = post!!,
+                          navController = navController,
+                          likePost = { postViewModel.likePost(post._id!!) },
+                          unlikePost = { postViewModel.unLikePost(post._id!!) },
+                          profileViewModel = profileViewModel,
+                          onClick = {
+                            /*TODO*/
+                          },
+                        )
                       }
                     }
                   }
-                  1 -> {
-                    val courses = state.data?.user?.courses
-                    if (courses.isNullOrEmpty()) {
-                      Icon(
-                        painter = painterResource(id = R.drawable.courses),
-                        contentDescription = "courses_not_found",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
-                      )
-                    } else {
-                      LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        items(courses) { course ->
-                          CourseItem(course = course!!, modifier = Modifier.fillMaxWidth())
-                        }
+                }
+                1 -> {
+                  val courses = state.data?.user?.courses
+                  if (courses.isNullOrEmpty()) {
+                    Icon(
+                      painter = painterResource(id = R.drawable.courses),
+                      contentDescription = "courses_not_found",
+                      tint = MaterialTheme.colorScheme.primary,
+                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
+                    )
+                  } else {
+                    LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      items(courses) { course ->
+                        CourseItem(course = course!!, modifier = Modifier.fillMaxWidth())
                       }
                     }
                   }

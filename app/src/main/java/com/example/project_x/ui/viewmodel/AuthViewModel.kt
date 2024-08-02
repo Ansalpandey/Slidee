@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val userRepository: UserRepositoryImplementation) :
-    ViewModel() {
+  ViewModel() {
 
   private val _userStateHolder = MutableStateFlow(UserStateHolder())
   val userStateHolder: StateFlow<UserStateHolder> = _userStateHolder.asStateFlow()
@@ -42,10 +42,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
 
   fun loginUser(user: UserRequest) {
     viewModelScope.launch {
-      userRepository.loginUser(user).collect { resource ->
-        handleResource(resource)
-        // Handle additional logic if needed for login
-      }
+      userRepository.loginUser(user).collect { resource -> handleResource(resource) }
     }
   }
 
@@ -56,20 +53,20 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
       }
       is Resource.Success -> {
         _userStateHolder.value =
-            _userStateHolder.value.copy(
-                isLoading = false,
-                data = flowOf(resource.data!!),
-                isLoggedIn = true,
-                isRegistered = true // Set registration status here
-                )
+          _userStateHolder.value.copy(
+            isLoading = false,
+            data = flowOf(resource.data!!),
+            isLoggedIn = true,
+            isRegistered = true, // Set registration status here
+          )
       }
       is Resource.Error -> {
         _userStateHolder.value =
-            _userStateHolder.value.copy(
-                isLoading = false,
-                error = resource.message,
-                isRegistered = false // Reset registration status on error
-                )
+          _userStateHolder.value.copy(
+            isLoading = false,
+            error = resource.message,
+            isRegistered = false, // Reset registration status on error
+          )
       }
     }
   }
