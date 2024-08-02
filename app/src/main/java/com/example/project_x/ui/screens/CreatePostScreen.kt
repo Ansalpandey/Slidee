@@ -1,20 +1,23 @@
 package com.example.project_x.ui.screens
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,11 +36,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.ui.viewmodel.PostViewModel
@@ -52,15 +53,16 @@ fun CreatePostScreen(
   val context = LocalContext.current
   var content by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
-  var postImageUri: Uri? by remember { mutableStateOf(null) }
-  var postImageBase64: String by remember { mutableStateOf("") }
+  var postImageUris: List<Uri> by remember { mutableStateOf(emptyList()) }
+  var postImageBase64s: List<String> by remember { mutableStateOf(emptyList()) }
 
-  val launcher =
+  // Launcher for picking images
+  val imageLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-      postImageUri = uri
       uri?.let {
+        postImageUris = postImageUris + it
         context.contentResolver.openInputStream(it)?.use { inputStream ->
-          postImageBase64 = inputStream.toBase64()
+          postImageBase64s = postImageBase64s + inputStream.toBase64()
         }
       }
     }
@@ -76,30 +78,40 @@ fun CreatePostScreen(
       maxLines = 10,
     )
 
-    Box(
-      modifier =
-        Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
-          launcher.launch(
-            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-          )
-        },
-      contentAlignment = Alignment.Center,
+    // Image Picker Button
+    Button(
+      onClick = {
+        imageLauncher.launch(
+          PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
+      },
+      modifier = Modifier.padding(16.dp),
     ) {
-      if (postImageUri == null) {
-        Image(
-          painter = painterResource(id = R.drawable.profile),
-          contentDescription = "profile_image",
-          modifier = Modifier.fillMaxSize(),
-        )
-      } else {
-        AsyncImage(
-          model = postImageUri,
-          contentDescription = "profile_image",
-          modifier = Modifier.fillMaxSize(),
-          contentScale = ContentScale.Crop,
-        )
+      Text("Pick Images")
+    }
+
+    // Display selected images
+    LazyRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      items(postImageUris) { uri ->
+        Box(
+          modifier = Modifier.size(100.dp).clip(CircleShape).background(Color.Gray),
+          contentAlignment = Alignment.Center,
+        ) {
+          AsyncImage(
+            model = uri,
+            contentDescription = "Selected Image",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+          )
+        }
       }
     }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
     Spacer(modifier = Modifier.height(16.dp))
 
     Button(
@@ -107,9 +119,9 @@ fun CreatePostScreen(
         val postRequest =
           PostRequest(
             content = content,
-            imageUrlBase64 = postImageBase64,
-            videoUrl = "", // Assuming you’re not handling video uploads here
-            imageUrl = ""
+            imageUrlBase64 = postImageBase64s, // Send list of base64 image data
+            videoUrl = "",
+            imageUrl = "",
           )
         postViewModel.createPost(postRequest)
         isLoading = true
@@ -132,6 +144,8 @@ fun CreatePostScreen(
         LaunchedEffect(Unit) {
           Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
           isLoading = false
+          // Log for debugging
+          Log.d("CreatePostScreen", "Setting shouldRefresh to true")
           navController.previousBackStackEntry?.savedStateHandle?.set("shouldRefresh", true)
           navController.popBackStack()
         }
@@ -139,17 +153,13 @@ fun CreatePostScreen(
 
       is Resource.Error -> {
         Toast.makeText(
-            context,
-            "Failed to create post: ${(postState as Resource.Error).message}",
-            Toast.LENGTH_SHORT,
-          )
-          .show()
-        isLoading = false
-      }
-
-      else -> {
+          context,
+          "Failed to create post: ${(postState as Resource.Error).message}",
+          Toast.LENGTH_SHORT,
+        ).show()
         isLoading = false
       }
     }
   }
 }
+
