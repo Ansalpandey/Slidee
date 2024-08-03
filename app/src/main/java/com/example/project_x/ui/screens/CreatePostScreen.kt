@@ -1,8 +1,6 @@
 package com.example.project_x.ui.screens
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,11 +18,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.project_x.common.Resource
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.ui.viewmodel.PostViewModel
 
@@ -125,41 +120,12 @@ fun CreatePostScreen(
           )
         postViewModel.createPost(postRequest)
         isLoading = true
+        postViewModel.getPosts()
+        navController.popBackStack()
       },
       modifier = Modifier.align(Alignment.End),
     ) {
       Text("Create Post")
     }
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    when (postState) {
-      is Resource.Loading -> {
-        if (isLoading) {
-          CircularProgressIndicator()
-        }
-      }
-
-      is Resource.Success -> {
-        LaunchedEffect(Unit) {
-          Toast.makeText(context, "Post created successfully!", Toast.LENGTH_SHORT).show()
-          isLoading = false
-          // Log for debugging
-          Log.d("CreatePostScreen", "Setting shouldRefresh to true")
-          navController.previousBackStackEntry?.savedStateHandle?.set("shouldRefresh", true)
-          navController.popBackStack()
-        }
-      }
-
-      is Resource.Error -> {
-        Toast.makeText(
-          context,
-          "Failed to create post: ${(postState as Resource.Error).message}",
-          Toast.LENGTH_SHORT,
-        ).show()
-        isLoading = false
-      }
-    }
   }
 }
-

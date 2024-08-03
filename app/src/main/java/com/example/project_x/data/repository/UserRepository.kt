@@ -1,6 +1,7 @@
 package com.example.project_x.data.repository
 
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
@@ -27,4 +28,6 @@ interface UserRepository {
   suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>>
 
   suspend fun refreshToken(refreshToken: String): Resource<TokenResponse>
+
+  suspend fun editProfile(id: String, user: EditProfileRequest): Flow<Resource<ProfileResponse>>
 }

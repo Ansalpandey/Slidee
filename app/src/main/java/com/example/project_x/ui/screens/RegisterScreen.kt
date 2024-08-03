@@ -128,7 +128,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Box(
           modifier =
-            Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
+            Modifier.size(100.dp).clip(CircleShape).clickable {
               launcher.launch(
                 PickVisualMediaRequest(
                   mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly

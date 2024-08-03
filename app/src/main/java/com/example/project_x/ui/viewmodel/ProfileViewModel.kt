@@ -3,6 +3,7 @@ package com.example.project_x.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.repository.UserRepository
@@ -20,8 +21,10 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
 
-  private val _loggedInUserProfileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
-  val loggedInUserProfileState: StateFlow<Resource<ProfileResponse>> = _loggedInUserProfileState.asStateFlow()
+  private val _loggedInUserProfileState =
+    MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
+  val loggedInUserProfileState: StateFlow<Resource<ProfileResponse>> =
+    _loggedInUserProfileState.asStateFlow()
 
   private val _followState = MutableStateFlow<Resource<FollowMessage>>(Resource.Loading())
 
@@ -46,6 +49,12 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
       userRepository.getUserProfileById(userId).collect { resource ->
         _profileState.value = resource
       }
+    }
+  }
+
+  fun editProfile(id: String, user: EditProfileRequest) {
+    viewModelScope.launch {
+      userRepository.editProfile(id, user).collect { resource -> _profileState.value = resource }
     }
   }
 

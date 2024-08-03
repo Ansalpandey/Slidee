@@ -1,6 +1,7 @@
 package com.example.project_x.data.api
 
 import com.example.project_x.data.model.CourseResponse
+import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
@@ -11,6 +12,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -45,4 +47,6 @@ interface AuthenticatedApiService {
   @POST("posts/{id}/like") suspend fun likePost(@Path("id") id: String): Response<PostLikeResponse>
 
   @POST("posts/{id}/unlike") suspend fun unLikePost(@Path("id") id: String): Response<PostLikeResponse>
+
+  @PUT("users/edit-profile/{id}") suspend fun editProfile(@Path("id") id: String, @Body user: EditProfileRequest): Response<ProfileResponse>
 }

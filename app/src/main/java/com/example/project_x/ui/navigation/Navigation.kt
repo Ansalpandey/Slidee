@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.project_x.ui.screens.CreatePostScreen
+import com.example.project_x.ui.screens.EditProfileScreen
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.ProfileScreen
@@ -85,6 +86,19 @@ fun NavigationSetup(
       SettingsScreen(
         modifier = modifier,
         navController = navController)
+    }
+
+    composable<Route.EditProfileScreen> {
+        backStackEntry ->
+      EditProfileScreen(
+        modifier = modifier,
+        navController = navController,
+        profileViewModel = profileViewModel,
+        username = backStackEntry.arguments?.getString("username") ?: "",
+        name = backStackEntry.arguments?.getString("name") ?: "",
+        bio = backStackEntry.arguments?.getString("bio") ?: "",
+        profileImage = backStackEntry.arguments?.getString("profileImage") ?: ""
+      )
     }
   }
 }

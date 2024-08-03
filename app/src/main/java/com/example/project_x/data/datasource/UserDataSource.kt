@@ -3,14 +3,15 @@ package com.example.project_x.data.datasource
 import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
+import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 
 class UserDataSource
 @Inject
@@ -42,6 +43,23 @@ constructor(
         emit(Resource.Success(userResponse))
       } else {
         emit(Resource.Error("Login failed"))
+      }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun editProfile(
+    id: String,
+    user: EditProfileRequest,
+  ): Flow<Resource<ProfileResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.editProfile(id, user)
+      if (response.isSuccessful) {
+        emit(Resource.Success(response.body()))
+      } else {
+        emit(Resource.Error("Edit profile failed"))
       }
     } catch (e: Exception) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))

@@ -75,7 +75,7 @@ fun ProfileScreen(
   val tabIcons =
     listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
-  var refreshTrigger by remember { mutableStateOf(false) }
+  val refreshTrigger by remember { mutableStateOf(false) }
 
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
@@ -179,7 +179,7 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically,
               ) {
                 Button(
-                  onClick = { /*TODO*/ },
+                  onClick = { navController.navigate(Route.EditProfileScreen(username = state.data?.user?.username!!, bio = state.data.user.bio!!, profileImage = state.data.user.profileImage!!, name = state.data.user.name!!)) },
                   modifier = Modifier.weight(1f),
                   colors =
                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
