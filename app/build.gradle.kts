@@ -3,13 +3,12 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.android)
   kotlin("kapt")
   id("com.google.dagger.hilt.android")
-  id("com.google.gms.google-services")
   alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
   namespace = "com.example.project_x"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.example.project_x"
@@ -36,6 +35,7 @@ android {
   buildFeatures { compose = true }
   composeOptions { kotlinCompilerExtensionVersion = "1.5.1" }
   packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+  buildToolsVersion = "35.0.0"
 }
 
 dependencies {
@@ -101,17 +101,7 @@ dependencies {
   implementation(libs.accompanist.pager)
   implementation(libs.accompanist.pager.indicators)
 
-  implementation (libs.androidx.room.runtime)
-  kapt (libs.androidx.room.compiler)
-  implementation (libs.androidx.room.ktx)
-
-  // Import the BoM for the Firebase platform
-  implementation(platform(libs.firebase.bom))
-
-  // Add the dependency for the Firebase Authentication library
-  // When using the BoM, you don't specify versions in Firebase library dependencies
-  implementation(libs.google.firebase.auth)
-
-  // Also add the dependency for the Google Play services library and specify its version
-  implementation(libs.play.services.auth)
+  implementation(libs.androidx.room.runtime)
+  kapt(libs.androidx.room.compiler)
+  implementation(libs.androidx.room.ktx)
 }

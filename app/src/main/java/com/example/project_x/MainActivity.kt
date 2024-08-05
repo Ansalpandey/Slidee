@@ -42,12 +42,12 @@ class MainActivity : ComponentActivity() {
       ProjectXTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
           MyApp(
-              modifier = Modifier.fillMaxSize(),
-              authViewModel = authViewModel,
-              profileViewModel = profileViewModel,
-              navController = navController,
-              postViewModel = postViewModel,
-              courseViewModel = courseViewModel,
+            modifier = Modifier.fillMaxSize(),
+            authViewModel = authViewModel,
+            profileViewModel = profileViewModel,
+            navController = navController,
+            postViewModel = postViewModel,
+            courseViewModel = courseViewModel,
           )
         }
       }
@@ -57,17 +57,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MyApp(
-    modifier: Modifier,
-    authViewModel: AuthViewModel,
-    profileViewModel: ProfileViewModel,
-    postViewModel: PostViewModel,
-    courseViewModel: CourseViewModel,
-    navController: NavController,
+  modifier: Modifier,
+  authViewModel: AuthViewModel,
+  profileViewModel: ProfileViewModel,
+  postViewModel: PostViewModel,
+  courseViewModel: CourseViewModel,
+  navController: NavController,
 ) {
   NavigationSetup(
-      authViewModel = authViewModel,
-      profileViewModel = profileViewModel,
-      postViewModel = postViewModel,
-      navController = navController as NavHostController,
-      courseViewModel = courseViewModel)
+    authViewModel = authViewModel,
+    profileViewModel = profileViewModel,
+    postViewModel = postViewModel,
+    navController = navController as NavHostController,
+    courseViewModel = courseViewModel,
+  )
 }

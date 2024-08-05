@@ -29,6 +29,9 @@ sealed class Route {
         val username: String,
         val name: String,
         val bio: String,
-        val profileImage: String
+        val profileImage: String,
+        val location: String,
+        val email: String,
+        val age: String
     ) : Route()
 }

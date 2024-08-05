@@ -122,7 +122,7 @@ fun ProfileScreen(
                 AsyncImage(
                   model = state.data?.user?.profileImage,
                   contentDescription = "profileImage",
-                  modifier = Modifier.clip(CircleShape).size(100.dp),
+                  modifier = Modifier.clip(CircleShape).size(75.dp),
                   placeholder = painterResource(id = R.drawable.profile),
                   error = painterResource(id = R.drawable.profile),
                   contentScale = ContentScale.Crop,
@@ -136,14 +136,15 @@ fun ProfileScreen(
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   Text(
-                    text = "${state.data?.user?.followersCount ?: 0}",
-                    fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                    text = "${state.data?.user?.posts?.size ?: 0}",
+                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(end = 5.dp),
                   )
+
                   Text(
-                    text = "Followers",
+                    text = "Posts",
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     fontWeight = FontWeight.Light,
                   )
@@ -155,13 +156,31 @@ fun ProfileScreen(
 
                   Text(
                     text = "${state.data?.user?.followingCount ?: 0}",
-                    fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                     fontWeight = FontWeight.Light,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(end = 5.dp),
                   )
                   Text(
                     text = "Following",
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                    fontWeight = FontWeight.Light,
+                  )
+                  Text(
+                    text = " • ",
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                    fontWeight = FontWeight.Light,
+                  )
+
+                  Text(
+                    text = "${state.data?.user?.followersCount ?: 0}",
+                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                    fontWeight = FontWeight.Light,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(end = 5.dp),
+                  )
+                  Text(
+                    text = "Followers",
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     fontWeight = FontWeight.Light,
                   )
@@ -179,7 +198,19 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically,
               ) {
                 Button(
-                  onClick = { navController.navigate(Route.EditProfileScreen(username = state.data?.user?.username!!, bio = state.data.user.bio!!, profileImage = state.data.user.profileImage!!, name = state.data.user.name!!)) },
+                  onClick = {
+                    navController.navigate(
+                      Route.EditProfileScreen(
+                        username = state.data?.user?.username!!,
+                        bio = state.data.user.bio!!,
+                        profileImage = state.data.user.profileImage!!,
+                        name = state.data.user.name!!,
+                        location = state.data.user.location!!,
+                        email = state.data.user.email!!,
+                        age = state.data.user.age.toString(),
+                      )
+                    )
+                  },
                   modifier = Modifier.weight(1f),
                   colors =
                     ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
@@ -243,7 +274,8 @@ fun ProfileScreen(
                     Icon(
                       painter = painterResource(id = R.drawable.post_stack),
                       contentDescription = "posts_not_found",
-                      modifier = Modifier.size(200.dp),
+                      tint = MaterialTheme.colorScheme.primary,
+                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
                     )
                   } else {
                     LazyColumn(

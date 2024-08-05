@@ -97,7 +97,10 @@ fun NavigationSetup(
         username = backStackEntry.arguments?.getString("username") ?: "",
         name = backStackEntry.arguments?.getString("name") ?: "",
         bio = backStackEntry.arguments?.getString("bio") ?: "",
-        profileImage = backStackEntry.arguments?.getString("profileImage") ?: ""
+        profileImage = backStackEntry.arguments?.getString("profileImage") ?: "",
+        location = backStackEntry.arguments?.getString("location") ?: "",
+        email = backStackEntry.arguments?.getString("email") ?: "",
+        age = backStackEntry.arguments?.getString("age") ?: ""
       )
     }
   }
