@@ -7,10 +7,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.project_x.ui.screens.ChatScreen
 import com.example.project_x.ui.screens.CreatePostScreen
 import com.example.project_x.ui.screens.EditProfileScreen
+import com.example.project_x.ui.screens.ExploreScreen
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.LoginScreen
+import com.example.project_x.ui.screens.NotificationScreen
 import com.example.project_x.ui.screens.ProfileScreen
 import com.example.project_x.ui.screens.RegisterScreen
 import com.example.project_x.ui.screens.SettingsScreen
@@ -68,7 +71,7 @@ fun NavigationSetup(
         modifier = modifier,
         profileViewModel = profileViewModel,
         navController = navController,
-        postViewModel = postViewModel
+        postViewModel = postViewModel,
       )
     }
 
@@ -78,18 +81,15 @@ fun NavigationSetup(
         profileViewModel = profileViewModel,
         userId = backStackEntry.arguments?.getString("userId") ?: "",
         navController = navController,
-        postViewModel = postViewModel
+        postViewModel = postViewModel,
       )
     }
 
     composable<Route.SettingsScreen> {
-      SettingsScreen(
-        modifier = modifier,
-        navController = navController)
+      SettingsScreen(modifier = modifier, navController = navController)
     }
 
-    composable<Route.EditProfileScreen> {
-        backStackEntry ->
+    composable<Route.EditProfileScreen> { backStackEntry ->
       EditProfileScreen(
         modifier = modifier,
         navController = navController,
@@ -100,7 +100,27 @@ fun NavigationSetup(
         profileImage = backStackEntry.arguments?.getString("profileImage") ?: "",
         location = backStackEntry.arguments?.getString("location") ?: "",
         email = backStackEntry.arguments?.getString("email") ?: "",
-        age = backStackEntry.arguments?.getString("age") ?: ""
+        age = backStackEntry.arguments?.getString("age") ?: "",
+      )
+    }
+
+    composable<Route.ChatScreen> {
+      ChatScreen(modifier = modifier, authViewModel = authViewModel, navController = navController)
+    }
+
+    composable<Route.ExploreScreen> {
+      ExploreScreen(
+        modifier = modifier,
+        authViewModel = authViewModel,
+        navController = navController,
+      )
+    }
+
+    composable<Route.NotificationScreen> {
+      NotificationScreen(
+        modifier = modifier,
+        authViewModel = authViewModel,
+        navController = navController,
       )
     }
   }

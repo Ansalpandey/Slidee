@@ -88,7 +88,7 @@ fun HomeScreen(
     },
     bottomBar = {
       if (userState.isLoggedIn) {
-        CustomBottomBar(authViewModel = authViewModel)
+        CustomBottomBar(authViewModel = authViewModel, navController = navController)
       }
     },
   ) { innerPadding ->
