@@ -67,8 +67,12 @@ fun PostItem(
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val showDialog = remember { mutableStateOf(false) }
   val dialogImageUrl = remember { mutableStateOf<String?>(null) }
-  val userId = rememberSaveable { profileViewModel.loggedInUserProfileState.value.data?.user?._id.toString() }
-  val isLiked = rememberSaveable(post?._id) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
+  val userId = rememberSaveable {
+    profileViewModel.loggedInUserProfileState.value.data?.user?._id.toString()
+  }
+
+  val isLiked =
+    rememberSaveable(post?._id) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
   val likeCount = rememberSaveable(post?._id) { mutableIntStateOf(post?.likes ?: 0) }
 
   LaunchedEffect(post?.createdAt) {
@@ -76,6 +80,11 @@ fun PostItem(
       timeAgo.value = getRelativeTimeSpanString(post?.createdAt!!)
       delay(60000) // Update every minute
     }
+  }
+
+  LaunchedEffect(post?._id) {
+    isLiked.value = post?.likedBy?.contains(userId) == true
+    likeCount.intValue = post?.likes ?: 0
   }
 
   Card(
@@ -116,21 +125,30 @@ fun PostItem(
         ) {
           Text(
             text = post?.createdBy?.name!!,
-            fontSize = 18.sp,
+            fontSize = MaterialTheme.typography.titleLarge.fontSize,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.clickable { onClick.invoke() },
           )
           Text(text = " ${timeAgo.value}", fontSize = 12.sp, fontWeight = FontWeight.Light)
         }
-        Text(text = "@${post?.createdBy?.username!!}")
-        Text(text = post.content!!, fontSize = 14.sp, fontWeight = FontWeight.Light)
+        Text(
+          text = "@${post?.createdBy?.username!!}",
+          fontSize = MaterialTheme.typography.titleMedium.fontSize,
+          color = Color.Gray,
+          fontWeight = FontWeight.SemiBold,
+        )
+        Text(
+          text = post.content!!,
+          fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+          fontWeight = FontWeight.Light,
+        )
         if (!post.imageUrl.isNullOrEmpty()) {
           LazyRow(
             modifier = Modifier
               .fillMaxWidth()
               .height(300.dp)
               .padding(top = 5.dp, bottom = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
           ) {
             items(post.imageUrl) { imageUrl ->
               AsyncImage(
@@ -149,7 +167,12 @@ fun PostItem(
             }
           }
         }
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
           IconButton(
             onClick = {
               if (isLiked.value) {
@@ -165,10 +188,10 @@ fun PostItem(
           ) {
             Icon(
               painter =
-              painterResource(
-                id = if (isLiked.value) R.drawable.like_filled else R.drawable.like
-              ),
-              modifier = Modifier.size(24.dp),
+                painterResource(
+                  id = if (isLiked.value) R.drawable.like_filled else R.drawable.like
+                ),
+              modifier = Modifier.size(18.dp),
               contentDescription = "like_btn",
               tint = if (isLiked.value) Color.Red else Color.Gray,
             )
@@ -182,28 +205,32 @@ fun PostItem(
           IconButton(onClick = { /*TODO*/ }) {
             Icon(
               painter = painterResource(id = R.drawable.comment),
-              modifier = Modifier.size(24.dp),
+              modifier = Modifier.size(18.dp),
               contentDescription = "comment_btn",
+              tint = Color.Gray,
             )
           }
           Text(
             text = "${post.commentsCount}",
             fontSize = MaterialTheme.typography.titleLarge.fontSize,
+            color = Color.Gray,
           )
 
           IconButton(onClick = { /*TODO*/ }) {
             Icon(
               painter = painterResource(id = R.drawable.share),
-              modifier = Modifier.size(24.dp),
+              modifier = Modifier.size(18.dp),
               contentDescription = "share_btn",
+              tint = Color.Gray,
             )
           }
 
           IconButton(onClick = { /*TODO*/ }) {
             Icon(
               painter = painterResource(id = R.drawable.more),
-              modifier = Modifier.size(24.dp),
+              modifier = Modifier.size(18.dp),
               contentDescription = "more_btn",
+              tint = Color.Gray,
             )
           }
         }

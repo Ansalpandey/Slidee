@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -117,119 +119,141 @@ fun ProfileScreen(
       ) { paddingValues ->
         LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
           item {
-            Row {
-              Column(modifier = Modifier.padding(start = 30.dp)) {
-                AsyncImage(
-                  model = state.data?.user?.profileImage,
-                  contentDescription = "profileImage",
-                  modifier = Modifier.clip(CircleShape).size(75.dp),
-                  placeholder = painterResource(id = R.drawable.profile),
-                  error = painterResource(id = R.drawable.profile),
-                  contentScale = ContentScale.Crop,
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceEvenly,
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              AsyncImage(
+                model = state.data?.user?.profileImage,
+                contentDescription = "profileImage",
+                modifier = Modifier.clip(CircleShape).size(80.dp),
+                placeholder = painterResource(id = R.drawable.profile),
+                error = painterResource(id = R.drawable.profile),
+                contentScale = ContentScale.Crop,
+              )
+              Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+              ) {
+                Text(
+                  text = "${state.data?.user?.posts?.size ?: 0}",
+                  fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                  fontWeight = FontWeight.Bold,
+                  color = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.padding(end = 5.dp),
+                )
+                Text(
+                  text = "Posts",
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                  fontWeight = FontWeight.ExtraBold,
                 )
               }
-              Column(modifier = Modifier.padding(start = 10.dp)) {
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                  text = state.data?.user?.name ?: "",
-                  fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                  text = "${state.data?.user?.followingCount ?: 0}",
+                  fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
+                  color = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.padding(end = 5.dp),
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                  Text(
-                    text = "${state.data?.user?.posts?.size ?: 0}",
-                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(end = 5.dp),
-                  )
-
-                  Text(
-                    text = "Posts",
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontWeight = FontWeight.Light,
-                  )
-                  Text(
-                    text = " • ",
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontWeight = FontWeight.Light,
-                  )
-
-                  Text(
-                    text = "${state.data?.user?.followingCount ?: 0}",
-                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(end = 5.dp),
-                  )
-                  Text(
-                    text = "Following",
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontWeight = FontWeight.Light,
-                  )
-                  Text(
-                    text = " • ",
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontWeight = FontWeight.Light,
-                  )
-
-                  Text(
-                    text = "${state.data?.user?.followersCount ?: 0}",
-                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(end = 5.dp),
-                  )
-                  Text(
-                    text = "Followers",
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                    fontWeight = FontWeight.Light,
-                  )
-                }
+                Text(
+                  text = "Following",
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                  fontWeight = FontWeight.ExtraBold,
+                )
+              }
+              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                  text = "${state.data?.user?.followersCount ?: 0}",
+                  fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                  fontWeight = FontWeight.Bold,
+                  color = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.padding(end = 5.dp),
+                )
+                Text(
+                  text = "Followers",
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                  fontWeight = FontWeight.ExtraBold,
+                )
               }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Column {
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(start = 30.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Start,
+            ) {
+              Text(
+                text = (state.data?.user?.name + " ") ?: "",
+                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                fontWeight = FontWeight.Bold,
+              )
+              if (
+                profileState.data?.user?.location != null &&
+                  profileState.data!!.user?.location != ""
+              ) {
+                Icon(
+                  imageVector = Icons.Default.LocationOn,
+                  contentDescription = "location",
+                  tint = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.size(24.dp),
+                )
+                Text(
+                  text = profileState.data?.user?.location!!,
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                  fontWeight = FontWeight.Bold,
+                  color = Color.LightGray,
+                  modifier = Modifier.padding(end = 5.dp),
+                )
+              }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(modifier = Modifier.fillMaxWidth().padding(start = 30.dp)) {
               Text(
                 text = state.data?.user?.bio ?: "",
-                modifier = Modifier.fillMaxWidth().padding(start = 30.dp),
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth(),
               )
-              Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp, end = 30.dp),
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                Button(
-                  onClick = {
-                    navController.navigate(
-                      Route.EditProfileScreen(
-                        username = state.data?.user?.username!!,
-                        bio = state.data.user.bio!!,
-                        profileImage = state.data.user.profileImage!!,
-                        name = state.data.user.name!!,
-                        location = state.data.user.location!!,
-                        email = state.data.user.email!!,
-                        age = state.data.user.age.toString(),
-                      )
+            }
+            Row(
+              modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp, end = 30.dp),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Button(
+                onClick = {
+                  navController.navigate(
+                    Route.EditProfileScreen(
+                      username = state.data?.user?.username!!,
+                      bio = state.data.user.bio!!,
+                      profileImage = state.data.user.profileImage!!,
+                      name = state.data.user.name!!,
+                      location = state.data.user.location!!,
+                      email = state.data.user.email!!,
+                      age = state.data.user.age.toString(),
                     )
-                  },
-                  modifier = Modifier.weight(1f),
-                  colors =
-                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                ) {
-                  Text(
-                    text = "Edit Profile",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                   )
-                }
+                },
+                modifier = Modifier.weight(1f),
+                colors =
+                  ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+              ) {
+                Text(
+                  text = "Edit Profile",
+                  fontWeight = FontWeight.Bold,
+                  fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                )
+              }
 
-                IconButton(onClick = { /*TODO*/ }) {
-                  Icon(
-                    imageVector = Icons.AutoMirrored.Filled.Send,
-                    contentDescription = "message",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(32.dp).align(Alignment.CenterVertically),
-                  )
-                }
+              IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                  imageVector = Icons.AutoMirrored.Filled.Send,
+                  contentDescription = "message",
+                  tint = MaterialTheme.colorScheme.primary,
+                  modifier = Modifier.size(32.dp).align(Alignment.CenterVertically),
+                )
               }
             }
             Spacer(modifier = Modifier.height(10.dp))

@@ -1,88 +1,113 @@
 package com.example.project_x.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.outlined.Chat
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @Composable
 fun CustomBottomBar(
   modifier: Modifier = Modifier,
-  authViewModel: AuthViewModel,
   navController: NavController,
+  authViewModel: AuthViewModel,
 ) {
-  var selectedItem by remember { mutableIntStateOf(0) }
+  val bottomScreens = remember {
+    listOf(
+      BottomNavItem(
+        title = "Home",
+        unselectedIcon = Icons.Outlined.Home,
+        selectedIcon = Icons.Filled.Home,
+        route = Route.HomeScreen,
+      ),
+      BottomNavItem(
+        title = "Explore",
+        unselectedIcon = Icons.Outlined.Explore,
+        selectedIcon = Icons.Filled.Explore,
+        route = Route.ExploreScreen,
+      ),
+      BottomNavItem(
+        title = "Notification",
+        unselectedIcon = Icons.Outlined.Notifications,
+        selectedIcon = Icons.Filled.Notifications,
+        route = Route.NotificationScreen,
+      ),
+      BottomNavItem(
+        title = "Message",
+        unselectedIcon = Icons.AutoMirrored.Outlined.Chat,
+        selectedIcon = Icons.Filled.ChatBubble,
+        route = Route.ChatScreen,
+      ),
+    )
+  }
 
-  NavigationBar {
-    bottomNavItems.forEachIndexed { index, bottomNavItem ->
+  NavigationBar(
+    modifier = modifier
+      .fillMaxWidth()
+      .background(MaterialTheme.colorScheme.background) // Ensure background color is set
+      .navigationBarsPadding(), // Adjust padding for navigation bars
+    contentColor = MaterialTheme.colorScheme.primary,
+    containerColor = Color.Transparent, // Transparent to let background color show through
+  ) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    bottomScreens.forEach { screen ->
+      val isSelected =
+        currentDestination?.hierarchy?.any { it.route == screen.route::class.qualifiedName } == true
       NavigationBarItem(
-        selected = selectedItem == index,
+        selected = isSelected,
         onClick = {
-//          navController.navigate(bottomNavItem.route)
-          selectedItem = index
+          navController.navigate(screen.route) {
+            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+          }
         },
         icon = {
           Icon(
-            imageVector =
-              if (selectedItem == index) bottomNavItem.selectedIcon
-              else bottomNavItem.unselectedIcon,
-            contentDescription = "icon",
+            imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
+            contentDescription = screen.title,
           )
         },
-        label = { Text(text = bottomNavItem.title) },
+        label = {
+          Text(
+            text = screen.title,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+          )
+        },
         alwaysShowLabel = false,
       )
     }
   }
 }
-
-val bottomNavItems =
-  listOf(
-    BottomNavItem(
-      title = "Home",
-      unselectedIcon = Icons.Outlined.Home,
-      selectedIcon = Icons.Filled.Home,
-      route = Route.HomeScreen,
-    ),
-    BottomNavItem(
-      title = "Explore",
-      unselectedIcon = Icons.Outlined.Explore,
-      selectedIcon = Icons.Filled.Explore,
-      route = Route.ExploreScreen,
-    ),
-    BottomNavItem(
-      title = "Notification",
-      unselectedIcon = Icons.Outlined.Notifications,
-      selectedIcon = Icons.Filled.Notifications,
-      route = Route.NotificationScreen,
-    ),
-    BottomNavItem(
-      title = "Message",
-      unselectedIcon = Icons.AutoMirrored.Outlined.Chat,
-      selectedIcon = Icons.Filled.ChatBubble,
-      route = Route.ChatScreen,
-    ),
-  )
 
 data class BottomNavItem(
   val title: String,

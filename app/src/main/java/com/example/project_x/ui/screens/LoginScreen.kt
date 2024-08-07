@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +31,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -59,16 +61,27 @@ fun LoginScreen(
   authViewModel: AuthViewModel,
   navController: NavController,
 ) {
-  val userState = authViewModel.userStateHolder.collectAsState().value
+  val userState by authViewModel.userStateHolder.collectAsState()
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
   var passwordVisible by rememberSaveable { mutableStateOf(false) }
   var emailOrUsernameError by remember { mutableStateOf<String?>(null) }
   var passwordError by remember { mutableStateOf<String?>(null) }
+  var showErrorDialog by remember { mutableStateOf(false) }
+  var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
+  // Display loading spinner if needed
   if (userState.isLoading) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       CircularProgressIndicator()
+    }
+  }
+
+  // Handle error message
+  SideEffect {
+    if (userState.error?.isNotBlank() == true) {
+      errorMessage = userState.error
+      showErrorDialog = true
     }
   }
 
@@ -170,7 +183,6 @@ fun LoginScreen(
               password = password,
             )
           authViewModel.loginUser(user)
-          navController.navigate(Route.HomeScreen)
         }
       },
       modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -233,7 +245,7 @@ fun LoginScreen(
       ) {
         Icon(
           painter = painterResource(id = R.drawable.apple),
-          contentDescription = "google_icon",
+          contentDescription = "apple_icon",
           tint = Color.Unspecified,
           modifier = Modifier.size(32.dp),
         )
@@ -262,8 +274,16 @@ fun LoginScreen(
       )
     }
   }
-  if (userState.error?.isNotBlank() == true) {
-    Spacer(modifier = Modifier.height(16.dp))
-    Text(text = userState.error, color = Color.Red, textAlign = TextAlign.Center)
+
+  if (errorMessage != null) {
+    LaunchedEffect(Unit) {
+      authViewModel.resetUserState() // Reset user state
+    }
+    AlertDialog(
+      onDismissRequest = { errorMessage = null },
+      title = { Text(text = "Error") },
+      text = { Text(errorMessage ?: "Invalid credentials. Please try again.") },
+      confirmButton = { Button(onClick = { errorMessage = null }) { Text("OK") } },
+    )
   }
 }

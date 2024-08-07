@@ -1,5 +1,8 @@
 package com.example.project_x.ui.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -35,6 +38,8 @@ constructor(
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post
+  var isPostCreated by mutableStateOf(false)
+    private set
 
   fun getPosts() {
     viewModelScope.launch {
@@ -64,10 +69,15 @@ constructor(
         _post.value = resource
         // Notify that a new post was created
         if (resource is Resource.Success) {
+          isPostCreated = true
           refreshPosts()
         }
       }
     }
+  }
+
+  fun resetPostCreationState() {
+    isPostCreated = false
   }
 
   fun likePost(postId: String) {

@@ -31,7 +31,7 @@ fun ChatScreen(
         title = { Text(text = "Explore", fontSize = 28.sp, modifier = Modifier.padding(10.dp)) }
       )
     },
-    bottomBar = { CustomBottomBar(authViewModel = authViewModel, navController = navController) },
+    bottomBar = { CustomBottomBar(navController = navController, authViewModel = authViewModel) },
   ) { innerPadding ->
     Column(
       modifier = Modifier.padding(innerPadding),

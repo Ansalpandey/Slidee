@@ -70,6 +70,9 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
       }
     }
   }
+  fun resetUserState() {
+    _userStateHolder.value = UserStateHolder()
+  }
 
   fun logoutUser() {
     viewModelScope.launch {
