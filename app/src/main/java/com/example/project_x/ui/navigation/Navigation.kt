@@ -1,5 +1,7 @@
 package com.example.project_x.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,11 +38,37 @@ fun NavigationSetup(
   val startDestination = if (userState.isLoggedIn) Route.HomeScreen else Route.LoginScreen
 
   NavHost(navController = navController, startDestination = startDestination) {
-    composable<Route.LoginScreen> {
+    composable<Route.LoginScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       LoginScreen(authViewModel = authViewModel, modifier = modifier, navController = navController)
     }
 
-    composable<Route.RegisterScreen> {
+    composable<Route.RegisterScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       RegisterScreen(
         authViewModel = authViewModel,
         modifier = modifier,
@@ -48,7 +76,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.HomeScreen> {
+    composable<Route.HomeScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       HomeScreen(
         authViewModel = authViewModel,
         modifier = modifier,
@@ -58,7 +99,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.CreatePostScreen> {
+    composable<Route.CreatePostScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       CreatePostScreen(
         postViewModel = postViewModel,
         modifier = modifier,
@@ -66,7 +120,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.ProfileScreen> {
+    composable<Route.ProfileScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       ProfileScreen(
         modifier = modifier,
         profileViewModel = profileViewModel,
@@ -75,7 +142,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.UserProfileScreen> { backStackEntry ->
+    composable<Route.UserProfileScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) { backStackEntry ->
       UserProfileScreen(
         modifier = modifier,
         profileViewModel = profileViewModel,
@@ -85,11 +165,37 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.SettingsScreen> {
+    composable<Route.SettingsScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       SettingsScreen(modifier = modifier, navController = navController)
     }
 
-    composable<Route.EditProfileScreen> { backStackEntry ->
+    composable<Route.EditProfileScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) { backStackEntry ->
       EditProfileScreen(
         modifier = modifier,
         navController = navController,
@@ -104,11 +210,37 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.ChatScreen> {
+    composable<Route.ChatScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       ChatScreen(modifier = modifier, authViewModel = authViewModel, navController = navController)
     }
 
-    composable<Route.ExploreScreen> {
+    composable<Route.ExploreScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       ExploreScreen(
         modifier = modifier,
         authViewModel = authViewModel,
@@ -116,7 +248,20 @@ fun NavigationSetup(
       )
     }
 
-    composable<Route.NotificationScreen> {
+    composable<Route.NotificationScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
       NotificationScreen(
         modifier = modifier,
         authViewModel = authViewModel,

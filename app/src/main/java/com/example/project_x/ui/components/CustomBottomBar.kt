@@ -65,18 +65,18 @@ fun CustomBottomBar(
       ),
     )
   }
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val currentDestination = navBackStackEntry?.destination
 
   NavigationBar(
-    modifier = modifier
-      .fillMaxWidth()
-      .background(MaterialTheme.colorScheme.background) // Ensure background color is set
-      .navigationBarsPadding(), // Adjust padding for navigation bars
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .background(MaterialTheme.colorScheme.background) // Ensure background color is set
+        .navigationBarsPadding(), // Adjust padding for navigation bars
     contentColor = MaterialTheme.colorScheme.primary,
     containerColor = Color.Transparent, // Transparent to let background color show through
   ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
     bottomScreens.forEach { screen ->
       val isSelected =
         currentDestination?.hierarchy?.any { it.route == screen.route::class.qualifiedName } == true

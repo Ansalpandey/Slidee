@@ -9,18 +9,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Settings
@@ -30,8 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,8 +53,9 @@ import coil.compose.AsyncImage
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.ProfileViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, DelicateCoroutinesApi::class)
 @Composable
 fun EditProfileScreen(
   modifier: Modifier = Modifier,
@@ -74,8 +76,7 @@ fun EditProfileScreen(
   var newLocation by remember { mutableStateOf(location) }
   var newEmail by remember { mutableStateOf(email) }
   var newAge by remember { mutableStateOf(age) }
-
-  var isLoading by remember { mutableStateOf(false) }
+  val refreshTrigger by remember { mutableStateOf(false) }
   val context = LocalContext.current
   val state by profileViewModel.loggedInUserProfileState.collectAsState()
 
@@ -113,10 +114,8 @@ fun EditProfileScreen(
         newProfileImage != profileImage ||
         profileImageUri != null
     }
-
   Scaffold(
     modifier = Modifier.fillMaxSize(),
-    backgroundColor = MaterialTheme.colorScheme.background,
     topBar = {
       TopAppBar(
         title = {
@@ -145,8 +144,10 @@ fun EditProfileScreen(
   ) { paddingValues ->
     Column(
       modifier =
-        Modifier.fillMaxSize().padding(paddingValues).verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.Center,
+        Modifier.fillMaxSize()
+          .padding(paddingValues)
+          .imePadding()
+          .verticalScroll(rememberScrollState()),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Box(
@@ -185,51 +186,54 @@ fun EditProfileScreen(
             )
           }
         }
-        Spacer(modifier = Modifier.height(16.dp))
       }
-      Spacer(modifier = Modifier.height(16.dp))
       OutlinedTextField(
         value = newUsername,
         onValueChange = { newUsername = it },
         singleLine = true,
         maxLines = 1,
+        label = { Text(text = "Username") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
-
-      TextField(
+      OutlinedTextField(
         value = newName,
         onValueChange = { newName = it },
         label = { Text("Name") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
 
-      TextField(
+      OutlinedTextField(
         value = newBio,
         onValueChange = { newBio = it },
         label = { Text("Bio") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
 
-      TextField(
+      OutlinedTextField(
         value = newEmail,
         onValueChange = { newEmail = it },
         label = { Text("Email") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
 
-      TextField(
+      OutlinedTextField(
         value = newLocation,
         onValueChange = { newLocation = it },
         label = { Text("Location") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
 
-      TextField(
+      OutlinedTextField(
         value = newAge,
         onValueChange = { newAge = it },
         label = { Text("Age") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
+        keyboardActions = KeyboardActions(onDone = KeyboardActions.Default.onDone),
       )
 
       Spacer(modifier = Modifier.height(16.dp))
@@ -248,12 +252,12 @@ fun EditProfileScreen(
               email = newEmail,
               location = newLocation,
             )
-
           profileViewModel.editProfile(id, user)
-          isLoading = true
+          profileViewModel.refreshProfile()
+          navController.popBackStack()
         },
         enabled = isSubmitEnabled,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
       ) {
         Text(text = "Submit")
       }

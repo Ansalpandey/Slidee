@@ -1,13 +1,13 @@
 [versions]
 accompanistPager = "0.24.13-rc"
 activityComposeVersion = "1.9.1"
-agp = "8.5.0"
+agp = "8.5.1"
 coilCompose = "2.6.0"
 converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
 datastorePreferences = "1.1.1"
 hiltCompiler = "2.51.1"
-kotlin = "1.9.0"
+kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -19,12 +19,12 @@ composeBom = "2024.06.00"
 loggingInterceptor = "4.12.0"
 materialIconsExtended = "1.6.8"
 okhttp = "4.12.0"
-pagingRuntime = "3.3.1"
+pagingRuntime = "3.3.2"
 retrofit = "2.9.0"
 coreKtxVersion = "1.6.1"
 kotlinxSerializationJson = "1.6.3"
 kotlinxSerialization = "1.9.0"
-navigationCompose = "2.8.0-beta06"
+navigationCompose = "2.8.0-beta07"
 roomRuntime = "2.6.1"
 uiTextGoogleFonts = "1.6.8"
 firebaseBom = "33.1.2"
@@ -81,4 +81,5 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinxSerialization" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
