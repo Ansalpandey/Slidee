@@ -85,7 +85,7 @@ fun NavigationSetup(
       },
       exitTransition = {
         slideOutOfContainer(
-          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
           animationSpec = tween(durationMillis = 300),
         )
       },

@@ -71,7 +71,7 @@ constructor(
             if (resource is Resource.Success) {
                 setUserPreferences(resource.data!!, true)
                 tokenManager.saveToken(resource.data.token!!)
-                tokenManager.saveRefreshToken(resource.data.token)
+
             }
         }
     }
