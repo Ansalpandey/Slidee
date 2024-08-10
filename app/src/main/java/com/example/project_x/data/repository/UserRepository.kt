@@ -27,7 +27,7 @@ interface UserRepository {
 
   suspend fun isFollowingUser(id: String): Flow<Resource<FollowMessage>>
 
-  suspend fun refreshToken(refreshToken: String): Resource<TokenResponse>
+  suspend fun refreshToken(): Resource<TokenResponse>
 
   suspend fun editProfile(id: String, user: EditProfileRequest): Flow<Resource<ProfileResponse>>
 }

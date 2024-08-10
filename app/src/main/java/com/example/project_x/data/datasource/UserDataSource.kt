@@ -9,9 +9,9 @@ import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 class UserDataSource
 @Inject
@@ -49,22 +49,20 @@ constructor(
     }
   }
 
-  suspend fun editProfile(
-    id: String,
-    user: EditProfileRequest,
-  ): Flow<Resource<ProfileResponse>> = flow {
-    emit(Resource.Loading())
-    try {
-      val response = authenticatedApiService.editProfile(id, user)
-      if (response.isSuccessful) {
-        emit(Resource.Success(response.body()))
-      } else {
-        emit(Resource.Error("Edit profile failed"))
+  suspend fun editProfile(id: String, user: EditProfileRequest): Flow<Resource<ProfileResponse>> =
+    flow {
+      emit(Resource.Loading())
+      try {
+        val response = authenticatedApiService.editProfile(id, user)
+        if (response.isSuccessful) {
+          emit(Resource.Success(response.body()))
+        } else {
+          emit(Resource.Error("Edit profile failed"))
+        }
+      } catch (e: Exception) {
+        emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
       }
-    } catch (e: Exception) {
-      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
-  }
 
   suspend fun logoutUser(): Flow<Resource<UserResponse>> = flow {
     emit(Resource.Loading())
@@ -143,9 +141,9 @@ constructor(
     }
   }
 
-  suspend fun refreshToken(refreshToken: String): Resource<TokenResponse> {
+  suspend fun refreshToken(): Resource<TokenResponse> {
     return try {
-      val response = authenticatedApiService.refreshToken(refreshToken)
+      val response = authenticatedApiService.refreshToken()
       if (response.isSuccessful) {
         Resource.Success(response.body()!!)
       } else {

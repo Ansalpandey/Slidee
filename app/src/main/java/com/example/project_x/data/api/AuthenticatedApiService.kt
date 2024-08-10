@@ -3,6 +3,7 @@ package com.example.project_x.data.api
 import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
+import com.example.project_x.data.model.FollowerResponse
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
@@ -28,6 +29,9 @@ interface AuthenticatedApiService {
   @GET("users/is-following/{id}")
   suspend fun isFollowingUser(@Path("id") id: String): Response<FollowMessage>
 
+  @GET("users/followers/{id}")
+  suspend fun getFollowers(@Path("id") id: String): Response<FollowerResponse>
+
   @GET("courses")
   suspend fun getCourses(
     @Query("page") page: Int,
@@ -36,8 +40,7 @@ interface AuthenticatedApiService {
 
   @GET("users/courses") suspend fun getUserCourses(): Response<CourseResponse>
 
-  @POST("users/refresh-token")
-  suspend fun refreshToken(@Body token: String): Response<TokenResponse>
+  @GET("users/refresh-token") suspend fun refreshToken(): Response<TokenResponse>
 
   @GET("posts")
   suspend fun getPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int): PostResponse
@@ -46,7 +49,12 @@ interface AuthenticatedApiService {
 
   @POST("posts/{id}/like") suspend fun likePost(@Path("id") id: String): Response<PostLikeResponse>
 
-  @POST("posts/{id}/unlike") suspend fun unLikePost(@Path("id") id: String): Response<PostLikeResponse>
+  @POST("posts/{id}/unlike")
+  suspend fun unLikePost(@Path("id") id: String): Response<PostLikeResponse>
 
-  @PUT("users/edit-profile/{id}") suspend fun editProfile(@Path("id") id: String, @Body user: EditProfileRequest): Response<ProfileResponse>
+  @PUT("users/edit-profile/{id}")
+  suspend fun editProfile(
+    @Path("id") id: String,
+    @Body user: EditProfileRequest,
+  ): Response<ProfileResponse>
 }

@@ -1,8 +1,5 @@
 package com.example.project_x.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
 import androidx.compose.material.icons.filled.ChatBubble
@@ -19,7 +16,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -37,7 +36,11 @@ fun CustomBottomBar(
   navController: NavController,
   authViewModel: AuthViewModel,
 ) {
-  val bottomScreens = remember {
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val currentDestination = navBackStackEntry?.destination
+
+  var selectedItem by remember { mutableStateOf(0) }
+  val barItems = remember {
     listOf(
       BottomNavItem(
         title = "Home",
@@ -65,25 +68,17 @@ fun CustomBottomBar(
       ),
     )
   }
-  val navBackStackEntry by navController.currentBackStackEntryAsState()
-  val currentDestination = navBackStackEntry?.destination
 
-  NavigationBar(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .background(MaterialTheme.colorScheme.background) // Ensure background color is set
-        .navigationBarsPadding(), // Adjust padding for navigation bars
-    contentColor = MaterialTheme.colorScheme.primary,
-    containerColor = Color.Transparent, // Transparent to let background color show through
-  ) {
-    bottomScreens.forEach { screen ->
-      val isSelected =
-        currentDestination?.hierarchy?.any { it.route == screen.route::class.qualifiedName } == true
+  NavigationBar {
+    barItems.forEachIndexed { index, barItem ->
+      val selected =
+        currentDestination?.hierarchy?.any { it.route == barItem.route::class.qualifiedName } ==
+          true
       NavigationBarItem(
-        selected = isSelected,
+        selected = selected,
         onClick = {
-          navController.navigate(screen.route) {
+          selectedItem = index
+          navController.navigate(barItem.route) {
             popUpTo(navController.graph.findStartDestination().id) { saveState = true }
             launchSingleTop = true
             restoreState = true
@@ -91,16 +86,16 @@ fun CustomBottomBar(
         },
         icon = {
           Icon(
-            imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-            contentDescription = screen.title,
+            imageVector = if (selected) barItem.selectedIcon else barItem.unselectedIcon,
+            contentDescription = "icons",
           )
         },
         label = {
           Text(
-            text = screen.title,
+            text = barItem.title,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            color = if (selected) MaterialTheme.colorScheme.primary else Color.Gray,
           )
         },
         alwaysShowLabel = false,

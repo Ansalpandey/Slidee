@@ -7,20 +7,27 @@ import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.datasource.CourseDataSource
 import com.example.project_x.data.datasource.PostDataSource
 import com.example.project_x.data.datasource.UserDataSource
+import com.example.project_x.data.implementation.CourseRepositoryImplementation
+import com.example.project_x.data.implementation.PostRepositoryImplementation
+import com.example.project_x.data.implementation.UserRepositoryImplementation
 import com.example.project_x.data.pagination.PostPagingSource
+import com.example.project_x.data.repository.CourseRepository
 import com.example.project_x.data.repository.PostRepository
+import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.utils.TokenManager
+import com.example.project_x.utils.TokenRefreshManager
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dagger.internal.Provider
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -41,14 +48,28 @@ class AppModule {
   @Singleton
   @Provides
   fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
-    return OkHttpClient.Builder().addInterceptor(authInterceptor).build()
+    return OkHttpClient.Builder()
+      .addInterceptor(authInterceptor)
+      .connectTimeout(30, TimeUnit.SECONDS) // Set connection timeout
+      .readTimeout(30, TimeUnit.SECONDS) // Set read timeout
+      .writeTimeout(30, TimeUnit.SECONDS) // Set write timeout
+      .build()
+  }
+
+  @Provides
+  @Singleton
+  fun provideTokenRefreshManager(
+    tokenManager: TokenManager,
+    userDataSource: Lazy<UserDataSource>,
+  ): TokenRefreshManager {
+    return TokenRefreshManager(tokenManager, userDataSource)
   }
 
   @Singleton
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-//                    .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+      //                    .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
       .baseUrl("http://192.168.1.7:3000/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
   }
@@ -70,22 +91,16 @@ class AppModule {
 
   @Singleton
   @Provides
-  fun provideAuthInterceptor(tokenManager: TokenManager): AuthInterceptor {
-    return AuthInterceptor(tokenManager)
+  fun provideAuthInterceptor(
+    tokenManager: TokenManager,
+    userDataSource: Lazy<UserDataSource>,
+  ): AuthInterceptor {
+    return AuthInterceptor(tokenManager, userDataSource)
   }
 
   @Singleton
   @Provides
-  fun provideUserDataSourceProvider(
-    apiService: ApiService,
-    authenticatedApiService: AuthenticatedApiService,
-  ): Provider<UserDataSource> {
-    return Provider { UserDataSource(apiService, authenticatedApiService) }
-  }
-
-  @Singleton
-  @Provides
-  fun provideDataSource(
+  fun provideUserDataSource(
     apiService: ApiService,
     authenticatedApiService: AuthenticatedApiService,
   ): UserDataSource {
@@ -108,5 +123,29 @@ class AppModule {
   @Provides
   fun providePostPagingSource(postRepository: PostRepository): PostPagingSource {
     return PostPagingSource(postRepository)
+  }
+
+  @Singleton
+  @Provides
+  fun provideUserRepository(
+    userRepositoryImplementation: UserRepositoryImplementation
+  ): UserRepository {
+    return userRepositoryImplementation
+  }
+
+  @Singleton
+  @Provides
+  fun providePostRepository(
+    postRepositoryImplementation: PostRepositoryImplementation
+  ): PostRepository {
+    return postRepositoryImplementation
+  }
+
+  @Singleton
+  @Provides
+  fun provideCourseRepository(
+    courseRepositoryImplementation: CourseRepositoryImplementation
+  ): CourseRepository {
+    return courseRepositoryImplementation
   }
 }
