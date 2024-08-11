@@ -34,4 +34,7 @@ sealed class Route {
   @Serializable data object ExploreScreen : Route()
 
   @Serializable data object NotificationScreen : Route()
+
+  @Serializable
+  data class ImageScreen(val images: List<String>, val initialPage: Int = 0) : Route()
 }

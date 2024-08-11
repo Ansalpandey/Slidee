@@ -6,12 +6,14 @@ import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
 
 class UserDataSource
 @Inject
@@ -153,4 +155,17 @@ constructor(
       Resource.Error(e.localizedMessage ?: "Unknown error")
     }
   }
+
+  suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>> =
+    flow {
+        emit(Resource.Loading())
+
+        val response = authenticatedApiService.searchUsers(query)
+        if (response.isSuccessful) {
+          emit(Resource.Success(response.body()))
+        } else {
+          emit(Resource.Error("Search failed"))
+        }
+      }
+      .catch { e -> emit(Resource.Error(e.localizedMessage ?: "Unknown error")) }
 }

@@ -21,6 +21,7 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
+import com.example.project_x.ui.viewmodel.SearchViewModel
 import com.example.project_x.ui.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
       val profileViewModel: ProfileViewModel by viewModels()
       val courseViewModel: CourseViewModel by viewModels()
       val postViewModel: PostViewModel by viewModels()
+      val searchViewModel: SearchViewModel by viewModels()
       val navController = rememberNavController()
       ProjectXTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
@@ -48,6 +50,7 @@ class MainActivity : ComponentActivity() {
             navController = navController,
             postViewModel = postViewModel,
             courseViewModel = courseViewModel,
+            searchViewModel = searchViewModel
           )
         }
       }
@@ -63,6 +66,7 @@ fun MyApp(
   postViewModel: PostViewModel,
   courseViewModel: CourseViewModel,
   navController: NavController,
+  searchViewModel: SearchViewModel
 ) {
   NavigationSetup(
     authViewModel = authViewModel,
@@ -70,5 +74,6 @@ fun MyApp(
     postViewModel = postViewModel,
     navController = navController as NavHostController,
     courseViewModel = courseViewModel,
+    searchViewModel = searchViewModel,
   )
 }

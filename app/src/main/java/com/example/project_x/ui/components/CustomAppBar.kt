@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,48 +28,51 @@ import com.example.project_x.ui.navigation.Route
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomAppBar(
-    modifier: Modifier = Modifier,
-    image: String?,
-    name: String?,
-    navController: NavController, // Add NavController parameter
+  modifier: Modifier = Modifier,
+  image: String?,
+  name: String?,
+  navController: NavController,
+  scrollBehavior: TopAppBarScrollBehavior,
 ) {
-  TopAppBar(
-      modifier = Modifier.fillMaxWidth(),
-      title = {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Text(
-              text = "Welcome, ",
-              fontSize = MaterialTheme.typography.titleLarge.fontSize,
-              fontWeight = FontWeight.Light,
-          )
-          Text(
-              text = "$name 👋",
-              fontSize = MaterialTheme.typography.titleLarge.fontSize,
-              fontWeight = FontWeight.Bold,
-          )
-        }
-      },
-      actions = {
-        val profileImageModifier =
-            Modifier.padding(10.dp).clip(CircleShape).size(50.dp).clickable {
-              navController.navigate(Route.ProfileScreen)
-            } // Handle navigation on click
 
-        if (image.isNullOrEmpty()) {
-          Image(
-              painter = painterResource(id = R.drawable.profile),
-              contentDescription = "profile_image",
-              contentScale = ContentScale.Crop,
-              modifier = profileImageModifier,
-          )
-        } else {
-          AsyncImage(
-              model = image,
-              contentDescription = "profileImage",
-              contentScale = ContentScale.Crop,
-              modifier = profileImageModifier,
-          )
-        }
-      },
+  TopAppBar(
+    modifier = modifier.fillMaxWidth(),
+    title = {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+          text = "Welcome, ",
+          fontSize = MaterialTheme.typography.titleLarge.fontSize,
+          fontWeight = FontWeight.Light,
+        )
+        Text(
+          text = "$name 👋",
+          fontSize = MaterialTheme.typography.titleLarge.fontSize,
+          fontWeight = FontWeight.Bold,
+        )
+      }
+    },
+    actions = {
+      val profileImageModifier =
+        Modifier.padding(10.dp).clip(CircleShape).size(50.dp).clickable {
+          navController.navigate(Route.ProfileScreen)
+        } // Handle navigation on click
+
+      if (image.isNullOrEmpty()) {
+        Image(
+          painter = painterResource(id = R.drawable.profile),
+          contentDescription = "profile_image",
+          contentScale = ContentScale.Crop,
+          modifier = profileImageModifier,
+        )
+      } else {
+        AsyncImage(
+          model = image,
+          contentDescription = "profileImage",
+          contentScale = ContentScale.Crop,
+          modifier = profileImageModifier,
+        )
+      }
+    },
+    scrollBehavior = scrollBehavior,
   )
 }

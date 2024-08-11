@@ -12,25 +12,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -43,6 +46,7 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
   modifier: Modifier = Modifier,
@@ -51,11 +55,14 @@ fun HomeScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val userState by authViewModel.userStateHolder.collectAsState()
-  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
+  val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
+
+  // Create scroll behavior
+  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
@@ -65,6 +72,7 @@ fun HomeScreen(
           image = profileState.data?.user?.profileImage,
           name = profileState.data?.user?.name,
           navController = navController,
+          scrollBehavior = scrollBehavior, // Pass the scroll behavior
         )
       }
     },
@@ -88,7 +96,7 @@ fun HomeScreen(
     },
     bottomBar = {
       if (userState.isLoggedIn) {
-        CustomBottomBar(authViewModel = authViewModel, navController = navController)
+        CustomBottomBar(navController = navController)
       }
     },
   ) { innerPadding ->
@@ -106,7 +114,11 @@ fun HomeScreen(
           }
         }
         LazyColumn(
-          modifier = modifier.fillMaxSize().padding(innerPadding),
+          modifier =
+            modifier
+              .fillMaxSize()
+              .padding(innerPadding)
+              .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {

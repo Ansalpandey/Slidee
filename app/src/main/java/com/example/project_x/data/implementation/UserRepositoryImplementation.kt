@@ -7,6 +7,7 @@ import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.User
 import com.example.project_x.data.model.UserRequest
@@ -16,13 +17,15 @@ import com.example.project_x.preferences.UserPreferences
 import com.example.project_x.preferences.dataStore
 import com.example.project_x.ui.stateholder.UserStateHolder
 import com.example.project_x.utils.TokenManager
+import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import javax.inject.Inject
 
 class UserRepositoryImplementation
 @Inject
@@ -86,6 +89,7 @@ constructor(
       preferences[UserPreferences.USER_AGE] = user.user.age
       preferences[UserPreferences.USER_USERNAME] = user.user.username
       preferences[UserPreferences.USER_BIO] = user.user.bio
+      preferences[UserPreferences.SEARCH_HISTORY] = ""
     }
   }
 
@@ -123,5 +127,25 @@ constructor(
 
   override suspend fun refreshToken(): Resource<TokenResponse> {
     return userDataSource.refreshToken()
+  }
+
+  override suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>> {
+    return userDataSource.searchUsers(query).onEach { resource ->
+      if (resource is Resource.Success) {
+        val existingHistoryJson = dataStore.data.first()[UserPreferences.SEARCH_HISTORY] ?: "[]"
+        val existingHistory =
+          Gson().fromJson(existingHistoryJson, Array<String>::class.java).toMutableList()
+
+        // Add new query to history if it's not already present
+        if (!existingHistory.contains(query)) {
+          existingHistory.add(query)
+        }
+
+        val updatedHistoryJson = Gson().toJson(existingHistory)
+        dataStore.edit { preferences ->
+          preferences[UserPreferences.SEARCH_HISTORY] = updatedHistoryJson
+        }
+      }
+    }
   }
 }

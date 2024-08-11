@@ -53,6 +53,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
@@ -68,7 +69,7 @@ fun RegisterScreen(
   authViewModel: AuthViewModel,
   navController: NavController,
 ) {
-  val userState by authViewModel.userStateHolder.collectAsState()
+  val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
   val context = LocalContext.current
 
   // Form state variables

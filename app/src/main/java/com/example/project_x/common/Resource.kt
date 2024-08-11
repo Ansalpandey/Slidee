@@ -9,7 +9,7 @@ package com.example.project_x.common
  */
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
   /** Represents a loading state. */
-  class Loading<T>() : Resource<T>()
+  class Loading<T> : Resource<T>()
 
   /**
    * Represents a success state.

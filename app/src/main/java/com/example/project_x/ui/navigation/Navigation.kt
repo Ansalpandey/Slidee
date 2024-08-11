@@ -14,6 +14,7 @@ import com.example.project_x.ui.screens.CreatePostScreen
 import com.example.project_x.ui.screens.EditProfileScreen
 import com.example.project_x.ui.screens.ExploreScreen
 import com.example.project_x.ui.screens.HomeScreen
+import com.example.project_x.ui.screens.ImageScreen
 import com.example.project_x.ui.screens.LoginScreen
 import com.example.project_x.ui.screens.NotificationScreen
 import com.example.project_x.ui.screens.ProfileScreen
@@ -24,6 +25,7 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
+import com.example.project_x.ui.viewmodel.SearchViewModel
 
 @Composable
 fun NavigationSetup(
@@ -33,6 +35,7 @@ fun NavigationSetup(
   postViewModel: PostViewModel,
   navController: NavHostController,
   courseViewModel: CourseViewModel,
+  searchViewModel: SearchViewModel,
 ) {
   val userState by authViewModel.userStateHolder.collectAsState()
   val startDestination = if (userState.isLoggedIn) Route.HomeScreen else Route.LoginScreen
@@ -224,7 +227,7 @@ fun NavigationSetup(
         )
       },
     ) {
-      ChatScreen(modifier = modifier, authViewModel = authViewModel, navController = navController)
+      ChatScreen(modifier = modifier, navController = navController)
     }
 
     composable<Route.ExploreScreen>(
@@ -243,8 +246,9 @@ fun NavigationSetup(
     ) {
       ExploreScreen(
         modifier = modifier,
-        authViewModel = authViewModel,
         navController = navController,
+        searchViewModel = searchViewModel,
+        profileViewModel = profileViewModel,
       )
     }
 
@@ -264,9 +268,28 @@ fun NavigationSetup(
     ) {
       NotificationScreen(
         modifier = modifier,
-        authViewModel = authViewModel,
         navController = navController,
       )
+    }
+
+    composable<Route.ImageScreen>(
+      enterTransition = {
+        slideIntoContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          towards = AnimatedContentTransitionScope.SlideDirection.Left,
+          animationSpec = tween(durationMillis = 300),
+        )
+      },
+    ) {
+      val images = it.arguments?.getStringArray("images")?.toList() ?: emptyList()
+      val initialPage = it.arguments?.getInt("initialPage") ?: 0
+
+      ImageScreen(images = images, initialPage = initialPage) { navController.popBackStack() }
     }
   }
 }

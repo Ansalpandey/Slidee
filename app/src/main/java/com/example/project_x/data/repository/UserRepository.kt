@@ -4,6 +4,7 @@ import com.example.project_x.common.Resource
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
 import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
@@ -30,4 +31,6 @@ interface UserRepository {
   suspend fun refreshToken(): Resource<TokenResponse>
 
   suspend fun editProfile(id: String, user: EditProfileRequest): Flow<Resource<ProfileResponse>>
+
+  suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>>
 }

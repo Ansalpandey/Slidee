@@ -16,6 +16,7 @@ import com.example.project_x.data.repository.PostRepository
 import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.utils.TokenManager
 import com.example.project_x.utils.TokenRefreshManager
+import com.google.gson.Gson
 import dagger.Lazy
 import dagger.Module
 import dagger.Provides
@@ -147,5 +148,18 @@ class AppModule {
     courseRepositoryImplementation: CourseRepositoryImplementation
   ): CourseRepository {
     return courseRepositoryImplementation
+  }
+
+  @Singleton
+  @Provides
+  fun provideGson(): Gson {
+    return Gson()
+  }
+
+  @Singleton
+  @Provides
+  fun provideDataStore(@ApplicationContext context: Context): androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> {
+    return androidx.datastore.preferences.preferencesDataStore(name = "user_preferences")
+      .getValue(context, String::javaClass)
   }
 }

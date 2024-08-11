@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.common.Resource
@@ -48,13 +49,12 @@ fun CreatePostScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val postState by postViewModel.post.collectAsState()
+  val postState by postViewModel.post.collectAsStateWithLifecycle()
   val context = LocalContext.current
   var content by remember { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
   var postImageUris: List<Uri> by remember { mutableStateOf(emptyList()) }
   var postImageBase64s: List<String> by remember { mutableStateOf(emptyList()) }
-  var isPostCreated = postViewModel.isPostCreated
 
   // Launcher for picking images
   val imageLauncher =

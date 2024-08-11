@@ -21,17 +21,16 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 @Composable
 fun ChatScreen(
   modifier: Modifier = Modifier,
-  authViewModel: AuthViewModel,
   navController: NavController,
 ) {
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        title = { Text(text = "Explore", fontSize = 28.sp, modifier = Modifier.padding(10.dp)) }
+        title = { Text(text = "Messages", fontSize = 28.sp, modifier = Modifier.padding(10.dp)) }
       )
     },
-    bottomBar = { CustomBottomBar(navController = navController, authViewModel = authViewModel) },
+    bottomBar = { CustomBottomBar(navController = navController) },
   ) { innerPadding ->
     Column(
       modifier = Modifier.padding(innerPadding),

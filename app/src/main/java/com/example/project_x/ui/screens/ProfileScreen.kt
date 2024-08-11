@@ -48,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
@@ -70,7 +71,7 @@ fun ProfileScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
 
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
@@ -185,7 +186,7 @@ fun ProfileScreen(
               horizontalArrangement = Arrangement.Start,
             ) {
               Text(
-                text = (state.data?.user?.name + " ") ?: "",
+                text = (state.data?.user?.name + " "),
                 fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                 fontWeight = FontWeight.Bold,
               )

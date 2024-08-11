@@ -8,6 +8,7 @@ import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.model.ProfileResponse
+import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -57,4 +58,7 @@ interface AuthenticatedApiService {
     @Path("id") id: String,
     @Body user: EditProfileRequest,
   ): Response<ProfileResponse>
+
+  @GET("users/search")
+  suspend fun searchUsers(@Query("q") query: String): Response<SearchResponse>
 }

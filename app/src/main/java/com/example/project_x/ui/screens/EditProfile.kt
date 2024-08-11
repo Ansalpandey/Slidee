@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +36,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,10 +46,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.project_x.R
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -76,9 +79,8 @@ fun EditProfileScreen(
   var newLocation by remember { mutableStateOf(location) }
   var newEmail by remember { mutableStateOf(email) }
   var newAge by remember { mutableStateOf(age) }
-  val refreshTrigger by remember { mutableStateOf(false) }
   val context = LocalContext.current
-  val state by profileViewModel.loggedInUserProfileState.collectAsState()
+  val state by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
 
   var profileImageUri: Uri? by remember { mutableStateOf(null) }
   var profileImageBase64: String? by remember { mutableStateOf(null) }
@@ -152,35 +154,37 @@ fun EditProfileScreen(
     ) {
       Box(
         modifier =
-          Modifier.size(100.dp).clip(CircleShape).clickable {
+          Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
             launcher.launch(
               PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
           },
         contentAlignment = Alignment.Center,
       ) {
-        Box(
-          modifier =
-            Modifier.size(100.dp).clip(CircleShape).background(Color.Gray).clickable {
-              launcher.launch(
-                PickVisualMediaRequest(
-                  mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
-                )
-              )
-            },
-          contentAlignment = Alignment.Center,
-        ) {
-          if (profileImageUri == null) {
+        when {
+          profileImageUri != null -> {
+            AsyncImage(
+              model = profileImageUri,
+              contentDescription = "profile_image",
+              modifier = Modifier.fillMaxSize(),
+              contentScale = ContentScale.Crop,
+            )
+          }
+          profileImage.isNotEmpty() -> {
             AsyncImage(
               model = profileImage,
               contentDescription = "profile_image",
               modifier = Modifier.fillMaxSize(),
               contentScale = ContentScale.Crop,
             )
-          } else {
-            AsyncImage(
-              model = profileImageUri,
-              contentDescription = "profile_image",
+          }
+          else -> {
+            Image(
+              painter =
+                painterResource(
+                  id = R.drawable.profile
+                ), // Use your placeholder image resource here
+              contentDescription = "placeholder_image",
               modifier = Modifier.fillMaxSize(),
               contentScale = ContentScale.Crop,
             )

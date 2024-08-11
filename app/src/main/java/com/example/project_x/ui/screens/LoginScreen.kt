@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.project_x.R
 import com.example.project_x.data.model.UserRequest
@@ -61,7 +62,7 @@ fun LoginScreen(
   authViewModel: AuthViewModel,
   navController: NavController,
 ) {
-  val userState by authViewModel.userStateHolder.collectAsState()
+  val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
   var emailOrUsername by rememberSaveable { mutableStateOf("") }
   var password by rememberSaveable { mutableStateOf("") }
   var passwordVisible by rememberSaveable { mutableStateOf(false) }

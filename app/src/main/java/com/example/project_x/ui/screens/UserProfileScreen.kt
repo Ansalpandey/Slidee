@@ -30,7 +30,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
@@ -68,8 +68,8 @@ fun UserProfileScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val profileState by profileViewModel.userProfileState.collectAsState()
-  val isFollowing by profileViewModel.isFollowing.collectAsState()
+  val profileState by profileViewModel.userProfileState.collectAsStateWithLifecycle()
+  val isFollowing by profileViewModel.isFollowing.collectAsStateWithLifecycle()
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
   val tabTitles = listOf("Posts", "Courses")
@@ -179,7 +179,7 @@ fun UserProfileScreen(
               horizontalArrangement = Arrangement.Start,
             ) {
               Text(
-                text = (state.data?.user?.name + " ") ?: "",
+                text = (state.data?.user?.name + " "),
                 fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                 fontWeight = FontWeight.Bold,
               )

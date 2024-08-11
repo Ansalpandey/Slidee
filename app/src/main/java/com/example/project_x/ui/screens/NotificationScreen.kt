@@ -21,17 +21,18 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 @Composable
 fun NotificationScreen(
   modifier: Modifier = Modifier,
-  authViewModel: AuthViewModel,
   navController: NavController,
 ) {
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        title = { Text(text = "Explore", fontSize = 28.sp, modifier = Modifier.padding(10.dp)) }
+        title = {
+          Text(text = "Notification", fontSize = 28.sp, modifier = Modifier.padding(10.dp))
+        }
       )
     },
-    bottomBar = { CustomBottomBar(authViewModel = authViewModel, navController = navController) },
+    bottomBar = { CustomBottomBar(navController = navController) },
   ) { innerPadding ->
     Column(
       modifier = Modifier.padding(innerPadding),

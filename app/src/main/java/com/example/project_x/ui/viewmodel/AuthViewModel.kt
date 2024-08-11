@@ -8,12 +8,12 @@ import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val userRepository: UserRepositoryImplementation) :
@@ -70,6 +70,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
       }
     }
   }
+
   fun resetUserState() {
     _userStateHolder.value = UserStateHolder()
   }
