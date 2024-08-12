@@ -59,6 +59,5 @@ interface AuthenticatedApiService {
     @Body user: EditProfileRequest,
   ): Response<ProfileResponse>
 
-  @GET("users/search")
-  suspend fun searchUsers(@Query("q") query: String): Response<SearchResponse>
+  @GET("users/search") suspend fun searchUsers(@Query("q") query: String): Response<SearchResponse>
 }

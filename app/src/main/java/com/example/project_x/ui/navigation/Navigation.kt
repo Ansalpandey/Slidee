@@ -13,6 +13,7 @@ import com.example.project_x.ui.screens.ChatScreen
 import com.example.project_x.ui.screens.CreatePostScreen
 import com.example.project_x.ui.screens.EditProfileScreen
 import com.example.project_x.ui.screens.ExploreScreen
+import com.example.project_x.ui.screens.FollowersScreen
 import com.example.project_x.ui.screens.HomeScreen
 import com.example.project_x.ui.screens.ImageScreen
 import com.example.project_x.ui.screens.LoginScreen
@@ -266,10 +267,7 @@ fun NavigationSetup(
         )
       },
     ) {
-      NotificationScreen(
-        modifier = modifier,
-        navController = navController,
-      )
+      NotificationScreen(modifier = modifier, navController = navController)
     }
 
     composable<Route.ImageScreen>(
@@ -290,6 +288,19 @@ fun NavigationSetup(
       val initialPage = it.arguments?.getInt("initialPage") ?: 0
 
       ImageScreen(images = images, initialPage = initialPage) { navController.popBackStack() }
+    }
+
+    composable<Route.FollowersScreen> { backStackEntry ->
+      val userId = backStackEntry.arguments?.getString("userId") ?: ""
+      val followersCount = backStackEntry.arguments?.getInt("followersCount") ?: 0
+      FollowersScreen(
+        userId = userId,
+        modifier = modifier,
+        profileViewModel = profileViewModel,
+        searchViewModel = searchViewModel,
+        navController = navController,
+        followersCount = followersCount,
+      )
     }
   }
 }

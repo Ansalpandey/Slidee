@@ -5,6 +5,7 @@ import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
+import com.example.project_x.data.model.FollowerResponse
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
@@ -12,7 +13,6 @@ import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class UserDataSource
@@ -156,16 +156,28 @@ constructor(
     }
   }
 
-  suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>> =
-    flow {
-        emit(Resource.Loading())
-
-        val response = authenticatedApiService.searchUsers(query)
-        if (response.isSuccessful) {
-          emit(Resource.Success(response.body()))
-        } else {
-          emit(Resource.Error("Search failed"))
-        }
+  suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>> = flow {
+    emit(Resource.Loading())
+    try {
+      val response = authenticatedApiService.searchUsers(query)
+      if (response.isSuccessful) {
+        emit(Resource.Success(response.body()))
+      } else {
+        emit(Resource.Error("Search failed"))
       }
-      .catch { e -> emit(Resource.Error(e.localizedMessage ?: "Unknown error")) }
+    } catch (e: Exception) {
+      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
+    }
+  }
+
+  suspend fun getFollowers(id: String): Flow<Resource<FollowerResponse>> = flow {
+    emit(Resource.Loading())
+
+    val response = authenticatedApiService.getFollowers(id)
+    if (response.isSuccessful) {
+      emit(Resource.Success(response.body()))
+    } else {
+      emit(Resource.Error("Search failed"))
+    }
+  }
 }

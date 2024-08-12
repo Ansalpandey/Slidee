@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -20,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -104,7 +104,7 @@ fun ExploreScreen(
     }
   }
   Scaffold(bottomBar = { CustomBottomBar(navController = navController) }) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize().clip(RoundedCornerShape(20.dp))) {
       val searchBarModifier =
         if (active) {
           Modifier.fillMaxWidth()
@@ -114,7 +114,7 @@ fun ExploreScreen(
 
       SearchBar(
         modifier = searchBarModifier,
-        shape = SearchBarDefaults.inputFieldShape,
+        shape = RoundedCornerShape(20.dp),
         query = query,
         onQueryChange = { query = it },
         onSearch = {

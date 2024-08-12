@@ -1,14 +1,12 @@
 package com.example.project_x.ui.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
+import com.example.project_x.data.model.FollowerResponse
 import com.example.project_x.data.model.ProfileResponse
-import com.example.project_x.data.model.SearchResponse
-import com.example.project_x.data.model.SearchUserResponse
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -35,6 +33,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   val isFollowing: StateFlow<Boolean> = _isFollowing.asStateFlow()
 
   private var isProfileFetched = false
+
+  private val _followers = MutableStateFlow<Resource<FollowerResponse>>(Resource.Loading())
+  val followers: StateFlow<Resource<FollowerResponse>> = _followers.asStateFlow()
 
   fun fetchUserProfile() {
     if (!isProfileFetched) {
@@ -102,5 +103,15 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   fun refreshProfile() {
     isProfileFetched = false // Reset flag to allow refresh
     fetchUserProfile()
+  }
+
+  fun getFollowers(userId: String) {
+    viewModelScope.launch {
+      userRepository.getFollowers(userId).collect { resource ->
+        if (resource is Resource.Success) {
+          _followers.value = resource
+        }
+      }
+    }
   }
 }

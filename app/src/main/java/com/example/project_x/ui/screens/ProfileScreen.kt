@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,7 +72,6 @@ fun ProfileScreen(
   navController: NavController,
 ) {
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
-
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
   val tabIcons =
@@ -164,7 +163,18 @@ fun ProfileScreen(
                   fontWeight = FontWeight.ExtraBold,
                 )
               }
-              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+              Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier =
+                  Modifier.clickable {
+                    navController.navigate(
+                      Route.FollowersScreen(
+                        userId = state.data?.user?._id!!,
+                        followersCount = state.data.user.followersCount!!,
+                      )
+                    )
+                  },
+              ) {
                 Text(
                   text = "${state.data?.user?.followersCount ?: 0}",
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,

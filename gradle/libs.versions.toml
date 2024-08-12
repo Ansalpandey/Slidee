@@ -1,5 +1,6 @@
 [versions]
 accompanistPager = "0.24.13-rc"
+accompanistPermissions = "0.34.0"
 activityComposeVersion = "1.9.1"
 agp = "8.5.1"
 coilCompose = "2.6.0"
@@ -33,6 +34,7 @@ playServicesAuth = "21.2.0"
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "converterGson" }
 androidx-activity-compose-v161 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityComposeVersion" }

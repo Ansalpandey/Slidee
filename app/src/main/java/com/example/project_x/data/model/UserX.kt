@@ -10,7 +10,7 @@ data class UserX(
   val email: String?, // rohit@gmail.com
   val enrolledCourses: List<EnrolledCourse?>?,
   val location: String?,
-  val followers: List<FollowerResponse?>?,
+  val followers: List<Follower>?,
   val followersCount: Int?, // 0
   val following: List<FollowingResponse?>?,
   val followingCount: Int?, // 0
