@@ -23,12 +23,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -70,7 +70,7 @@ class AppModule {
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-      //                    .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
+      //      .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
       .baseUrl("http://192.168.1.7:3000/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
   }
@@ -158,8 +158,11 @@ class AppModule {
 
   @Singleton
   @Provides
-  fun provideDataStore(@ApplicationContext context: Context): androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> {
-    return androidx.datastore.preferences.preferencesDataStore(name = "user_preferences")
+  fun provideDataStore(
+    @ApplicationContext context: Context
+  ): androidx.datastore.core.DataStore<androidx.datastore.preferences.core.Preferences> {
+    return androidx.datastore.preferences
+      .preferencesDataStore(name = "user_preferences")
       .getValue(context, String::javaClass)
   }
 }
