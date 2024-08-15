@@ -15,14 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.project_x.ui.components.CustomBottomBar
-import com.example.project_x.ui.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(
-  modifier: Modifier = Modifier,
-  navController: NavController,
-) {
+fun ChatScreen(modifier: Modifier = Modifier, navController: NavController) {
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {

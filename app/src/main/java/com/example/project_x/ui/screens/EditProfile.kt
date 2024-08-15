@@ -67,7 +67,7 @@ fun EditProfileScreen(
   username: String,
   name: String,
   bio: String,
-  location: String,
+  location: String?,
   email: String,
   age: String,
   profileImage: String,
@@ -225,7 +225,7 @@ fun EditProfileScreen(
       )
 
       OutlinedTextField(
-        value = newLocation,
+        value = newLocation!!,
         onValueChange = { newLocation = it },
         label = { Text("Location") },
         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -254,7 +254,7 @@ fun EditProfileScreen(
               profileImageBase64 = profileImageBase64,
               age = newAge.toInt(),
               email = newEmail,
-              location = newLocation,
+              location = newLocation!!,
             )
           profileViewModel.editProfile(id, user)
           profileViewModel.refreshProfile()

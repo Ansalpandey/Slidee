@@ -1,5 +1,6 @@
 package com.example.project_x.data.datasource
 
+import android.util.Log
 import com.example.project_x.common.Resource
 import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthenticatedApiService
@@ -26,15 +27,18 @@ constructor(
     emit(Resource.Loading())
     try {
       val response = apiService.registerUser(user)
-      if (response.isSuccessful) {
-        emit(Resource.Success(response.body()))
+      if (response.isSuccessful && response.body() != null) {
+        emit(Resource.Success(response.body()!!))
       } else {
-        emit(Resource.Error("Registration failed"))
+        val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+        emit(Resource.Error("Registration failed: $errorMessage"))
       }
     } catch (e: Exception) {
+      Log.e("RegisterUser", "Error registering user", e)
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
+
 
   suspend fun loginUser(user: UserRequest): Flow<Resource<UserResponse>> = flow {
     emit(Resource.Loading())

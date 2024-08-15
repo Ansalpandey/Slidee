@@ -1,6 +1,5 @@
 package com.example.project_x.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -63,7 +61,7 @@ fun HomeScreen(
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
-  val listState: LazyListState = rememberLazyListState()
+  val listState = rememberLazyListState()
 
   // Create scroll behavior
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -117,13 +115,6 @@ fun HomeScreen(
             isProfileFetched = true
           }
         }
-        Log.w(
-          "TEST",
-          "List state recompose. " +
-            "first_visible=${listState.firstVisibleItemIndex}, " +
-            "offset=${listState.firstVisibleItemScrollOffset}, " +
-            "amount items=${posts.itemCount}",
-        )
         LazyColumn(
           state = listState,
           modifier =
@@ -165,7 +156,7 @@ fun HomeScreen(
               }
             }
           }
-          items(key = { index -> posts[index]?._id ?: index }, count = posts.itemCount) { index ->
+          items(posts.itemCount) { index ->
             posts[index]?.let { post ->
               PostItem(
                 post = post,
@@ -206,18 +197,65 @@ fun HomeScreen(
               }
               loadState.append is LoadState.Error -> {
                 item {
-                  Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = "Error loading more posts")
+                  Box(
+                    modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                    contentAlignment = Alignment.Center,
+                  ) {
+                    Column(
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      modifier = Modifier.fillMaxSize(),
+                      verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                      Image(
+                        painter = painterResource(id = R.drawable.page_not_found),
+                        contentDescription = "posts_not_found",
+                      )
+                      Text(
+                        text = "Error 404! Posts not found",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                      )
+
+                      OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                        Text(
+                          text = "Reload Posts",
+                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                          fontWeight = FontWeight.Medium,
+                        )
+                      }
+                    }
                   }
                 }
               }
               loadState.refresh is LoadState.Error -> {
                 item {
                   Box(
-                    modifier = Modifier.fillParentMaxSize(),
+                    modifier = Modifier.fillParentMaxSize().padding(30.dp),
                     contentAlignment = Alignment.Center,
                   ) {
-                    Text(text = "Error refreshing posts")
+                    Column(
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      modifier = Modifier.fillMaxSize(),
+                      verticalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                      Image(
+                        painter = painterResource(id = R.drawable.page_not_found),
+                        contentDescription = "posts_not_found",
+                      )
+                      Text(
+                        text = "Error 404! Posts not found",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                      )
+
+                      OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                        Text(
+                          text = "Reload Posts",
+                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                          fontWeight = FontWeight.Medium,
+                        )
+                      }
+                    }
                   }
                 }
               }

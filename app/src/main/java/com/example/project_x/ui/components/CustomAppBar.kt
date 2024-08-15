@@ -53,9 +53,9 @@ fun CustomAppBar(
     },
     actions = {
       val profileImageModifier =
-        Modifier.padding(10.dp).clip(CircleShape).size(50.dp).clickable {
+        Modifier.padding(end = 10.dp).clip(CircleShape).size(50.dp).clickable {
           navController.navigate(Route.ProfileScreen)
-        } // Handle navigation on click
+        }
 
       if (image.isNullOrEmpty()) {
         Image(

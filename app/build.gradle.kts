@@ -24,7 +24,7 @@ android {
 
   buildTypes {
     release {
-      isMinifyEnabled = true
+      isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
@@ -49,6 +49,7 @@ dependencies {
   implementation(libs.androidx.material3)
   implementation(libs.core.ktx)
   implementation(libs.androidx.ui.text.google.fonts)
+  implementation(libs.androidx.material3.adaptive.navigation.suite.android)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
@@ -69,6 +70,8 @@ dependencies {
   // Dagger Hilt
   implementation(libs.hilt.android)
   kapt(libs.hilt.compiler)
+
+  implementation(libs.androidx.hilt.navigation.compose)
 
   // ViewModel
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -104,6 +107,4 @@ dependencies {
   implementation(libs.androidx.room.runtime)
   kapt(libs.androidx.room.compiler)
   implementation(libs.androidx.room.ktx)
-  implementation(libs.androidx.slidingpanelayout)
-
 }

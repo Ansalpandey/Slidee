@@ -3,7 +3,6 @@ package com.example.project_x.data.model
 data class UserRequest(
     val age: Int? = null,
     val bio: String? = null,
-    val coverImage: String? = null,
     val email: String? = null,
     val name: String? = null,
     val password: String? = null,

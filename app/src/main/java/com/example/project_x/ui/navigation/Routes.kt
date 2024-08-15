@@ -1,6 +1,5 @@
 package com.example.project_x.ui.navigation
 
-import com.example.project_x.data.model.Follower
 import kotlinx.serialization.Serializable
 
 sealed class Route {
@@ -39,6 +38,5 @@ sealed class Route {
   @Serializable
   data class ImageScreen(val images: List<String>, val initialPage: Int = 0) : Route()
 
-  @Serializable
-  data class FollowersScreen(val userId: String, val followersCount: Int) : Route()
+  @Serializable data class FollowersScreen(val userId: String, val followersCount: Int) : Route()
 }

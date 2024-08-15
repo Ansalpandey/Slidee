@@ -66,8 +66,6 @@ fun ExploreScreen(
   val searchHistory by searchViewModel.searchHistory.collectAsStateWithLifecycle()
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
 
-  LaunchedEffect(profileState.data?.user?._id) { profileViewModel.refreshProfile() }
-
   fun onUserClick(user: SearchUserResponse) {
     if (user._id == profileState.data?.user?._id) {
       searchViewModel.addUserToHistory(user)
