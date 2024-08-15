@@ -9,11 +9,11 @@ import com.example.project_x.data.model.FollowerResponse
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(private val userRepository: UserRepository) :

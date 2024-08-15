@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -60,6 +63,7 @@ fun HomeScreen(
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
+  val listState: LazyListState = rememberLazyListState()
 
   // Create scroll behavior
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -113,7 +117,15 @@ fun HomeScreen(
             isProfileFetched = true
           }
         }
+        Log.w(
+          "TEST",
+          "List state recompose. " +
+            "first_visible=${listState.firstVisibleItemIndex}, " +
+            "offset=${listState.firstVisibleItemScrollOffset}, " +
+            "amount items=${posts.itemCount}",
+        )
         LazyColumn(
+          state = listState,
           modifier =
             modifier
               .fillMaxSize()
@@ -153,7 +165,7 @@ fun HomeScreen(
               }
             }
           }
-          items(posts.itemCount) { index ->
+          items(key = { index -> posts[index]?._id ?: index }, count = posts.itemCount) { index ->
             posts[index]?.let { post ->
               PostItem(
                 post = post,
@@ -161,6 +173,7 @@ fun HomeScreen(
                 likePost = { postViewModel.likePost(post._id!!) },
                 unlikePost = { postViewModel.unLikePost(post._id!!) },
                 profileViewModel = profileViewModel,
+                postViewModel = postViewModel,
                 onClick = {
                   val loggedInUserId = profileState.data?.user?._id
                   if (post.createdBy?._id == loggedInUserId) {

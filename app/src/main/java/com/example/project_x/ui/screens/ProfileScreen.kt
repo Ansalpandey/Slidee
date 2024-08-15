@@ -324,6 +324,7 @@ fun ProfileScreen(
                           likePost = { postViewModel.likePost(post._id!!) },
                           unlikePost = { postViewModel.unLikePost(post._id!!) },
                           profileViewModel = profileViewModel,
+                          postViewModel = postViewModel,
                           onClick = {
                             /*TODO*/
                           },

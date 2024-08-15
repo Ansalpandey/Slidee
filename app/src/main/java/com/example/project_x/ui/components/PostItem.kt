@@ -25,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +41,7 @@ import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.Post
 import com.example.project_x.ui.navigation.Route
+import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.utils.getRelativeTimeSpanString
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -58,17 +58,18 @@ fun PostItem(
   navController: NavController,
   onClick: () -> Unit,
   profileViewModel: ProfileViewModel,
+  postViewModel: PostViewModel,
   likePost: (String) -> Unit,
   unlikePost: (String) -> Unit,
 ) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
-  val userId = rememberSaveable {
+  val userId = remember {
     profileViewModel.loggedInUserProfileState.value.data?.user?._id.toString()
   }
 
-  val isLiked =
-    rememberSaveable(post?._id) { mutableStateOf(post?.likedBy?.contains(userId) == true) }
-  val likeCount = rememberSaveable(post?._id) { mutableIntStateOf(post?.likes ?: 0) }
+  // Get the like state from the view model
+  val isLiked = remember(post?._id) { mutableStateOf(postViewModel.isPostLiked(post?._id!!)) }
+  val likeCount = remember(post?._id) { mutableIntStateOf(post?.likes ?: 0) }
 
   LaunchedEffect(post?.createdAt) {
     while (true) {
@@ -192,10 +193,12 @@ fun PostItem(
               onClick = {
                 if (isLiked.value) {
                   unlikePost(post._id!!)
+                  postViewModel.unLikePost(post._id)
                   isLiked.value = false
                   likeCount.intValue -= 1
                 } else {
                   likePost(post._id!!)
+                  postViewModel.likePost(post._id)
                   isLiked.value = true
                   likeCount.intValue += 1
                 }

@@ -1,6 +1,8 @@
 package com.example.project_x.ui.viewmodel
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -40,6 +42,10 @@ constructor(
   val post: StateFlow<Resource<PostResponse>> = _post
   var isPostCreated by mutableStateOf(false)
     private set
+
+  private val _postLikes = mutableStateMapOf<String, Boolean>()
+  val postLikes: State<Map<String, Boolean>> = mutableStateOf(_postLikes)
+
 
   fun getPosts() {
     viewModelScope.launch {
@@ -82,13 +88,23 @@ constructor(
 
   fun likePost(postId: String) {
     viewModelScope.launch {
-      postRepository.likePost(postId).collect { resource -> _likePost.value = resource }
+      postRepository.likePost(postId).collect { resource ->
+        _likePost.value = resource
+        if (resource is Resource.Success) {
+          _postLikes[postId] = true
+        }
+      }
     }
   }
 
   fun unLikePost(postId: String) {
     viewModelScope.launch {
-      postRepository.unLikePost(postId).collect { resource -> _likePost.value = resource }
+      postRepository.unLikePost(postId).collect { resource ->
+        _likePost.value = resource
+        if (resource is Resource.Success) {
+          _postLikes[postId] = false
+        }
+      }
     }
   }
 
@@ -99,5 +115,9 @@ constructor(
       // Re-fetch posts to include the new post at the top
       getPosts()
     }
+  }
+
+  fun isPostLiked(postId: String): Boolean {
+    return _postLikes[postId] ?: false
   }
 }

@@ -1,6 +1,7 @@
 package com.example.project_x.data.implementation
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import com.example.project_x.common.Resource
 import com.example.project_x.data.datasource.UserDataSource
@@ -133,18 +134,25 @@ constructor(
   override suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>> {
     return userDataSource.searchUsers(query).onEach { resource ->
       if (resource is Resource.Success) {
-        val existingHistoryJson = dataStore.data.first()[UserPreferences.SEARCH_HISTORY] ?: "[]"
-        val existingHistory =
-          Gson().fromJson(existingHistoryJson, Array<String>::class.java).toMutableList()
+        try {
+          // Retrieve the existing search history or default to an empty list
+          val existingHistoryJson = dataStore.data.first()[UserPreferences.SEARCH_HISTORY] ?: "[]"
+          val existingHistory =
+            Gson().fromJson(existingHistoryJson, Array<String>::class.java)?.toMutableList()
+              ?: mutableListOf()
 
-        // Add new query to history if it's not already present
-        if (!existingHistory.contains(query)) {
-          existingHistory.add(query)
-        }
+          // Add new query to history if it's not already present
+          if (!existingHistory.contains(query)) {
+            existingHistory.add(query)
+          }
 
-        val updatedHistoryJson = Gson().toJson(existingHistory)
-        dataStore.edit { preferences ->
-          preferences[UserPreferences.SEARCH_HISTORY] = updatedHistoryJson
+          val updatedHistoryJson = Gson().toJson(existingHistory)
+          dataStore.edit { preferences ->
+            preferences[UserPreferences.SEARCH_HISTORY] = updatedHistoryJson
+          }
+        } catch (e: Exception) {
+          // Log the error or handle it as needed
+          Log.e("SearchUsers", "Failed to update search history", e)
         }
       }
     }
