@@ -1,5 +1,6 @@
 [versions]
 accompanistPager = "0.24.13-rc"
+accompanistPullToRefresh = "0.29.0-alpha"
 activityComposeVersion = "1.9.1"
 agp = "8.5.2"
 coilCompose = "2.6.0"
@@ -34,6 +35,7 @@ material3AdaptiveNavigationSuiteAndroid = "1.3.0-beta05"
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
+accompanist-pull-to-refresh = { module = "com.google.accompanist:accompanist-pull-to-refresh", version.ref = "accompanistPullToRefresh" }
 adapter-rxjava2 = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "converterGson" }
 androidx-activity-compose-v161 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityComposeVersion" }
