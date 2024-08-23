@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
             navController = navController,
             postViewModel = postViewModel,
             courseViewModel = courseViewModel,
-            searchViewModel = searchViewModel
+            searchViewModel = searchViewModel,
           )
         }
       }
@@ -66,7 +66,7 @@ fun MyApp(
   postViewModel: PostViewModel,
   courseViewModel: CourseViewModel,
   navController: NavController,
-  searchViewModel: SearchViewModel
+  searchViewModel: SearchViewModel,
 ) {
   NavigationSetup(
     authViewModel = authViewModel,

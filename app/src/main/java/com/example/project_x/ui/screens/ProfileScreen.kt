@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -63,7 +67,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun ProfileScreen(
   modifier: Modifier = Modifier,
@@ -78,7 +82,8 @@ fun ProfileScreen(
     listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
-
+  val pullRefreshState =
+    rememberPullRefreshState(refreshing = false, onRefresh = { profileViewModel.refreshProfile() })
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
   when (val state = profileState) {
@@ -98,7 +103,9 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
               ) {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(
+                  onClick = { navController.popBackStack().also { postViewModel.refreshPosts() } }
+                ) {
                   Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "back")
                 }
                 Text(
@@ -117,7 +124,9 @@ fun ProfileScreen(
           )
         },
       ) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        LazyColumn(
+          modifier = Modifier.padding(paddingValues).fillMaxSize().pullRefresh(pullRefreshState)
+        ) {
           item {
             Row(
               modifier = Modifier.fillMaxWidth(),
@@ -333,6 +342,7 @@ fun ProfileScreen(
                     }
                   }
                 }
+
                 1 -> {
                   val courses = state.data?.user?.courses
                   if (courses.isNullOrEmpty()) {
@@ -356,6 +366,12 @@ fun ProfileScreen(
               }
             }
           }
+        }
+        Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          PullRefreshIndicator(refreshing = true, state = pullRefreshState)
         }
       }
     }

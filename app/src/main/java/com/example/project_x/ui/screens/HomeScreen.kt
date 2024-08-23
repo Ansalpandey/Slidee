@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -22,11 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -47,7 +47,7 @@ import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
   modifier: Modifier = Modifier,
@@ -59,10 +59,10 @@ fun HomeScreen(
   val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
-  var isProfileFetched by remember { mutableStateOf(false) }
   val lifecycleOwner = LocalLifecycleOwner.current
   val listState = rememberLazyListState()
-
+  val pullRefreshState =
+    rememberPullRefreshState(refreshing = false, onRefresh = { postViewModel.refreshPosts() })
   // Create scroll behavior
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -108,18 +108,12 @@ fun HomeScreen(
       }
     } else {
       if (userState.isLoggedIn) {
-        LaunchedEffect(key1 = userState.isLoggedIn) {
-          if (!isProfileFetched) {
-            profileViewModel.fetchUserProfile()
-            postViewModel.getPosts()
-            isProfileFetched = true
-          }
-        }
         LazyColumn(
           state = listState,
           modifier =
             modifier
               .fillMaxSize()
+              .pullRefresh(pullRefreshState)
               .padding(innerPadding)
               .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
           horizontalAlignment = Alignment.CenterHorizontally,
@@ -188,6 +182,7 @@ fun HomeScreen(
                   }
                 }
               }
+
               loadState.append is LoadState.Loading -> {
                 item {
                   Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -195,6 +190,7 @@ fun HomeScreen(
                   }
                 }
               }
+
               loadState.append is LoadState.Error -> {
                 item {
                   Box(
@@ -227,6 +223,7 @@ fun HomeScreen(
                   }
                 }
               }
+
               loadState.refresh is LoadState.Error -> {
                 item {
                   Box(
@@ -261,6 +258,12 @@ fun HomeScreen(
               }
             }
           }
+        }
+        Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          PullRefreshIndicator(refreshing = true, state = pullRefreshState)
         }
       } else {
         navController.navigate(Route.LoginScreen)

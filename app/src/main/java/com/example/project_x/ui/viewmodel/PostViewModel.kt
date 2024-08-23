@@ -1,6 +1,5 @@
 package com.example.project_x.ui.viewmodel
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,11 +18,11 @@ import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.pagination.PostPagingSource
 import com.example.project_x.data.repository.PostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel
@@ -35,7 +34,7 @@ constructor(
   private val _posts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
 
-  private val _isPostsFetched = MutableStateFlow(false)
+  private val _isPostsFetched = MutableStateFlow(false) // Flag to track if posts are fetched
   private val _likePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
@@ -44,8 +43,12 @@ constructor(
     private set
 
   private val _postLikes = mutableStateMapOf<String, Boolean>()
-  val postLikes: State<Map<String, Boolean>> = mutableStateOf(_postLikes)
 
+  init {
+    if (!_isPostsFetched.value) { // Check if posts are already fetched
+      getPosts()
+    }
+  }
 
   fun getPosts() {
     viewModelScope.launch {
@@ -63,7 +66,7 @@ constructor(
         .cachedIn(viewModelScope)
         .collect {
           _posts.value = it
-          _isPostsFetched.value = true
+          _isPostsFetched.value = true // Set flag to true after fetching
         }
     }
   }
@@ -108,10 +111,11 @@ constructor(
     }
   }
 
-  private fun refreshPosts() {
+  fun refreshPosts() {
     viewModelScope.launch {
       // Clear existing posts
       _posts.value = PagingData.empty()
+      _isPostsFetched.value = false // Reset the flag when refreshing posts
       // Re-fetch posts to include the new post at the top
       getPosts()
     }
