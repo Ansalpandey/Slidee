@@ -5,6 +5,7 @@ import android.util.Base64
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,17 +18,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -359,6 +365,35 @@ fun RegisterScreen(
             color = Color.White,
             fontSize = 16.sp,
           )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        OutlinedButton(
+          onClick = {
+            /*TODO*/
+          },
+          shape = RoundedCornerShape(10.dp),
+          border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+          colors =
+          ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent, // Keeps the inside transparent
+            contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
+          ),
+          modifier = Modifier.fillMaxWidth().height(50.dp),
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth(),
+          ) {
+            Icon(
+              painter = painterResource(id = R.drawable.google_icon),
+              contentDescription = "google_icon",
+              modifier = Modifier.size(32.dp),
+              tint = Color.Unspecified,
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(text = "Continue with Google", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+          }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

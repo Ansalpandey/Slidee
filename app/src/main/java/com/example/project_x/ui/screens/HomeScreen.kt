@@ -78,24 +78,6 @@ fun HomeScreen(
         )
       }
     },
-    floatingActionButton = {
-      FloatingActionButton(
-        shape = RoundedCornerShape(20.dp),
-        content = { Icon(imageVector = Icons.Default.Add, contentDescription = "create_post") },
-        onClick = {
-          navController.navigate(Route.CreatePostScreen)
-          navController.currentBackStackEntry
-            ?.savedStateHandle
-            ?.getLiveData<Boolean>("refreshProfile")
-            ?.observe(lifecycleOwner) { shouldRefresh ->
-              if (shouldRefresh) {
-                profileViewModel.refreshProfile()
-                postViewModel.getPosts() // Re-fetch posts if needed
-              }
-            }
-        },
-      )
-    },
     bottomBar = {
       if (userState.isLoggedIn) {
         CustomBottomBar(navController = navController)

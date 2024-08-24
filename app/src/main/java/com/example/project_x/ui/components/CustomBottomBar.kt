@@ -6,6 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Home
@@ -55,6 +57,12 @@ fun CustomBottomBar(modifier: Modifier = Modifier, navController: NavController)
         route = Route.ExploreScreen,
       ),
       BottomNavItem(
+        title = "Create Post",
+        unselectedIcon = Icons.Default.AddCircleOutline,
+        selectedIcon = Icons.Filled.AddCircle,
+        route = Route.CreatePostScreen,
+      ),
+      BottomNavItem(
         title = "Notification",
         unselectedIcon = Icons.Outlined.Notifications,
         selectedIcon = Icons.Filled.Notifications,
@@ -66,6 +74,7 @@ fun CustomBottomBar(modifier: Modifier = Modifier, navController: NavController)
         selectedIcon = Icons.Filled.ChatBubble,
         route = Route.ChatScreen,
       ),
+
     )
   }
 

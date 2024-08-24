@@ -41,7 +41,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     fetchUserProfile()
   }
 
-  private fun fetchUserProfile() {
+  fun fetchUserProfile() {
     if (!isProfileFetched) {
       viewModelScope.launch {
         userRepository.getUserProfile().collect { resource ->

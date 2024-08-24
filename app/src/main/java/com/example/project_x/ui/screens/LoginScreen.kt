@@ -235,33 +235,6 @@ fun LoginScreen(
         Text(text = "Sign In with Google", fontSize = 16.sp, fontWeight = FontWeight.Bold)
       }
     }
-    Spacer(modifier = Modifier.height(20.dp))
-    Button(
-      onClick = { /*TODO*/ },
-      shape = RoundedCornerShape(10.dp),
-      modifier = Modifier.fillMaxWidth().height(50.dp),
-      colors = ButtonDefaults.buttonColors(Color.Black),
-    ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Icon(
-          painter = painterResource(id = R.drawable.apple),
-          contentDescription = "apple_icon",
-          tint = Color.Unspecified,
-          modifier = Modifier.size(32.dp),
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(
-          text = "Sign In with Apple",
-          fontSize = 16.sp,
-          fontWeight = FontWeight.Bold,
-          color = Color.White,
-        )
-      }
-    }
     Spacer(modifier = Modifier.height(30.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,
