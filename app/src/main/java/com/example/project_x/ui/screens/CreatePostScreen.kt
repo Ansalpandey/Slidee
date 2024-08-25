@@ -1,7 +1,6 @@
 package com.example.project_x.ui.screens
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,14 +13,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,7 +38,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,14 +49,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
-import com.example.project_x.common.Resource
 import com.example.project_x.data.model.PostRequest
+import com.example.project_x.ui.components.VideoPreview
 import com.example.project_x.ui.viewmodel.PostViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,8 +71,13 @@ fun CreatePostScreen(
   val context = LocalContext.current
   var content by rememberSaveable { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
-  var postImageUris: List<Uri> by rememberSaveable { mutableStateOf(emptyList()) }
-  var postImageBase64s: List<String> by rememberSaveable { mutableStateOf(emptyList()) }
+  var postImageUris by rememberSaveable { mutableStateOf(emptyList<Uri>()) }
+  var postImageBase64s by rememberSaveable { mutableStateOf(emptyList<String>()) }
+  var videoUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+  var videoBase64 by rememberSaveable { mutableStateOf<String?>(null) }
+
+  // Keyboard controller
+  val keyboardController = LocalSoftwareKeyboardController.current
 
   // Launcher for picking images
   val imageLauncher =
@@ -80,6 +88,17 @@ fun CreatePostScreen(
           context.contentResolver.openInputStream(uri)?.use { inputStream ->
             postImageBase64s = postImageBase64s + inputStream.toBase64()
           }
+        }
+      }
+    }
+
+  // Launcher for picking a video
+  val videoLauncher =
+    rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+      uri?.let {
+        videoUri = it
+        context.contentResolver.openInputStream(it)?.use { inputStream ->
+          videoBase64 = inputStream.toBase64()
         }
       }
     }
@@ -97,19 +116,21 @@ fun CreatePostScreen(
         actions = {
           Button(
             onClick = {
+              keyboardController?.hide()
               val postRequest =
                 PostRequest(
                   content = content,
                   imageUrlBase64 = postImageBase64s,
-                  videoUrl = "",
+                  videoUrlBase64 = videoBase64,
                   imageUrl = "",
+                  videoUrl = "",
                 )
               postViewModel.createPost(postRequest)
               isLoading = true
               postViewModel.getPosts()
               navController.popBackStack()
             },
-            enabled = content.isNotEmpty() || postImageUris.isNotEmpty(),
+            enabled = content.isNotEmpty() || postImageUris.isNotEmpty() || videoUri != null,
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
           ) {
             Text("Post")
@@ -118,7 +139,7 @@ fun CreatePostScreen(
       )
     },
   ) { paddingValues ->
-    Column(modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp).imePadding()) {
       TextField(
         value = content,
         onValueChange = { content = it },
@@ -128,12 +149,12 @@ fun CreatePostScreen(
         textStyle = MaterialTheme.typography.bodyLarge,
       )
 
+      // Display selected images
       if (postImageUris.isNotEmpty()) {
         LazyRow(
           modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-          // Display the selected images
           items(postImageUris) { uri ->
             Box(
               modifier =
@@ -147,7 +168,6 @@ fun CreatePostScreen(
                 contentScale = ContentScale.Crop,
               )
 
-              // Close button
               IconButton(
                 onClick = {
                   val indexToRemove = postImageUris.indexOf(uri)
@@ -156,9 +176,9 @@ fun CreatePostScreen(
                     postImageBase64s.toMutableList().apply { removeAt(indexToRemove) }
                 },
                 modifier =
-                Modifier.align(Alignment.Center)
-                  .size(50.dp)
-                  .background(Color.Gray.copy(alpha = 0.3f), CircleShape),
+                  Modifier.align(Alignment.Center)
+                    .size(50.dp)
+                    .background(Color.Gray.copy(alpha = 0.7f), CircleShape),
               ) {
                 Icon(
                   imageVector = Icons.Default.Close,
@@ -170,14 +190,13 @@ fun CreatePostScreen(
             }
           }
 
-          // Show the "Add more" option if images are less than 5
-          if (postImageUris.size < 5) {
+          if (postImageUris.size < 5 && postImageUris.isNotEmpty()) {
             item {
               Box(
                 modifier =
                   Modifier.size(100.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f))
                     .clickable {
                       imageLauncher.launch(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -186,10 +205,7 @@ fun CreatePostScreen(
                 contentAlignment = Alignment.Center,
               ) {
                 Icon(
-                  painter =
-                    painterResource(
-                      id = R.drawable.image
-                    ), // Replace with your "Add Image" icon resource
+                  painter = painterResource(id = R.drawable.image),
                   contentDescription = "add_more_images",
                   tint = MaterialTheme.colorScheme.primary,
                   modifier = Modifier.size(48.dp),
@@ -199,18 +215,41 @@ fun CreatePostScreen(
           }
         }
       }
+      Spacer(modifier = Modifier.height(10.dp))
+      // Display selected video
+      if (videoUri != null) {
+        Box(
+          modifier = Modifier.width(100.dp).height(100.dp).clip(RoundedCornerShape(12.dp)),
+          contentAlignment = Alignment.Center,
+        ) {
+          VideoPreview(
+            uri = videoUri,
+            onRemove = {
+              videoUri = null
+              videoBase64 = null
+            },
+          )
+        }
+      }
 
       Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
+        // Image picker
         IconButton(
+          modifier =
+            Modifier.size(50.dp)
+              .background(
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                RoundedCornerShape(12.dp),
+              ),
           onClick = {
             imageLauncher.launch(
               PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
-          }
+          },
+          enabled = videoUri == null, // Disable if a video is selected
         ) {
           Icon(
             painter = painterResource(id = R.drawable.image),
@@ -218,50 +257,35 @@ fun CreatePostScreen(
             tint = MaterialTheme.colorScheme.primary,
           )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        if (isLoading) {
-          CircularProgressIndicator(
-            modifier = Modifier.size(24.dp),
-            color = MaterialTheme.colorScheme.primary,
-            strokeWidth = 2.dp,
+        Spacer(modifier = Modifier.width(10.dp))
+        // Video picker
+        IconButton(
+          modifier =
+            Modifier.size(50.dp)
+              .background(
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                RoundedCornerShape(12.dp),
+              ),
+          onClick = {
+            videoLauncher.launch(
+              PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+            )
+          },
+          enabled = postImageUris.isEmpty() && videoUri == null, // Disable if images are selected
+        ) {
+          Icon(
+            imageVector = Icons.Default.VideoLibrary,
+            contentDescription = "pick_video",
+            tint = MaterialTheme.colorScheme.primary,
           )
         }
       }
-    }
 
-    when (postState) {
-      is Resource.Loading -> {
-        if (isLoading) {
-          CircularProgressIndicator()
-        }
-      }
-      is Resource.Success -> {
-        LaunchedEffect(postViewModel.isPostCreated) {
-          if (postViewModel.isPostCreated) {
-            Toast.makeText(context, "Post created successfully", Toast.LENGTH_SHORT).show()
+      Spacer(modifier = Modifier.height(16.dp))
 
-            // Reset post creation state in the ViewModel
-            postViewModel.resetPostCreationState()
-
-            // Reset other state variables
-            content = ""
-            postImageUris = emptyList()
-            postImageBase64s = emptyList()
-            isLoading = false
-          }
-        }
-      }
-      is Resource.Error -> {
-        Toast.makeText(
-            context,
-            "Failed to create post: ${(postState as Resource.Error).message}",
-            Toast.LENGTH_SHORT,
-          )
-          .show()
-        isLoading = false
-      }
-      else -> {
-        isLoading = false
+      // Handle Loading State
+      if (isLoading) {
+        CircularProgressIndicator()
       }
     }
   }

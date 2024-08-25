@@ -59,7 +59,6 @@ fun HomeScreen(
   val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
-  val lifecycleOwner = LocalLifecycleOwner.current
   val listState = rememberLazyListState()
   val pullRefreshState =
     rememberPullRefreshState(refreshing = false, onRefresh = { postViewModel.refreshPosts() })

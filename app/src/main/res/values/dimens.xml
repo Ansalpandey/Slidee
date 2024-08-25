@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Size for the rotation icon in the ExoPlayer -->
+    <dimen name="exo_icon_size">48dp</dimen>
+    <!-- Margin for the icon from the edge of the PlayerView -->
+    <dimen name="exo_margin">16dp</dimen>
+</resources>

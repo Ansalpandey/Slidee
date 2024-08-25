@@ -91,7 +91,7 @@ fun ImageScreen(images: List<String>, initialPage: Int = 0, onClose: () -> Unit)
       modifier =
         Modifier.align(Alignment.CenterStart)
           .padding(16.dp)
-          .background(Color.Gray.copy(alpha = 0.3f), CircleShape),
+          .background(Color.Gray.copy(alpha = 0.7f), CircleShape),
     ) {
       Icon(
         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -111,7 +111,7 @@ fun ImageScreen(images: List<String>, initialPage: Int = 0, onClose: () -> Unit)
       modifier =
         Modifier.align(Alignment.CenterEnd)
           .padding(16.dp)
-          .background(Color.Gray.copy(alpha = 0.3f), CircleShape),
+          .background(Color.Gray.copy(alpha = 0.7f), CircleShape),
     ) {
       Icon(
         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
@@ -126,7 +126,7 @@ fun ImageScreen(images: List<String>, initialPage: Int = 0, onClose: () -> Unit)
     modifier =
       Modifier.padding(start = 20.dp, top = 30.dp)
         .size(50.dp)
-        .background(Color.Gray.copy(alpha = 0.3f), CircleShape),
+        .background(Color.Gray.copy(alpha = 0.7f), CircleShape),
   ) {
     Icon(
       imageVector = Icons.Default.Close,

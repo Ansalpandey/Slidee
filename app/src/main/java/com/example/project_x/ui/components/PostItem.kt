@@ -134,53 +134,106 @@ fun PostItem(
             fontWeight = FontWeight.Light,
           )
 
-          if (!post.imageUrl.isNullOrEmpty()) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-              HorizontalPager(
-                count = post.imageUrl.size,
-                state = pagerState,
-                modifier = Modifier.height(300.dp).padding(top = 5.dp, bottom = 10.dp),
-              ) { page ->
-                Box(
-                  modifier =
+          when {
+            post.imageUrl?.isNotEmpty()!! -> {
+              Box(modifier = Modifier.fillMaxWidth()) {
+                HorizontalPager(
+                  count = post.imageUrl.size,
+                  state = pagerState,
+                  modifier = Modifier.height(300.dp).padding(top = 5.dp, bottom = 10.dp),
+                ) { page ->
+                  Box(
+                    modifier =
+                      Modifier.padding(horizontal = 4.dp) // Gap between images
+                        .fillMaxWidth()
+                        .height(300.dp)
+                  ) {
+                    AsyncImage(
+                      model = post.imageUrl[page],
+                      contentDescription = "post_image",
+                      contentScale = ContentScale.Crop,
+                      modifier =
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable {
+                          navController.navigate(Route.ImageScreen(post.imageUrl, page))
+                        },
+                    )
+                    Box(
+                      modifier =
+                        Modifier.fillMaxWidth()
+                          .height(60.dp)
+                          .align(Alignment.BottomCenter)
+                          .clip(RoundedCornerShape(12.dp))
+                          .background(
+                            brush =
+                              Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
+                              )
+                          )
+                    )
+                  }
+                }
+                if (post.imageUrl.size > 1) {
+                  HorizontalPagerIndicator(
+                    pagerState = pagerState,
+                    modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
+                    activeColor = MaterialTheme.colorScheme.primary,
+                    inactiveColor = Color.LightGray,
+                    indicatorWidth = 6.dp,
+                    indicatorHeight = 6.dp,
+                    spacing = 4.dp,
+                  )
+                }
+              }
+            }
+
+            post.videoUrl?.isNotEmpty()!! -> {
+              PostVideoPlayer(
+                videoUrl = post.videoUrl,
+                modifier = Modifier.fillMaxWidth().height(300.dp)
+              )
+            }
+
+            post.imageUrl.isNotEmpty() && post.videoUrl.isNotEmpty() -> {
+              Box(modifier = Modifier.fillMaxWidth()) {
+                HorizontalPager(
+                  count = post.imageUrl.size,
+                  state = pagerState,
+                  modifier = Modifier.height(300.dp).padding(top = 5.dp, bottom = 10.dp),
+                ) { page ->
+                  Box(
+                    modifier =
                     Modifier.padding(horizontal = 4.dp) // Gap between images
                       .fillMaxWidth()
                       .height(300.dp)
-                ) {
-                  AsyncImage(
-                    model = post.imageUrl[page],
-                    contentDescription = "post_image",
-                    contentScale = ContentScale.Crop,
-                    modifier =
+                  ) {
+                    AsyncImage(
+                      model = post.imageUrl[page],
+                      contentDescription = "post_image",
+                      contentScale = ContentScale.Crop,
+                      modifier =
                       Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable {
                         navController.navigate(Route.ImageScreen(post.imageUrl, page))
                       },
-                  )
-                  Box(
-                    modifier =
+                    )
+                    Box(
+                      modifier =
                       Modifier.fillMaxWidth()
                         .height(60.dp)
                         .align(Alignment.BottomCenter)
                         .clip(RoundedCornerShape(12.dp))
                         .background(
                           brush =
-                            Brush.verticalGradient(
-                              colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
-                            )
+                          Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
+                          )
                         )
+                    )
+                  }
+                  PostVideoPlayer(
+                    videoUrl = post.videoUrl,
+                    modifier = Modifier.fillMaxWidth().height(300.dp)
                   )
                 }
-              }
-              if (post.imageUrl.size > 1) {
-                HorizontalPagerIndicator(
-                  pagerState = pagerState,
-                  modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp),
-                  activeColor = MaterialTheme.colorScheme.primary,
-                  inactiveColor = Color.LightGray,
-                  indicatorWidth = 6.dp, // Adjust the width for shrinking effect
-                  indicatorHeight = 6.dp, // Maintain the height as well
-                  spacing = 4.dp, // Adjust spacing
-                )
               }
             }
           }

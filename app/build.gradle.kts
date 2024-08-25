@@ -110,4 +110,9 @@ dependencies {
 
   implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1")
 
+  // Exo
+  implementation("androidx.media3:media3-exoplayer:1.4.0")
+  implementation("androidx.media3:media3-ui:1.4.0")
+  implementation("androidx.media3:media3-common:1.2.1")
+  implementation("androidx.media3:media3-exoplayer-hls:1.4.0")
 }
