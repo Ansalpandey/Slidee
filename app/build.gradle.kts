@@ -105,14 +105,19 @@ dependencies {
   implementation(libs.accompanist.pager.indicators)
 
   implementation(libs.androidx.room.runtime)
+  //noinspection KaptUsageInsteadOfKsp
   kapt(libs.androidx.room.compiler)
   implementation(libs.androidx.room.ktx)
 
-  implementation("com.google.accompanist:accompanist-swiperefresh:0.30.1")
+  implementation(libs.accompanist.swiperefresh)
 
   // Exo
-  implementation("androidx.media3:media3-exoplayer:1.4.0")
-  implementation("androidx.media3:media3-ui:1.4.0")
-  implementation("androidx.media3:media3-common:1.2.1")
-  implementation("androidx.media3:media3-exoplayer-hls:1.4.0")
+  implementation(libs.androidx.media3.exoplayer)
+  implementation(libs.androidx.media3.ui)
+  implementation(libs.androidx.media3.common)
+  implementation(libs.androidx.media3.exoplayer.hls)
+
+  implementation(libs.androidx.adaptive)
+  implementation (libs.androidx.adaptive.layout)
+  implementation (libs.androidx.adaptive.navigation)
 }

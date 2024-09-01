@@ -9,6 +9,7 @@ import com.example.project_x.data.model.FollowerResponse
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,9 +42,9 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
     fetchUserProfile()
   }
 
-  fun fetchUserProfile() {
+  private fun fetchUserProfile() {
     if (!isProfileFetched) {
-      viewModelScope.launch {
+      viewModelScope.launch(Dispatchers.IO) {
         userRepository.getUserProfile().collect { resource ->
           _loggedInUserProfileState.value = resource
           isProfileFetched = true
@@ -53,7 +54,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun fetchUserProfileById(userId: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.getUserProfileById(userId).collect { resource ->
         _profileState.value = resource
       }
@@ -61,13 +62,13 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun editProfile(id: String, user: EditProfileRequest) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.editProfile(id, user).collect { resource -> _profileState.value = resource }
     }
   }
 
   fun checkIfFollowing(userId: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.isFollowingUser(userId).collect { resource ->
         if (resource is Resource.Success) {
           _isFollowing.value = resource.data?.isFollowing ?: false
@@ -77,29 +78,39 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun toggleFollowUser(userId: String) {
-    viewModelScope.launch {
+    // Toggle follow button state immediately
+    _isFollowing.value = !_isFollowing.value
+
+    // Update followers count locally
+    _profileState.value =
+      _profileState.value.data?.let { profile ->
+        val updatedFollowersCount =
+          if (_isFollowing.value) {
+            profile.user?.followersCount?.plus(1)
+          } else {
+            profile.user?.followersCount?.minus(1)
+          }
+        profile.copy(user = profile.user?.copy(followersCount = updatedFollowersCount))
+      }?.let { Resource.Success(it) } ?: _profileState.value
+
+    // Perform the follow/unfollow operation in the background
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.followUser(userId).collect { resource ->
-        if (resource is Resource.Success) {
-          // Update isFollowing based on the API response
-          _isFollowing.value = !_isFollowing.value
-
-          // Update followers count locally
-          _profileState.value =
-            _profileState.value.data
-              ?.let { profile ->
-                val updatedFollowersCount =
-                  if (_isFollowing.value) {
-                    profile.user?.followersCount?.plus(1)
-                  } else {
-                    profile.user?.followersCount?.minus(1)
-                  }
-                profile.copy(user = profile.user?.copy(followersCount = updatedFollowersCount))
-              }
-              ?.let { Resource.Success(it) } ?: _profileState.value
-
-          fetchUserProfileById(userId) // Optionally refresh the profile from the server
-        }
         _followState.value = resource
+        if (resource is Resource.Error) {
+          // If the API call fails, revert the changes
+          _isFollowing.value = !_isFollowing.value
+          _profileState.value =
+            _profileState.value.data?.let { profile ->
+              val revertedFollowersCount =
+                if (_isFollowing.value) {
+                  profile.user?.followersCount?.plus(1)
+                } else {
+                  profile.user?.followersCount?.minus(1)
+                }
+              profile.copy(user = profile.user?.copy(followersCount = revertedFollowersCount))
+            }?.let { Resource.Success(it) } ?: _profileState.value
+        }
       }
     }
   }
@@ -110,7 +121,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun getFollowers(userId: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.getFollowers(userId).collect { resource ->
         if (resource is Resource.Success) {
           _followers.value = resource

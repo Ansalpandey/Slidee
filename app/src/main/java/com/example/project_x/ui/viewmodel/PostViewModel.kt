@@ -18,6 +18,7 @@ import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.pagination.PostPagingSource
 import com.example.project_x.data.repository.PostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,7 +52,7 @@ constructor(
   }
 
   fun getPosts() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       Pager(
           config =
             PagingConfig(
@@ -72,7 +73,7 @@ constructor(
   }
 
   fun createPost(postRequest: PostRequest) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       _post.value = Resource.Loading() // Set loading state
       postRepository.createPost(postRequest).collect { resource ->
         _post.value = resource
@@ -90,7 +91,7 @@ constructor(
   }
 
   fun likePost(postId: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       postRepository.likePost(postId).collect { resource ->
         _likePost.value = resource
         if (resource is Resource.Success) {
@@ -101,7 +102,7 @@ constructor(
   }
 
   fun unLikePost(postId: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       postRepository.unLikePost(postId).collect { resource ->
         _likePost.value = resource
         if (resource is Resource.Success) {
@@ -112,7 +113,7 @@ constructor(
   }
 
   fun refreshPosts() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       // Clear existing posts
       _posts.value = PagingData.empty()
       _isPostsFetched.value = false // Reset the flag when refreshing posts

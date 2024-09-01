@@ -24,7 +24,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.project_x.ui.components.FollowerItem
 import com.example.project_x.ui.viewmodel.ProfileViewModel
-import com.example.project_x.ui.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +31,6 @@ fun FollowersScreen(
   modifier: Modifier = Modifier,
   userId: String,
   profileViewModel: ProfileViewModel,
-  searchViewModel: SearchViewModel,
   navController: NavController,
   followersCount: Int,
 ) {

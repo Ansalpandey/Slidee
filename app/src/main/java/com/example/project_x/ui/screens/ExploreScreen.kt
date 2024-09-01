@@ -169,7 +169,7 @@ fun ExploreScreen(
               searchHistory.forEach { historyUser ->
                 Row(
                   modifier =
-                    Modifier.fillMaxWidth().padding(start = 20.dp, bottom = 10.dp).clickable {
+                    Modifier.fillMaxWidth().padding(start = 10.dp, bottom = 10.dp).clickable {
                       onHistoryItemClick(historyUser)
                     },
                   verticalAlignment = Alignment.CenterVertically,
@@ -185,12 +185,12 @@ fun ExploreScreen(
                   Column {
                     Text(
                       text = "@${historyUser.username!!}",
-                      modifier = Modifier.padding(start = 16.dp),
+                      modifier = Modifier.padding(start = 10.dp),
                       fontSize = MaterialTheme.typography.titleSmall.fontSize,
                       color = Color.Gray,
                       fontWeight = FontWeight.Normal,
                     )
-                    Text(text = historyUser.name!!, modifier = Modifier.padding(start = 16.dp))
+                    Text(text = historyUser.name!!, modifier = Modifier.padding(start = 10.dp))
                   }
                 }
               }
@@ -233,12 +233,12 @@ fun ExploreScreen(
                       Column {
                         Text(
                           text = "@${user.username!!}",
-                          modifier = Modifier.padding(start = 16.dp),
+                          modifier = Modifier.padding(start = 10.dp),
                           fontSize = MaterialTheme.typography.titleSmall.fontSize,
                           color = Color.Gray,
                           fontWeight = FontWeight.Normal,
                         )
-                        Text(text = user.name!!, modifier = Modifier.padding(start = 16.dp))
+                        Text(text = user.name!!, modifier = Modifier.padding(start = 10.dp))
                       }
                     }
                   }

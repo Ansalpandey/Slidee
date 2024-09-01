@@ -7,20 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,7 +28,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
@@ -46,6 +40,8 @@ import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
+import com.example.project_x.utils.provideSizingValues
+import com.example.project_x.utils.rememberScreenSize
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -56,6 +52,8 @@ fun HomeScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
+  val screenSize = rememberScreenSize()
+  val sizingValues = provideSizingValues(screenSize)
   val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
@@ -73,7 +71,7 @@ fun HomeScreen(
           image = profileState.data?.user?.profileImage,
           name = profileState.data?.user?.name,
           navController = navController,
-          scrollBehavior = scrollBehavior, // Pass the scroll behavior
+          scrollBehavior = scrollBehavior,
         )
       }
     },
@@ -96,7 +94,7 @@ fun HomeScreen(
               .fillMaxSize()
               .pullRefresh(pullRefreshState)
               .padding(innerPadding)
-              .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
+              .nestedScroll(scrollBehavior.nestedScrollConnection),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
@@ -113,17 +111,18 @@ fun HomeScreen(
                   Image(
                     painter = painterResource(id = R.drawable.page_not_found),
                     contentDescription = "posts_not_found",
+                    modifier = Modifier.size(sizingValues.imageSize),
                   )
                   Text(
                     text = "Error 404! Posts not found",
                     fontWeight = FontWeight.Bold,
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontSize = sizingValues.titleTextSize,
                   )
 
                   OutlinedButton(onClick = { postViewModel.getPosts() }) {
                     Text(
                       text = "Reload Posts",
-                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                      fontSize = sizingValues.textSize,
                       fontWeight = FontWeight.Medium,
                     )
                   }
@@ -186,17 +185,18 @@ fun HomeScreen(
                       Image(
                         painter = painterResource(id = R.drawable.page_not_found),
                         contentDescription = "posts_not_found",
+                        modifier = Modifier.size(sizingValues.imageSize),
                       )
                       Text(
                         text = "Error 404! Posts not found",
                         fontWeight = FontWeight.Bold,
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        fontSize = sizingValues.titleTextSize,
                       )
 
                       OutlinedButton(onClick = { postViewModel.getPosts() }) {
                         Text(
                           text = "Reload Posts",
-                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                          fontSize = sizingValues.textSize,
                           fontWeight = FontWeight.Medium,
                         )
                       }
@@ -219,17 +219,18 @@ fun HomeScreen(
                       Image(
                         painter = painterResource(id = R.drawable.page_not_found),
                         contentDescription = "posts_not_found",
+                        modifier = Modifier.size(sizingValues.imageSize),
                       )
                       Text(
                         text = "Error 404! Posts not found",
                         fontWeight = FontWeight.Bold,
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                        fontSize = sizingValues.titleTextSize,
                       )
 
                       OutlinedButton(onClick = { postViewModel.getPosts() }) {
                         Text(
                           text = "Reload Posts",
-                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                          fontSize = sizingValues.textSize,
                           fontWeight = FontWeight.Medium,
                         )
                       }

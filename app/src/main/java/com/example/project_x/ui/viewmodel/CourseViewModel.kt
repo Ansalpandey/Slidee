@@ -6,6 +6,7 @@ import com.example.project_x.common.Resource
 import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.repository.CourseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,13 +22,13 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
   val userCourses: StateFlow<Resource<CourseResponse>> = _userCourses
 
   fun getCourses() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       courseRepository.getCourses(1, 10).collect { resource -> _courses.value = resource }
     }
   }
 
   fun getUserCourses() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       courseRepository.getUserCourses().collect { resource -> _userCourses.value = resource }
     }
   }

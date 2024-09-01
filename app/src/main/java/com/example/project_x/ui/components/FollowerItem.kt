@@ -8,15 +8,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -26,18 +25,16 @@ import com.example.project_x.data.model.Follower
 @Composable
 fun FollowerItem(modifier: Modifier = Modifier, follower: Follower) {
   Card(
-    modifier = Modifier.fillMaxWidth().padding(10.dp),
+    modifier = Modifier.fillMaxWidth().padding(start = 10.dp, top = 10.dp),
     shape = RectangleShape,
     colors = CardDefaults.cardColors(Color.Transparent),
   ) {
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = Modifier.fillMaxWidth().size(60.dp).padding(start = 10.dp, end = 10.dp),
-    ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+    Column(modifier = Modifier.fillMaxWidth().size(60.dp).padding(start = 10.dp)) {
+      Row {
         AsyncImage(
           model = follower.profileImage,
           contentDescription = "profile_image",
+          contentScale = ContentScale.Crop,
           modifier = Modifier.size(50.dp).clip(CircleShape),
         )
         Column {
@@ -49,9 +46,8 @@ fun FollowerItem(modifier: Modifier = Modifier, follower: Follower) {
               fontWeight = FontWeight.Bold,
             )
             Text(
-              text = "@${follower.username}",
+              text = " @${follower.username}",
               fontSize = MaterialTheme.typography.titleMedium.fontSize,
-              modifier = Modifier.padding(start = 10.dp),
               color = Color.Gray,
               fontWeight = FontWeight.SemiBold,
             )
@@ -69,5 +65,4 @@ fun FollowerItem(modifier: Modifier = Modifier, follower: Follower) {
       }
     }
   }
-  HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)
 }

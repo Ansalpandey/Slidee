@@ -8,12 +8,13 @@ import com.example.project_x.data.model.UserRequest
 import com.example.project_x.data.model.UserResponse
 import com.example.project_x.ui.stateholder.UserStateHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val userRepository: UserRepositoryImplementation) :
@@ -29,7 +30,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun registerUser(user: UserRequest) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.registerUser(user).collect { resource ->
         handleResource(resource)
         if (resource is Resource.Success) {
@@ -41,7 +42,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun loginUser(user: UserRequest) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.loginUser(user).collect { resource -> handleResource(resource) }
     }
   }
@@ -76,7 +77,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun logoutUser() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.logoutUser()
       _userStateHolder.value = UserStateHolder() // Reset the state holder after logout
     }

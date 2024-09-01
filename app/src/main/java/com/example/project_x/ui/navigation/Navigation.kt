@@ -297,7 +297,6 @@ fun NavigationSetup(
         userId = userId,
         modifier = modifier,
         profileViewModel = profileViewModel,
-        searchViewModel = searchViewModel,
         navController = navController,
         followersCount = followersCount,
       )

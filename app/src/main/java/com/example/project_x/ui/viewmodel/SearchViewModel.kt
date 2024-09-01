@@ -13,6 +13,7 @@ import com.example.project_x.preferences.UserPreferences
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +40,7 @@ constructor(
 
   init {
     // Load initial search history with error handling
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       try {
         val historyJson = dataStore.data.first()[UserPreferences.SEARCH_HISTORY] ?: "[]"
         val historyArray = gson.fromJson(historyJson, Array<SearchUserResponse>::class.java)
@@ -52,13 +53,13 @@ constructor(
   }
 
   fun searchUsers(query: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       userRepository.searchUsers(query).collect { resource -> _searchResults.value = resource }
     }
   }
 
   fun addUserToHistory(user: SearchUserResponse) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       val existingHistoryJson = dataStore.data.first()[UserPreferences.SEARCH_HISTORY] ?: "[]"
       val existingHistory =
         try {
@@ -82,7 +83,7 @@ constructor(
   }
 
   fun clearSearchHistory() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       // Clear search history in DataStore
       dataStore.edit { preferences -> preferences[UserPreferences.SEARCH_HISTORY] = "[]" }
 

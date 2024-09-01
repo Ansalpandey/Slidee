@@ -3,6 +3,7 @@ package com.example.project_x.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,7 @@ class SplashViewModel @Inject constructor() : ViewModel() {
   val isSplashShow = splashShowFlow.asStateFlow()
 
   init {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       delay(2000)
       splashShowFlow.value = false
     }

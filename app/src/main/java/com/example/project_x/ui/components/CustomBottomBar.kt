@@ -3,6 +3,7 @@ package com.example.project_x.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Chat
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,11 +76,10 @@ fun CustomBottomBar(modifier: Modifier = Modifier, navController: NavController)
         selectedIcon = Icons.Filled.ChatBubble,
         route = Route.ChatScreen,
       ),
-
     )
   }
 
-  NavigationBar() {
+  NavigationBar(containerColor = Color.Transparent) {
     barItems.forEachIndexed { index, barItem ->
       val selected =
         currentDestination?.hierarchy?.any { it.route == barItem.route::class.qualifiedName } ==
@@ -100,6 +101,15 @@ fun CustomBottomBar(modifier: Modifier = Modifier, navController: NavController)
 
       NavigationBarItem(
         selected = selected,
+        interactionSource = MutableInteractionSource(),
+        colors =
+          NavigationBarItemDefaults.colors(
+            indicatorColor = Color.Transparent,
+            selectedIconColor = Color.Transparent,
+            unselectedIconColor = Color.Transparent,
+            selectedTextColor = Color.Transparent,
+            unselectedTextColor = Color.Transparent,
+          ),
         onClick = {
           selectedItem = index
           navController.navigate(barItem.route) {
@@ -119,7 +129,7 @@ fun CustomBottomBar(modifier: Modifier = Modifier, navController: NavController)
         label = {
           Text(
             text = barItem.title,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelSmall,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             color = animatedIconColor,
           )

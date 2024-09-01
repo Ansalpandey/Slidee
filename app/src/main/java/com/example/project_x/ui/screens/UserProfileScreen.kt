@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,16 +14,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedIconToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -59,7 +64,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun UserProfileScreen(
   modifier: Modifier = Modifier,
@@ -75,8 +80,14 @@ fun UserProfileScreen(
   val tabTitles = listOf("Posts", "Courses")
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
+  val pullRefreshState =
+    rememberPullRefreshState(
+      refreshing = false,
+      onRefresh = { profileViewModel.fetchUserProfileById(userId) },
+    )
+  LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
-  LaunchedEffect(refreshTrigger) { profileViewModel.checkIfFollowing(userId) }
+  LaunchedEffect(userId) { profileViewModel.checkIfFollowing(userId) }
 
   LaunchedEffect(key1 = userId) { profileViewModel.fetchUserProfileById(userId) }
 
@@ -111,7 +122,9 @@ fun UserProfileScreen(
           )
         },
       ) { paddingValues ->
-        LazyColumn(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+        LazyColumn(
+          modifier = Modifier.padding(paddingValues).fillMaxSize().pullRefresh(pullRefreshState)
+        ) {
           item {
             Row(
               modifier = Modifier.fillMaxWidth(),
@@ -157,7 +170,18 @@ fun UserProfileScreen(
                   fontWeight = FontWeight.ExtraBold,
                 )
               }
-              Column(horizontalAlignment = Alignment.CenterHorizontally) {
+              Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier =
+                  Modifier.clickable {
+                    navController.navigate(
+                      Route.FollowersScreen(
+                        userId = state.data?.user?._id!!,
+                        followersCount = state.data.user.followersCount!!,
+                      )
+                    )
+                  },
+              ) {
                 Text(
                   text = "${state.data?.user?.followersCount ?: 0}",
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
@@ -216,7 +240,7 @@ fun UserProfileScreen(
               modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp, end = 30.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              OutlinedIconToggleButton(
+              FilledIconToggleButton(
                 modifier = Modifier.weight(1f),
                 checked = isFollowing,
                 onCheckedChange = { profileViewModel.toggleFollowUser(userId) },
@@ -327,6 +351,12 @@ fun UserProfileScreen(
               }
             }
           }
+        }
+        Column(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          PullRefreshIndicator(refreshing = true, state = pullRefreshState)
         }
       }
     }

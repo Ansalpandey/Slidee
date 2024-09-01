@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -133,7 +134,7 @@ fun PostItem(
             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
             fontWeight = FontWeight.Light,
           )
-
+          Spacer(modifier = Modifier.height(10.dp))
           when {
             post.imageUrl?.isNotEmpty()!! -> {
               Box(modifier = Modifier.fillMaxWidth()) {
@@ -143,10 +144,7 @@ fun PostItem(
                   modifier = Modifier.height(300.dp).padding(top = 5.dp, bottom = 10.dp),
                 ) { page ->
                   Box(
-                    modifier =
-                      Modifier.padding(horizontal = 4.dp) // Gap between images
-                        .fillMaxWidth()
-                        .height(300.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp).fillMaxWidth().height(300.dp)
                   ) {
                     AsyncImage(
                       model = post.imageUrl[page],
@@ -189,7 +187,7 @@ fun PostItem(
             post.videoUrl?.isNotEmpty()!! -> {
               PostVideoPlayer(
                 videoUrl = post.videoUrl,
-                modifier = Modifier.fillMaxWidth().height(300.dp)
+                modifier = Modifier.fillMaxWidth().height(300.dp),
               )
             }
 
@@ -202,36 +200,36 @@ fun PostItem(
                 ) { page ->
                   Box(
                     modifier =
-                    Modifier.padding(horizontal = 4.dp) // Gap between images
-                      .fillMaxWidth()
-                      .height(300.dp)
+                      Modifier.padding(horizontal = 4.dp) // Gap between images
+                        .fillMaxWidth()
+                        .height(300.dp)
                   ) {
                     AsyncImage(
                       model = post.imageUrl[page],
                       contentDescription = "post_image",
                       contentScale = ContentScale.Crop,
                       modifier =
-                      Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable {
-                        navController.navigate(Route.ImageScreen(post.imageUrl, page))
-                      },
+                        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).clickable {
+                          navController.navigate(Route.ImageScreen(post.imageUrl, page))
+                        },
                     )
                     Box(
                       modifier =
-                      Modifier.fillMaxWidth()
-                        .height(60.dp)
-                        .align(Alignment.BottomCenter)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                          brush =
-                          Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
+                        Modifier.fillMaxWidth()
+                          .height(60.dp)
+                          .align(Alignment.BottomCenter)
+                          .clip(RoundedCornerShape(12.dp))
+                          .background(
+                            brush =
+                              Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
+                              )
                           )
-                        )
                     )
                   }
                   PostVideoPlayer(
                     videoUrl = post.videoUrl,
-                    modifier = Modifier.fillMaxWidth().height(300.dp)
+                    modifier = Modifier.fillMaxWidth().height(300.dp),
                   )
                 }
               }
