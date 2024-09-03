@@ -8,6 +8,7 @@ import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.FollowerResponse
+import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
@@ -160,5 +161,9 @@ constructor(
 
   override suspend fun getFollowers(id: String): Flow<Resource<FollowerResponse>> = flow {
     userDataSource.getFollowers(id).collect { resource -> emit(resource) }
+  }
+
+  override suspend fun getUserPosts(page: Int, pageSize: Int): PostResponse {
+    return userDataSource.getUserPosts(page, pageSize)
   }
 }

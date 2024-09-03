@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -16,11 +15,13 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +29,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -40,8 +40,6 @@ import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
-import com.example.project_x.utils.provideSizingValues
-import com.example.project_x.utils.rememberScreenSize
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -52,17 +50,14 @@ fun HomeScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val screenSize = rememberScreenSize()
-  val sizingValues = provideSizingValues(screenSize)
-  val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
-  val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
+  val userState by authViewModel.userStateHolder.collectAsState()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   val listState = rememberLazyListState()
   val pullRefreshState =
     rememberPullRefreshState(refreshing = false, onRefresh = { postViewModel.refreshPosts() })
   // Create scroll behavior
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
@@ -71,7 +66,7 @@ fun HomeScreen(
           image = profileState.data?.user?.profileImage,
           name = profileState.data?.user?.name,
           navController = navController,
-          scrollBehavior = scrollBehavior,
+          scrollBehavior = scrollBehavior, // Pass the scroll behavior
         )
       }
     },
@@ -94,7 +89,7 @@ fun HomeScreen(
               .fillMaxSize()
               .pullRefresh(pullRefreshState)
               .padding(innerPadding)
-              .nestedScroll(scrollBehavior.nestedScrollConnection),
+              .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
@@ -111,18 +106,16 @@ fun HomeScreen(
                   Image(
                     painter = painterResource(id = R.drawable.page_not_found),
                     contentDescription = "posts_not_found",
-                    modifier = Modifier.size(sizingValues.imageSize),
                   )
                   Text(
                     text = "Error 404! Posts not found",
                     fontWeight = FontWeight.Bold,
-                    fontSize = sizingValues.titleTextSize,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
                   )
-
                   OutlinedButton(onClick = { postViewModel.getPosts() }) {
                     Text(
                       text = "Reload Posts",
-                      fontSize = sizingValues.textSize,
+                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
                       fontWeight = FontWeight.Medium,
                     )
                   }
@@ -162,15 +155,18 @@ fun HomeScreen(
                   }
                 }
               }
-
               loadState.append is LoadState.Loading -> {
                 item {
                   Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    Column(
+                      modifier = Modifier.fillMaxWidth(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      PullRefreshIndicator(refreshing = true, state = pullRefreshState)
+                    }
                   }
                 }
               }
-
               loadState.append is LoadState.Error -> {
                 item {
                   Box(
@@ -185,18 +181,16 @@ fun HomeScreen(
                       Image(
                         painter = painterResource(id = R.drawable.page_not_found),
                         contentDescription = "posts_not_found",
-                        modifier = Modifier.size(sizingValues.imageSize),
                       )
                       Text(
                         text = "Error 404! Posts not found",
                         fontWeight = FontWeight.Bold,
-                        fontSize = sizingValues.titleTextSize,
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
                       )
-
                       OutlinedButton(onClick = { postViewModel.getPosts() }) {
                         Text(
                           text = "Reload Posts",
-                          fontSize = sizingValues.textSize,
+                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
                           fontWeight = FontWeight.Medium,
                         )
                       }
@@ -204,7 +198,6 @@ fun HomeScreen(
                   }
                 }
               }
-
               loadState.refresh is LoadState.Error -> {
                 item {
                   Box(
@@ -219,18 +212,16 @@ fun HomeScreen(
                       Image(
                         painter = painterResource(id = R.drawable.page_not_found),
                         contentDescription = "posts_not_found",
-                        modifier = Modifier.size(sizingValues.imageSize),
                       )
                       Text(
                         text = "Error 404! Posts not found",
                         fontWeight = FontWeight.Bold,
-                        fontSize = sizingValues.titleTextSize,
+                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
                       )
-
                       OutlinedButton(onClick = { postViewModel.getPosts() }) {
                         Text(
                           text = "Reload Posts",
-                          fontSize = sizingValues.textSize,
+                          fontSize = MaterialTheme.typography.labelLarge.fontSize,
                           fontWeight = FontWeight.Medium,
                         )
                       }

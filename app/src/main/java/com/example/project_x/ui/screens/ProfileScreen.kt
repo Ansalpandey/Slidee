@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
@@ -85,6 +86,8 @@ fun ProfileScreen(
   val pullRefreshState =
     rememberPullRefreshState(refreshing = false, onRefresh = { profileViewModel.refreshProfile() })
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
+
+  val userPosts = profileViewModel.userPosts.collectAsLazyPagingItems()
 
   when (val state = profileState) {
     is Resource.Loading -> {
