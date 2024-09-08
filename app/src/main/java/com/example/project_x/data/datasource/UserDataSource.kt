@@ -7,7 +7,6 @@ import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.FollowerResponse
-import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.model.ProfileResponse
 import com.example.project_x.data.model.SearchResponse
 import com.example.project_x.data.model.TokenResponse
@@ -183,9 +182,5 @@ constructor(
     } else {
       emit(Resource.Error("Search failed"))
     }
-  }
-
-  suspend fun getUserPosts(page: Int, pageSize: Int): PostResponse {
-    return authenticatedApiService.getPosts(page, pageSize)
   }
 }

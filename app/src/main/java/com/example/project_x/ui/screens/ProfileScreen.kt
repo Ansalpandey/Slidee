@@ -54,12 +54,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
-import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -87,8 +85,6 @@ fun ProfileScreen(
     rememberPullRefreshState(refreshing = false, onRefresh = { profileViewModel.refreshProfile() })
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
-  val userPosts = profileViewModel.userPosts.collectAsLazyPagingItems()
-
   when (val state = profileState) {
     is Resource.Loading -> {
       Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -106,9 +102,7 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
               ) {
-                IconButton(
-                  onClick = { navController.popBackStack().also { postViewModel.refreshPosts() } }
-                ) {
+                IconButton(onClick = { navController.popBackStack() }) {
                   Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "back")
                 }
                 Text(
@@ -149,7 +143,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Center,
               ) {
                 Text(
-                  text = "${state.data?.user?.posts?.size ?: 0}",
+                  text = "${state.data?.postCount ?: 0}",
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.primary,
@@ -316,34 +310,35 @@ fun ProfileScreen(
             ) { page ->
               when (page) {
                 0 -> {
-                  val posts = state.data?.user?.posts
-                  if (posts.isNullOrEmpty()) {
-                    Icon(
-                      painter = painterResource(id = R.drawable.post_stack),
-                      contentDescription = "posts_not_found",
-                      tint = MaterialTheme.colorScheme.primary,
-                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
-                    )
-                  } else {
-                    LazyColumn(
-                      modifier = Modifier.fillMaxSize(),
-                      horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                      items(posts) { post ->
-                        PostItem(
-                          post = post!!,
-                          navController = navController,
-                          likePost = { postViewModel.likePost(post._id!!) },
-                          unlikePost = { postViewModel.unLikePost(post._id!!) },
-                          profileViewModel = profileViewModel,
-                          postViewModel = postViewModel,
-                          onClick = {
-                            /*TODO*/
-                          },
-                        )
-                      }
-                    }
-                  }
+                  //                  val posts = state.data?.user?.posts
+                  //                  if (posts.isNullOrEmpty()) {
+                  //                    Icon(
+                  //                      painter = painterResource(id = R.drawable.post_stack),
+                  //                      contentDescription = "posts_not_found",
+                  //                      tint = MaterialTheme.colorScheme.primary,
+                  //                      modifier =
+                  // Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
+                  //                    )
+                  //                  } else {
+                  //                    LazyColumn(
+                  //                      modifier = Modifier.fillMaxSize(),
+                  //                      horizontalAlignment = Alignment.CenterHorizontally,
+                  //                    ) {
+                  //                      items(posts) { post ->
+                  //                        PostItem(
+                  //                          post = post!!,
+                  //                          navController = navController,
+                  //                          likePost = { postViewModel.likePost(post._id!!) },
+                  //                          unlikePost = { postViewModel.unLikePost(post._id!!) },
+                  //                          profileViewModel = profileViewModel,
+                  //                          postViewModel = postViewModel,
+                  //                          onClick = {
+                  //                            /*TODO*/
+                  //                          },
+                  //                        )
+                  //                      }
+                  //                    }
+                  //                  }
                 }
 
                 1 -> {

@@ -1,6 +1,5 @@
 package com.example.project_x.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -23,19 +21,15 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,7 +83,10 @@ fun LoginScreen(
   }
 
   Column(
-    modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)
+      .verticalScroll(rememberScrollState()),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
@@ -185,56 +182,20 @@ fun LoginScreen(
               username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
               password = password,
             )
-          authViewModel.loginUser(user)
-          navController.navigate(Route.HomeScreen)
+          authViewModel.loginUser(user).also {
+            navController.navigate(Route.HomeScreen)
+          }
         }
       },
-      modifier = Modifier.fillMaxWidth().height(50.dp),
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp),
     ) {
-      Text("Sign In", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 16.sp)
+      Text("Sign In", fontWeight = FontWeight.Bold, fontSize = 16.sp)
     }
     Spacer(modifier = Modifier.height(16.dp))
     Text(text = "Forgot Password?", color = Color.LightGray)
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-      Spacer(modifier = Modifier.height(20.dp))
 
-      Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-        HorizontalDivider(modifier = Modifier.weight(1f), thickness = 2.dp)
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = "OR", fontSize = 16.sp)
-        Spacer(modifier = Modifier.width(4.dp))
-        HorizontalDivider(modifier = Modifier.weight(1f), thickness = 2.dp)
-      }
-    }
-    Spacer(modifier = Modifier.height(20.dp))
-    OutlinedButton(
-      onClick = {
-        /*TODO*/
-      },
-      shape = RoundedCornerShape(10.dp),
-      border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-      colors =
-        ButtonDefaults.outlinedButtonColors(
-          containerColor = Color.Transparent, // Keeps the inside transparent
-          contentColor = MaterialTheme.colorScheme.primary, // Sets the text color
-        ),
-      modifier = Modifier.fillMaxWidth().height(50.dp),
-    ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Icon(
-          painter = painterResource(id = R.drawable.google_icon),
-          contentDescription = "google_icon",
-          modifier = Modifier.size(32.dp),
-          tint = Color.Unspecified,
-        )
-        Spacer(modifier = Modifier.width(10.dp))
-        Text(text = "Sign In with Google", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-      }
-    }
     Spacer(modifier = Modifier.height(30.dp))
     Row(
       verticalAlignment = Alignment.CenterVertically,

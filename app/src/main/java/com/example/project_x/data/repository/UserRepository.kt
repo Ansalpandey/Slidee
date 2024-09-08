@@ -37,6 +37,4 @@ interface UserRepository {
   suspend fun searchUsers(query: String): Flow<Resource<SearchResponse>>
 
   suspend fun getFollowers(id: String): Flow<Resource<FollowerResponse>>
-
-  suspend fun getUserPosts(page: Int, pageSize: Int) : PostResponse
 }

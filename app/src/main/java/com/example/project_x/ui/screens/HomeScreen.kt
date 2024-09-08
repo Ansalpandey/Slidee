@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,6 +30,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -50,14 +52,19 @@ fun HomeScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val userState by authViewModel.userStateHolder.collectAsState()
-  val profileState by profileViewModel.loggedInUserProfileState.collectAsState()
+  val userState by authViewModel.userStateHolder.collectAsStateWithLifecycle()
+  val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val posts = postViewModel.posts.collectAsLazyPagingItems()
   val listState = rememberLazyListState()
   val pullRefreshState =
     rememberPullRefreshState(refreshing = false, onRefresh = { postViewModel.refreshPosts() })
   // Create scroll behavior
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+  LaunchedEffect(key1 = userState) {
+    profileViewModel.fetchUserProfile()
+  }
+
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
@@ -85,17 +92,19 @@ fun HomeScreen(
         LazyColumn(
           state = listState,
           modifier =
-            modifier
-              .fillMaxSize()
-              .pullRefresh(pullRefreshState)
-              .padding(innerPadding)
-              .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
+          modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+            .padding(innerPadding)
+            .nestedScroll(scrollBehavior.nestedScrollConnection), // Attach nested scroll
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           if (posts.itemCount == 0 && posts.loadState.refresh is LoadState.NotLoading) {
             item {
               Box(
-                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                modifier = Modifier
+                  .fillParentMaxSize()
+                  .padding(30.dp),
                 contentAlignment = Alignment.Center,
               ) {
                 Column(
@@ -170,7 +179,9 @@ fun HomeScreen(
               loadState.append is LoadState.Error -> {
                 item {
                   Box(
-                    modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                    modifier = Modifier
+                      .fillParentMaxSize()
+                      .padding(30.dp),
                     contentAlignment = Alignment.Center,
                   ) {
                     Column(
@@ -201,7 +212,9 @@ fun HomeScreen(
               loadState.refresh is LoadState.Error -> {
                 item {
                   Box(
-                    modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                    modifier = Modifier
+                      .fillParentMaxSize()
+                      .padding(30.dp),
                     contentAlignment = Alignment.Center,
                   ) {
                     Column(

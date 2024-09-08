@@ -2,39 +2,26 @@ package com.example.project_x.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.example.project_x.common.Resource
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.FollowerResponse
-import com.example.project_x.data.model.Post
 import com.example.project_x.data.model.ProfileResponse
-import com.example.project_x.data.pagination.UserPostsPagingSource
 import com.example.project_x.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel
-@Inject
-constructor(
-  private val userRepository: UserRepository,
-  private val userPostsPagingSource: UserPostsPagingSource,
-) : ViewModel() {
+class ProfileViewModel @Inject constructor(private val userRepository: UserRepository) :
+  ViewModel() {
 
   private val _profileState = MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
   val userProfileState: StateFlow<Resource<ProfileResponse>> = _profileState.asStateFlow()
-
-  private val _userPosts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
-  val userPosts: StateFlow<PagingData<Post>> = _userPosts.asStateFlow()
 
   private val _loggedInUserProfileState =
     MutableStateFlow<Resource<ProfileResponse>>(Resource.Loading())
@@ -53,10 +40,9 @@ constructor(
 
   init {
     fetchUserProfile()
-    getUserPosts()
   }
 
-  private fun fetchUserProfile() {
+  fun fetchUserProfile() {
     if (!isProfileFetched) {
       viewModelScope.launch {
         userRepository.getUserProfile().collect { resource ->
@@ -145,24 +131,6 @@ constructor(
           _followers.value = resource
         }
       }
-    }
-  }
-
-  private fun getUserPosts() {
-    viewModelScope.launch {
-      Pager(
-          config =
-            PagingConfig(
-              pageSize = 30, // Larger page size to reduce the number of API calls
-              enablePlaceholders = false,
-              initialLoadSize = 30, // Load a larger initial page size
-            )
-        ) {
-          userPostsPagingSource
-        }
-        .flow
-        .cachedIn(viewModelScope)
-        .collect { _userPosts.value = it }
     }
   }
 }

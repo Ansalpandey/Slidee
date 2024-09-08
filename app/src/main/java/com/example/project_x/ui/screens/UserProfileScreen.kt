@@ -55,7 +55,6 @@ import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
-import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -144,7 +143,7 @@ fun UserProfileScreen(
                 verticalArrangement = Arrangement.Center,
               ) {
                 Text(
-                  text = "${state.data?.user?.posts?.size ?: 0}",
+                  text = "${state.data?.postCount ?: 0}",
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.primary,
@@ -300,33 +299,35 @@ fun UserProfileScreen(
               ) { page ->
                 when (page) {
                   0 -> {
-                    val posts = state.data?.user?.posts
-                    if (posts.isNullOrEmpty()) {
-                      Icon(
-                        painter = painterResource(id = R.drawable.post_stack),
-                        contentDescription = "posts_not_found",
-                        modifier = Modifier.size(200.dp),
-                      )
-                    } else {
-                      LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        items(posts) { post ->
-                          PostItem(
-                            post = post!!,
-                            navController = navController,
-                            likePost = { postViewModel.likePost(post._id!!) },
-                            unlikePost = { postViewModel.unLikePost(post._id!!) },
-                            profileViewModel = profileViewModel,
-                            postViewModel = postViewModel,
-                            onClick = {
-                              navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
-                            },
-                          )
-                        }
-                      }
-                    }
+                    //                    val posts = state.data?.user?.posts
+                    //                    if (posts.isNullOrEmpty()) {
+                    //                      Icon(
+                    //                        painter = painterResource(id = R.drawable.post_stack),
+                    //                        contentDescription = "posts_not_found",
+                    //                        modifier = Modifier.size(200.dp),
+                    //                      )
+                    //                    } else {
+                    //                      LazyColumn(
+                    //                        modifier = Modifier.fillMaxSize(),
+                    //                        horizontalAlignment = Alignment.CenterHorizontally,
+                    //                      ) {
+                    //                        items(posts) { post ->
+                    //                          PostItem(
+                    //                            post = post!!,
+                    //                            navController = navController,
+                    //                            likePost = { postViewModel.likePost(post._id!!) },
+                    //                            unlikePost = {
+                    // postViewModel.unLikePost(post._id!!) },
+                    //                            profileViewModel = profileViewModel,
+                    //                            postViewModel = postViewModel,
+                    //                            onClick = {
+                    //
+                    // navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
+                    //                            },
+                    //                          )
+                    //                        }
+                    //                      }
+                    //                    }
                   }
                   1 -> {
                     val courses = state.data?.user?.courses

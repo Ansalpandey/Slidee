@@ -22,8 +22,6 @@ interface AuthenticatedApiService {
 
   @GET("users/profile") suspend fun getUserProfile(): Response<ProfileResponse>
 
-  @GET("users/posts") suspend fun getUserPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int) : PostResponse
-
   @GET("users/profile/{id}")
   suspend fun getUserProfileById(@Path("id") id: String): Response<ProfileResponse>
 

@@ -15,8 +15,6 @@ data class UserX(
   val following: List<FollowingResponse?>?,
   val followingCount: Int?, // 0
   val name: String?, // Rohit
-  val password: String?, // $2b$10$m2SjycPrjrKTnAj18U1XqeX3YAIo5yRRt8z9PC3dXHcQyLEQyU72a
-  val posts: List<Post?>?,
   val profileImage: String?,
   val updatedAt: String?, // 2024-07-19T13:28:41.524Z
   val username: String?, // rohit
