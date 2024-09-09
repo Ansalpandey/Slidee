@@ -59,4 +59,8 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
       emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
     }
   }
+
+  suspend fun getUserPostsById(id: String, page: Int, pageSize: Int): PostResponse {
+    return authenticatedApiService.getUserPostsById(id, page, pageSize)
+  }
 }

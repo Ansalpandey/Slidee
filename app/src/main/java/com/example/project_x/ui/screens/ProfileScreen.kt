@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -54,10 +56,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
+import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -75,6 +80,12 @@ fun ProfileScreen(
   navController: NavController,
 ) {
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
+  val userPosts = postViewModel.userPosts.collectAsLazyPagingItems()
+  LaunchedEffect(key1 = userPosts) {
+    if (userPosts.itemCount == 0) {
+      postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
+    }
+  }
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
   val tabIcons =
@@ -82,7 +93,13 @@ fun ProfileScreen(
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
   val pullRefreshState =
-    rememberPullRefreshState(refreshing = false, onRefresh = { profileViewModel.refreshProfile() })
+    rememberPullRefreshState(
+      refreshing = false,
+      onRefresh = {
+        profileViewModel.refreshProfile()
+        postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
+      },
+    )
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
 
   when (val state = profileState) {
@@ -310,35 +327,126 @@ fun ProfileScreen(
             ) { page ->
               when (page) {
                 0 -> {
-                  //                  val posts = state.data?.user?.posts
-                  //                  if (posts.isNullOrEmpty()) {
-                  //                    Icon(
-                  //                      painter = painterResource(id = R.drawable.post_stack),
-                  //                      contentDescription = "posts_not_found",
-                  //                      tint = MaterialTheme.colorScheme.primary,
-                  //                      modifier =
-                  // Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
-                  //                    )
-                  //                  } else {
-                  //                    LazyColumn(
-                  //                      modifier = Modifier.fillMaxSize(),
-                  //                      horizontalAlignment = Alignment.CenterHorizontally,
-                  //                    ) {
-                  //                      items(posts) { post ->
-                  //                        PostItem(
-                  //                          post = post!!,
-                  //                          navController = navController,
-                  //                          likePost = { postViewModel.likePost(post._id!!) },
-                  //                          unlikePost = { postViewModel.unLikePost(post._id!!) },
-                  //                          profileViewModel = profileViewModel,
-                  //                          postViewModel = postViewModel,
-                  //                          onClick = {
-                  //                            /*TODO*/
-                  //                          },
-                  //                        )
-                  //                      }
-                  //                    }
-                  //                  }
+                  if (userPosts.itemCount == 0) {
+                    Icon(
+                      painter = painterResource(id = R.drawable.post_stack),
+                      contentDescription = "posts_not_found",
+                      tint = MaterialTheme.colorScheme.primary,
+                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
+                    )
+                  } else {
+                    LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      items(userPosts.itemCount) { index ->
+                        userPosts[index].let { post ->
+                          PostItem(
+                            post = post,
+                            navController = navController,
+                            likePost = { postViewModel.likePost(post?._id!!) },
+                            unlikePost = { postViewModel.unLikePost(post?._id!!) },
+                            profileViewModel = profileViewModel,
+                            postViewModel = postViewModel,
+                            onClick = {
+                              /*TODO*/
+                            },
+                          )
+                        }
+                      }
+                      userPosts.apply {
+                        when {
+                          loadState.refresh is LoadState.Loading -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                CircularProgressIndicator()
+                              }
+                            }
+                          }
+                          loadState.append is LoadState.Loading -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  modifier = Modifier.fillMaxWidth(),
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                  PullRefreshIndicator(refreshing = true, state = pullRefreshState)
+                                }
+                              }
+                            }
+                          }
+                          loadState.append is LoadState.Error -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                  modifier = Modifier.fillMaxSize(),
+                                  verticalArrangement = Arrangement.SpaceEvenly,
+                                ) {
+                                  Image(
+                                    painter = painterResource(id = R.drawable.page_not_found),
+                                    contentDescription = "posts_not_found",
+                                  )
+                                  Text(
+                                    text = "Error 404! Posts not found",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                  )
+                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                                    Text(
+                                      text = "Reload Posts",
+                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                                      fontWeight = FontWeight.Medium,
+                                    )
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          loadState.refresh is LoadState.Error -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                  modifier = Modifier.fillMaxSize(),
+                                  verticalArrangement = Arrangement.SpaceEvenly,
+                                ) {
+                                  Image(
+                                    painter = painterResource(id = R.drawable.page_not_found),
+                                    contentDescription = "posts_not_found",
+                                  )
+                                  Text(
+                                    text = "Error 404! Posts not found",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                  )
+                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                                    Text(
+                                      text = "Reload Posts",
+                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                                      fontWeight = FontWeight.Medium,
+                                    )
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
 
                 1 -> {

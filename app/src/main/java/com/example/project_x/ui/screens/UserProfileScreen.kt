@@ -1,5 +1,6 @@
 package com.example.project_x.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -42,6 +44,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -51,10 +54,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.common.Resource
 import com.example.project_x.ui.components.CourseItem
+import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -73,22 +79,23 @@ fun UserProfileScreen(
   navController: NavController,
 ) {
   val profileState by profileViewModel.userProfileState.collectAsStateWithLifecycle()
+  val userPosts = postViewModel.userPosts.collectAsLazyPagingItems()
   val isFollowing by profileViewModel.isFollowing.collectAsStateWithLifecycle()
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
-  val tabTitles = listOf("Posts", "Courses")
+  val tabIcons =
+    listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
   val pullRefreshState =
     rememberPullRefreshState(
       refreshing = false,
-      onRefresh = { profileViewModel.fetchUserProfileById(userId) },
+      onRefresh = {
+        profileViewModel.refreshProfile()
+        postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
+      },
     )
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
-
-  LaunchedEffect(userId) { profileViewModel.checkIfFollowing(userId) }
-
-  LaunchedEffect(key1 = userId) { profileViewModel.fetchUserProfileById(userId) }
 
   when (val state = profileState) {
     is Resource.Loading -> {
@@ -276,9 +283,16 @@ fun UserProfileScreen(
                 selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.fillMaxWidth(),
               ) {
-                tabTitles.forEachIndexed { index, title ->
+                tabIcons.forEachIndexed { index, icon ->
                   Tab(
-                    text = { Text(title) },
+                    icon = {
+                      Icon(
+                        painter = icon,
+                        contentDescription = "icons",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp),
+                      )
+                    },
                     selected = pagerState.currentPage == index,
                     onClick = {
                       coroutineScope.launch {
@@ -291,60 +305,153 @@ fun UserProfileScreen(
                   )
                 }
               }
+            }
 
-              HorizontalPager(
-                count = tabTitles.size,
-                state = pagerState,
-                modifier = Modifier.fillMaxWidth().height(700.dp), // Set a fixed height
-              ) { page ->
-                when (page) {
-                  0 -> {
-                    //                    val posts = state.data?.user?.posts
-                    //                    if (posts.isNullOrEmpty()) {
-                    //                      Icon(
-                    //                        painter = painterResource(id = R.drawable.post_stack),
-                    //                        contentDescription = "posts_not_found",
-                    //                        modifier = Modifier.size(200.dp),
-                    //                      )
-                    //                    } else {
-                    //                      LazyColumn(
-                    //                        modifier = Modifier.fillMaxSize(),
-                    //                        horizontalAlignment = Alignment.CenterHorizontally,
-                    //                      ) {
-                    //                        items(posts) { post ->
-                    //                          PostItem(
-                    //                            post = post!!,
-                    //                            navController = navController,
-                    //                            likePost = { postViewModel.likePost(post._id!!) },
-                    //                            unlikePost = {
-                    // postViewModel.unLikePost(post._id!!) },
-                    //                            profileViewModel = profileViewModel,
-                    //                            postViewModel = postViewModel,
-                    //                            onClick = {
-                    //
-                    // navController.navigate(Route.UserProfileScreen(post.createdBy?._id!!))
-                    //                            },
-                    //                          )
-                    //                        }
-                    //                      }
-                    //                    }
-                  }
-                  1 -> {
-                    val courses = state.data?.user?.courses
-                    if (courses.isNullOrEmpty()) {
-                      Icon(
-                        painter = painterResource(id = R.drawable.courses),
-                        contentDescription = "courses_not_found",
-                        modifier = Modifier.size(200.dp),
-                      )
-                    } else {
-                      LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                      ) {
-                        items(courses) { course ->
-                          CourseItem(course = course!!, modifier = Modifier.fillMaxWidth())
+            HorizontalPager(
+              count = tabIcons.size,
+              state = pagerState,
+              modifier = Modifier.fillMaxWidth().height(700.dp), // Set a fixed height
+            ) { page ->
+              when (page) {
+                0 -> {
+                  if (userPosts.itemCount == 0) {
+                    Icon(
+                      painter = painterResource(id = R.drawable.post_stack),
+                      contentDescription = "posts_not_found",
+                      tint = MaterialTheme.colorScheme.primary,
+                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
+                    )
+                  } else {
+                    LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      items(userPosts.itemCount) { index ->
+                        userPosts[index].let { post ->
+                          PostItem(
+                            post = post,
+                            navController = navController,
+                            likePost = { postViewModel.likePost(post?._id!!) },
+                            unlikePost = { postViewModel.unLikePost(post?._id!!) },
+                            profileViewModel = profileViewModel,
+                            postViewModel = postViewModel,
+                            onClick = {
+                              /*TODO*/
+                            },
+                          )
                         }
+                      }
+                      userPosts.apply {
+                        when {
+                          loadState.refresh is LoadState.Loading -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                CircularProgressIndicator()
+                              }
+                            }
+                          }
+                          loadState.append is LoadState.Loading -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  modifier = Modifier.fillMaxWidth(),
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                  PullRefreshIndicator(refreshing = true, state = pullRefreshState)
+                                }
+                              }
+                            }
+                          }
+                          loadState.append is LoadState.Error -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                  modifier = Modifier.fillMaxSize(),
+                                  verticalArrangement = Arrangement.SpaceEvenly,
+                                ) {
+                                  Image(
+                                    painter = painterResource(id = R.drawable.page_not_found),
+                                    contentDescription = "posts_not_found",
+                                  )
+                                  Text(
+                                    text = "Error 404! Posts not found",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                  )
+                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                                    Text(
+                                      text = "Reload Posts",
+                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                                      fontWeight = FontWeight.Medium,
+                                    )
+                                  }
+                                }
+                              }
+                            }
+                          }
+                          loadState.refresh is LoadState.Error -> {
+                            item {
+                              Box(
+                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
+                                contentAlignment = Alignment.Center,
+                              ) {
+                                Column(
+                                  horizontalAlignment = Alignment.CenterHorizontally,
+                                  modifier = Modifier.fillMaxSize(),
+                                  verticalArrangement = Arrangement.SpaceEvenly,
+                                ) {
+                                  Image(
+                                    painter = painterResource(id = R.drawable.page_not_found),
+                                    contentDescription = "posts_not_found",
+                                  )
+                                  Text(
+                                    text = "Error 404! Posts not found",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                  )
+                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
+                                    Text(
+                                      text = "Reload Posts",
+                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                                      fontWeight = FontWeight.Medium,
+                                    )
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                1 -> {
+                  val courses = state.data?.user?.courses
+                  if (courses.isNullOrEmpty()) {
+                    Icon(
+                      painter = painterResource(id = R.drawable.courses),
+                      contentDescription = "courses_not_found",
+                      tint = MaterialTheme.colorScheme.primary,
+                      modifier = Modifier.fillMaxSize().padding(60.dp).alpha(0.6f),
+                    )
+                  } else {
+                    LazyColumn(
+                      modifier = Modifier.fillMaxSize(),
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                      items(courses) { course ->
+                        CourseItem(course = course!!, modifier = Modifier.fillMaxWidth())
                       }
                     }
                   }

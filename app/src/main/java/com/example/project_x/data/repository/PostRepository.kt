@@ -14,4 +14,10 @@ interface PostRepository {
   suspend fun likePost(postId: String): Flow<Resource<PostLikeResponse>>
 
   suspend fun unLikePost(postId: String): Flow<Resource<PostLikeResponse>>
+
+  suspend fun getUsersPostById(
+    id: String,
+    page: Int,
+    pageSize: Int
+  ): PostResponse
 }

@@ -16,6 +16,7 @@ import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import com.example.project_x.data.pagination.PostPagingSource
+import com.example.project_x.data.pagination.UserPostsPagingSource
 import com.example.project_x.data.repository.PostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -30,18 +31,18 @@ class PostViewModel
 @Inject
 constructor(
   private val postRepository: PostRepository,
-  private val postPagingSource: PostPagingSource,
+  private val postPagingSource: PostPagingSource
 ) : ViewModel() {
   private val _posts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
-
+  private val _userPosts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
+  val userPosts: StateFlow<PagingData<Post>> = _userPosts.asStateFlow()
   private val _isPostsFetched = MutableStateFlow(false) // Flag to track if posts are fetched
   private val _likePost = MutableStateFlow<Resource<PostLikeResponse>>(Resource.Loading())
 
   private val _post = MutableStateFlow<Resource<PostResponse>>(Resource.Loading())
   val post: StateFlow<Resource<PostResponse>> = _post
-  var isPostCreated by mutableStateOf(false)
-    private set
+  private var isPostCreated by mutableStateOf(false)
 
   private val _postLikes = mutableStateMapOf<String, Boolean>()
 
@@ -68,6 +69,28 @@ constructor(
         .collect {
           _posts.value = it
           _isPostsFetched.value = true // Set flag to true after fetching
+        }
+    }
+  }
+
+  fun getUsersPostsById(
+    id: String,
+  ){
+    viewModelScope.launch {
+      Pager(
+        config =
+        PagingConfig(
+          pageSize = 30, // Larger page size to reduce the number of API calls
+          enablePlaceholders = false,
+          initialLoadSize = 30, // Load a larger initial page size
+        )
+      ) {
+        UserPostsPagingSource(postRepository, id)
+      }
+        .flow
+        .cachedIn(viewModelScope)
+        .collect {
+          _userPosts.value = it
         }
     }
   }
