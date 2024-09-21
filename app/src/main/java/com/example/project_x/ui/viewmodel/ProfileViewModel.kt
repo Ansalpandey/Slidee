@@ -38,10 +38,6 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   private val _followers = MutableStateFlow<Resource<FollowerResponse>>(Resource.Loading())
   val followers: StateFlow<Resource<FollowerResponse>> = _followers.asStateFlow()
 
-  init {
-    fetchUserProfile()
-  }
-
   fun fetchUserProfile() {
     if (!isProfileFetched) {
       viewModelScope.launch {

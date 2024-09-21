@@ -79,7 +79,7 @@ fun PostItem(
     }
   }
 
-  LaunchedEffect(post?._id) {
+  LaunchedEffect(isLiked) {
     isLiked.value = post?.likedBy?.contains(userId) == true
     likeCount.intValue = post?.likes ?: 0
   }

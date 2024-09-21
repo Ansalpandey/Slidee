@@ -30,7 +30,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun registerUser(user: UserRequest) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       userRepository.registerUser(user).collect { resource ->
         handleResource(resource)
         if (resource is Resource.Success) {
@@ -42,7 +42,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun loginUser(user: UserRequest) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       userRepository.loginUser(user).collect { resource -> handleResource(resource) }
     }
   }
@@ -77,7 +77,7 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
   }
 
   fun logoutUser() {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       userRepository.logoutUser()
       _userStateHolder.value = UserStateHolder() // Reset the state holder after logout
     }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -29,7 +30,6 @@ import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -86,16 +86,26 @@ fun UserProfileScreen(
   val tabIcons =
     listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
-  val refreshTrigger by remember { mutableStateOf(false) }
+  var isRefreshing by remember { mutableStateOf(false) }
+  LaunchedEffect(key1 = userId) { profileViewModel.fetchUserProfileById(userId) }
+  LaunchedEffect(key1 = userId) { profileViewModel.checkIfFollowing(userId) }
+  LaunchedEffect(key1 = userId) {
+    if (userPosts.itemCount == 0) {
+      postViewModel.getUsersPostsById(userId)
+    }
+  }
   val pullRefreshState =
     rememberPullRefreshState(
-      refreshing = false,
+      refreshing = isRefreshing,
       onRefresh = {
-        profileViewModel.refreshProfile()
-        postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
+        isRefreshing = true
+        profileViewModel.fetchUserProfileById(userId)
+        postViewModel.getUsersPostsById(userId)
+        isRefreshing = false
       },
     )
-  LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
+
+
 
   when (val state = profileState) {
     is Resource.Loading -> {

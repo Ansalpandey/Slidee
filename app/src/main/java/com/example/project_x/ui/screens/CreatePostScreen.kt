@@ -52,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
@@ -67,7 +66,6 @@ fun CreatePostScreen(
   postViewModel: PostViewModel,
   navController: NavController,
 ) {
-  val postState by postViewModel.post.collectAsStateWithLifecycle()
   val context = LocalContext.current
   var content by rememberSaveable { mutableStateOf("") }
   var isLoading by remember { mutableStateOf(false) }
@@ -145,8 +143,13 @@ fun CreatePostScreen(
         onValueChange = { content = it },
         modifier = Modifier.fillMaxWidth().weight(1f),
         placeholder = { Text("What's happening?") },
-        colors = TextFieldDefaults.colors(MaterialTheme.colorScheme.primary),
         textStyle = MaterialTheme.typography.bodyLarge,
+        colors =
+          TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent
+          ),
       )
 
       // Display selected images

@@ -25,6 +25,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.PhotoCameraBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -169,6 +172,7 @@ fun EditProfileScreen(
               modifier = Modifier.fillMaxSize(),
               contentScale = ContentScale.Crop,
             )
+            Icon(imageVector = Icons.Default.PhotoCameraBack, contentDescription = "camera")
           }
           profileImage.isNotEmpty() -> {
             AsyncImage(
@@ -177,13 +181,28 @@ fun EditProfileScreen(
               modifier = Modifier.fillMaxSize(),
               contentScale = ContentScale.Crop,
             )
+            IconButton(
+              onClick = {
+                launcher.launch(
+                  PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly
+                  )
+                )
+              },
+              modifier =
+                Modifier.fillMaxSize().background(Color.Gray.copy(alpha = 0.5f), CircleShape),
+            ) {
+              Icon(
+                imageVector = Icons.Default.Image,
+                contentDescription = "close_button",
+                tint = Color.White,
+                modifier = Modifier.size(38.dp),
+              )
+            }
           }
           else -> {
             Image(
-              painter =
-                painterResource(
-                  id = R.drawable.profile
-                ), // Use your placeholder image resource here
+              painter = painterResource(id = R.drawable.profile),
               contentDescription = "placeholder_image",
               modifier = Modifier.fillMaxSize(),
               contentScale = ContentScale.Crop,

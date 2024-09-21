@@ -1,6 +1,5 @@
 package com.example.project_x.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,7 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -66,6 +64,7 @@ import com.example.project_x.ui.components.PostItem
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
+import com.example.project_x.utils.formatNumber
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -92,12 +91,18 @@ fun ProfileScreen(
     listOf(painterResource(id = R.drawable.post_stack), painterResource(id = R.drawable.courses))
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
+  val isProfileRefreshing = profileState is Resource.Loading
+  val isPostRefreshing = userPosts.loadState.refresh is LoadState.Loading
+
+  val isRefreshing = isProfileRefreshing || isPostRefreshing
+
   val pullRefreshState =
     rememberPullRefreshState(
-      refreshing = false,
+      refreshing = isRefreshing,
       onRefresh = {
+        // Trigger both profile refresh and post refresh
         profileViewModel.refreshProfile()
-        postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
+        postViewModel.getUsersPostsById(profileState.data?.user?._id ?: "")
       },
     )
   LaunchedEffect(refreshTrigger) { profileViewModel.refreshProfile() }
@@ -160,7 +165,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Center,
               ) {
                 Text(
-                  text = "${state.data?.postCount ?: 0}",
+                  text = formatNumber(state.data?.postCount?.toLong() ?: 0),
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.primary,
@@ -174,7 +179,7 @@ fun ProfileScreen(
               }
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                  text = "${state.data?.user?.followingCount ?: 0}",
+                  text = formatNumber(state.data?.user?.followingCount?.toLong() ?: 0),
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.primary,
@@ -199,7 +204,7 @@ fun ProfileScreen(
                   },
               ) {
                 Text(
-                  text = "${state.data?.user?.followersCount ?: 0}",
+                  text = formatNumber(state.data?.user?.followersCount?.toLong() ?: 0),
                   fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                   fontWeight = FontWeight.Bold,
                   color = MaterialTheme.colorScheme.primary,
@@ -366,80 +371,14 @@ fun ProfileScreen(
                               }
                             }
                           }
+
                           loadState.append is LoadState.Loading -> {
                             item {
                               Box(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                                 contentAlignment = Alignment.Center,
                               ) {
-                                Column(
-                                  modifier = Modifier.fillMaxWidth(),
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                  PullRefreshIndicator(refreshing = true, state = pullRefreshState)
-                                }
-                              }
-                            }
-                          }
-                          loadState.append is LoadState.Error -> {
-                            item {
-                              Box(
-                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
-                                contentAlignment = Alignment.Center,
-                              ) {
-                                Column(
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                  modifier = Modifier.fillMaxSize(),
-                                  verticalArrangement = Arrangement.SpaceEvenly,
-                                ) {
-                                  Image(
-                                    painter = painterResource(id = R.drawable.page_not_found),
-                                    contentDescription = "posts_not_found",
-                                  )
-                                  Text(
-                                    text = "Error 404! Posts not found",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                                  )
-                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
-                                    Text(
-                                      text = "Reload Posts",
-                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                                      fontWeight = FontWeight.Medium,
-                                    )
-                                  }
-                                }
-                              }
-                            }
-                          }
-                          loadState.refresh is LoadState.Error -> {
-                            item {
-                              Box(
-                                modifier = Modifier.fillParentMaxSize().padding(30.dp),
-                                contentAlignment = Alignment.Center,
-                              ) {
-                                Column(
-                                  horizontalAlignment = Alignment.CenterHorizontally,
-                                  modifier = Modifier.fillMaxSize(),
-                                  verticalArrangement = Arrangement.SpaceEvenly,
-                                ) {
-                                  Image(
-                                    painter = painterResource(id = R.drawable.page_not_found),
-                                    contentDescription = "posts_not_found",
-                                  )
-                                  Text(
-                                    text = "Error 404! Posts not found",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                                  )
-                                  OutlinedButton(onClick = { postViewModel.getPosts() }) {
-                                    Text(
-                                      text = "Reload Posts",
-                                      fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                                      fontWeight = FontWeight.Medium,
-                                    )
-                                  }
-                                }
+                                CircularProgressIndicator()
                               }
                             }
                           }
@@ -477,7 +416,7 @@ fun ProfileScreen(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          PullRefreshIndicator(refreshing = true, state = pullRefreshState)
+          PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
         }
       }
     }

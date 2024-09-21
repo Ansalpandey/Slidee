@@ -83,10 +83,7 @@ fun LoginScreen(
   }
 
   Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp)
-      .verticalScroll(rememberScrollState()),
+    modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState()),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
@@ -182,14 +179,10 @@ fun LoginScreen(
               username = if (!emailOrUsername.contains('@')) emailOrUsername else null,
               password = password,
             )
-          authViewModel.loginUser(user).also {
-            navController.navigate(Route.HomeScreen)
-          }
+          authViewModel.loginUser(user)
         }
       },
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp),
+      modifier = Modifier.fillMaxWidth().height(50.dp),
     ) {
       Text("Sign In", fontWeight = FontWeight.Bold, fontSize = 16.sp)
     }
