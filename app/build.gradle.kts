@@ -24,7 +24,7 @@ android {
 
   buildTypes {
     release {
-      isMinifyEnabled = false
+      isMinifyEnabled = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
   }
@@ -120,5 +120,5 @@ dependencies {
   implementation(libs.androidx.adaptive)
   implementation (libs.androidx.adaptive.layout)
   implementation (libs.androidx.adaptive.navigation)
-  implementation ("com.airbnb.android:lottie-compose:6.3.0")
+  implementation (libs.lottie.compose)
 }

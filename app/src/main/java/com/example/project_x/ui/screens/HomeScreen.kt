@@ -25,7 +25,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -70,16 +69,14 @@ fun HomeScreen(
   // Create scroll behavior for the top bar
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-  LaunchedEffect(key1 = userState) {
-    profileViewModel.fetchUserProfile()
-  }
+  LaunchedEffect(key1 = userState) { profileViewModel.fetchUserProfile() }
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       // TopBar should only recompose when profileImage or name changes
       val profileImage by remember { derivedStateOf { profileState.data?.user?.profileImage } }
-      val profileName by remember { derivedStateOf { profileState.data?.user?.name } }
+      val profileName by remember { derivedStateOf { profileState.data?.user?.name ?: "" } }
       CustomAppBar(
         image = profileImage,
         name = profileName,
@@ -177,7 +174,6 @@ fun HomeScreen(
             }
           }
 
-          // Pull refresh indicator at the top
           PullRefreshIndicator(
             refreshing = isRefreshing,
             state = pullRefreshState,

@@ -348,6 +348,7 @@ fun RegisterScreen(
                   username = username,
                   password = password,
                   bio = bio,
+                  profileImageBase64 = profileImageBase64
                 )
               authViewModel.registerUser(user)
             }

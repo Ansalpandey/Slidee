@@ -2,8 +2,8 @@
 accompanistPager = "0.24.13-rc"
 accompanistPullToRefresh = "0.29.0-alpha"
 accompanistSwiperefresh = "0.30.1"
-activityComposeVersion = "1.9.1"
-adaptive = "1.1.0-alpha01"
+activityComposeVersion = "1.9.2"
+adaptive = "1.1.0-alpha03"
 agp = "8.6.1"
 coilCompose = "2.6.0"
 converterGson = "2.9.0"
@@ -17,11 +17,12 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxCoroutinesAndroid = "1.8.1"
-lifecycleRuntimeKtx = "2.8.4"
-activityCompose = "1.9.1"
-composeBom = "2024.06.00"
+lifecycleRuntimeKtx = "2.8.6"
+activityCompose = "1.9.2"
+composeBom = "2024.09.02"
 loggingInterceptor = "4.12.0"
-materialIconsExtended = "1.6.8"
+lottieCompose = "6.3.0"
+materialIconsExtended = "1.7.2"
 media3ExoplayerHls = "1.4.1"
 okhttp = "4.12.0"
 pagingRuntime = "3.3.2"
@@ -29,10 +30,10 @@ retrofit = "2.9.0"
 coreKtxVersion = "1.6.1"
 kotlinxSerializationJson = "1.6.3"
 kotlinxSerialization = "1.9.0"
-navigationCompose = "2.8.0-beta07"
+navigationCompose = "2.8.1"
 roomRuntime = "2.6.1"
-uiTextGoogleFonts = "1.6.8"
-material3AdaptiveNavigationSuiteAndroid = "1.3.0-beta05"
+uiTextGoogleFonts = "1.7.2"
+material3AdaptiveNavigationSuiteAndroid = "1.3.0"
 
 
 [libraries]
@@ -82,6 +83,7 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
