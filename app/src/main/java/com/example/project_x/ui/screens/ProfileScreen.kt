@@ -219,7 +219,7 @@ fun ProfileScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row(
-              modifier = Modifier.fillMaxWidth().padding(start = 30.dp),
+              modifier = Modifier.fillMaxWidth().padding(start = 10.dp),
               verticalAlignment = Alignment.CenterVertically,
               horizontalArrangement = Arrangement.Start,
             ) {
@@ -249,7 +249,7 @@ fun ProfileScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
 
-            Column(modifier = Modifier.fillMaxWidth().padding(start = 30.dp)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(start = 10.dp)) {
               Text(
                 text = state.data?.user?.bio ?: "",
                 fontSize = MaterialTheme.typography.bodyMedium.fontSize,
@@ -258,7 +258,7 @@ fun ProfileScreen(
               )
             }
             Row(
-              modifier = Modifier.fillMaxWidth().padding(start = 30.dp, top = 10.dp, end = 30.dp),
+              modifier = Modifier.fillMaxWidth().padding(start = 10.dp, top = 10.dp, end = 10.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Button(

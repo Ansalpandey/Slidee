@@ -138,8 +138,4 @@ constructor(
       getPosts()
     }
   }
-
-  fun isPostLiked(postId: String): Boolean {
-    return _postLikes[postId] ?: false
-  }
 }

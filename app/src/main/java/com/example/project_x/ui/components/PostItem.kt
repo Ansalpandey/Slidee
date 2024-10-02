@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,10 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.Post
+import com.example.project_x.preferences.getLikeCount
+import com.example.project_x.preferences.getLikeState
+import com.example.project_x.preferences.saveLikeCount
+import com.example.project_x.preferences.saveLikeState
 import com.example.project_x.ui.navigation.Route
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
@@ -50,6 +56,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -64,24 +71,22 @@ fun PostItem(
   unlikePost: (String) -> Unit,
 ) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
-  val userId = remember {
-    profileViewModel.loggedInUserProfileState.value.data?.user?._id.toString()
-  }
+  val context = LocalContext.current
+  val scope = rememberCoroutineScope()
+  val isLiked = remember { mutableStateOf(false) }
+  val likeCount = remember { mutableIntStateOf(post?.likes ?: 0) }
 
-  // Get the like state from the view model
-  val isLiked = remember(post?._id) { mutableStateOf(postViewModel.isPostLiked(post?._id!!)) }
-  val likeCount = remember(post?._id) { mutableIntStateOf(post?.likes ?: 0) }
+  LaunchedEffect(post?._id) {
+    // Fetch the like state from local storage
+    isLiked.value = getLikeState(context, post?._id!!)
+    likeCount.intValue = getLikeCount(context, post._id)
+  }
 
   LaunchedEffect(post?.createdAt) {
     while (true) {
       timeAgo.value = getRelativeTimeSpanString(post?.createdAt!!)
       delay(60000) // Update every minute
     }
-  }
-
-  LaunchedEffect(isLiked) {
-    isLiked.value = post?.likedBy?.contains(userId) == true
-    likeCount.intValue = post?.likes ?: 0
   }
 
   val pagerState = rememberPagerState()
@@ -247,11 +252,19 @@ fun PostItem(
                   postViewModel.unLikePost(post._id)
                   isLiked.value = false
                   likeCount.intValue -= 1
+                  scope.launch {
+                    saveLikeState(context, post._id, false)
+                    saveLikeCount(context, post._id, likeCount.intValue) // Save the updated count
+                  }
                 } else {
                   likePost(post._id!!)
                   postViewModel.likePost(post._id)
                   isLiked.value = true
                   likeCount.intValue += 1
+                  scope.launch {
+                    saveLikeState(context, post._id, true)
+                    saveLikeCount(context, post._id, likeCount.intValue) // Save the updated count
+                  }
                 }
               }
             ) {
