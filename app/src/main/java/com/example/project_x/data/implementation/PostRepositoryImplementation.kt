@@ -2,6 +2,8 @@ package com.example.project_x.data.implementation
 
 import com.example.project_x.common.Resource
 import com.example.project_x.data.datasource.PostDataSource
+import com.example.project_x.data.model.CommentCreateResponse
+import com.example.project_x.data.model.CommentResponse
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
@@ -29,5 +31,13 @@ class PostRepositoryImplementation @Inject constructor(private val postDataSourc
 
   override suspend fun getUsersPostById(id: String, page: Int, pageSize: Int): PostResponse {
     return postDataSource.getUserPostsById(id, page, pageSize)
+  }
+
+  override suspend fun getComments(postId: String, page: Int, pageSize: Int): CommentResponse {
+    return postDataSource.getComments(postId, page, pageSize)
+  }
+
+  override suspend fun addComment(postId: String, content: String): Flow<Resource<CommentCreateResponse>> {
+    return postDataSource.addComment(postId, content)
   }
 }

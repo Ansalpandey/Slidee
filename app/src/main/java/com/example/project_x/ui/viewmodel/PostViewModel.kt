@@ -11,6 +11,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.CommentCreateResponse
+import com.example.project_x.data.model.CommentResponse
 import com.example.project_x.data.model.Post
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
@@ -46,6 +48,10 @@ constructor(
 
   private val _postLikes = mutableStateMapOf<String, Boolean>()
 
+  private val _comments = MutableStateFlow<CommentResponse?>(null)
+
+  private val _createComment = MutableStateFlow<Resource<CommentCreateResponse>>(Resource.Loading())
+
   init {
     if (!_isPostsFetched.value) { // Check if posts are already fetched
       getPosts()
@@ -53,7 +59,7 @@ constructor(
   }
 
   fun getPosts() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       Pager(
           config =
             PagingConfig(
@@ -74,7 +80,7 @@ constructor(
   }
 
   fun getUsersPostsById(id: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       Pager(
           config =
             PagingConfig(
@@ -132,10 +138,23 @@ constructor(
   }
 
   fun refreshPosts() {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       _isPostsFetched.value = false // Reset the flag when refreshing posts
       // Re-fetch posts to include the new post at the top
       getPosts()
+    }
+  }
+
+  fun getComments(postId: String) {
+    viewModelScope.launch(Dispatchers.IO) {
+      val fetchedComments = postRepository.getComments(postId, page = 1, pageSize = 60)
+      _comments.value = fetchedComments
+    }
+  }
+
+  fun addComment(postId: String, content: String) {
+    viewModelScope.launch(Dispatchers.IO) {
+      postRepository.addComment(postId, content).collect { _createComment.value = it }
     }
   }
 }

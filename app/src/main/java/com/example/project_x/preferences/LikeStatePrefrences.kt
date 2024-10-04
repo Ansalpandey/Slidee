@@ -40,4 +40,5 @@ suspend fun getLikeCount(context: Context, postId: String): Int {
       .map { it[key] ?: 0 } // Default to 0 if the value is not found
       .first()
   return preferences
+
 }

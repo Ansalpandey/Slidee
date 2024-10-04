@@ -4,7 +4,7 @@ package com.example.project_x.data.model
 data class Post(
     val __v: Int?, // 1
     val _id: String?, // 66966f354a66a76146037e41
-    val comments: List<Any>?,
+    val comments: List<Comment>?,
     val commentsCount: Int?, // 0
     val content: String?, // Hello everyone 👋👋
     val createdAt: String?, // 2024-07-16T13:01:41.645Z

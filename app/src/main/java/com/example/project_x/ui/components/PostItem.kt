@@ -6,27 +6,48 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imeNestedScroll
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.InsertComment
+import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +58,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -58,7 +81,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun PostItem(
   modifier: Modifier = Modifier,
@@ -75,6 +98,8 @@ fun PostItem(
   val scope = rememberCoroutineScope()
   val isLiked = remember { mutableStateOf(false) }
   val likeCount = remember { mutableIntStateOf(post?.likes ?: 0) }
+  val newComment = rememberSaveable { mutableStateOf("") }
+  val showComments = rememberSaveable { mutableStateOf(false) }
 
   LaunchedEffect(post?._id) {
     // Fetch the like state from local storage
@@ -283,8 +308,8 @@ fun PostItem(
               fontSize = MaterialTheme.typography.titleLarge.fontSize,
               color = Color.Gray,
             )
-
-            IconButton(onClick = { /*TODO*/ }) {
+            // Comment Button
+            IconButton(onClick = { showComments.value = true }) {
               Icon(
                 painter = painterResource(id = R.drawable.comment),
                 modifier = Modifier.size(18.dp),
@@ -298,7 +323,7 @@ fun PostItem(
               color = Color.Gray,
             )
 
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*TODO: Share functionality*/ }) {
               Icon(
                 painter = painterResource(id = R.drawable.share),
                 modifier = Modifier.size(18.dp),
@@ -307,13 +332,140 @@ fun PostItem(
               )
             }
 
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*TODO: More options*/ }) {
               Icon(
                 painter = painterResource(id = R.drawable.more),
                 modifier = Modifier.size(18.dp),
                 contentDescription = "more_btn",
                 tint = Color.Gray,
               )
+            }
+
+            if (showComments.value) {
+              ModalBottomSheet(
+                onDismissRequest = {
+                  showComments.value = false
+                },
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                modifier = Modifier
+                  .fillMaxHeight()
+                  .fillMaxWidth()
+                  .padding(top = 100.dp)
+                  .imePadding(), // Ensure padding is adjusted for the keyboard
+              ) {
+                // State to trigger comment fetching
+                val commentsFetched = remember { mutableStateOf(false) }
+
+                // Fetch comments when the modal is shown
+                LaunchedEffect(showComments.value) {
+                  if (showComments.value && !commentsFetched.value) {
+                    postViewModel.getComments(post._id!!) // Fetch comments
+                    commentsFetched.value = true // Mark as fetched
+                  }
+                }
+
+                Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+                  Text(
+                    text = "Comments",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                  )
+                  LazyColumn(
+                    modifier = Modifier
+                      .weight(1f) // Makes the LazyColumn take available space for scrolling
+                      .fillMaxWidth(),
+                    content = {
+                      if (post.comments.isNullOrEmpty()) {
+                        item {
+                          Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                          ) {
+                            Icon(
+                              imageVector = Icons.Default.ChatBubbleOutline, // Replace with desired icon
+                              contentDescription = "No comments available",
+                              modifier = Modifier
+                                .fillMaxWidth()
+                                .size(144.dp)
+                                .fillMaxHeight()
+                                .padding(16.dp)
+                                .align(Alignment.CenterHorizontally),
+                              tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            )
+
+                            Text(
+                              text = "No comments yet. Be the first to comment!",
+                              style = MaterialTheme.typography.bodyLarge,
+                              color = MaterialTheme.colorScheme.onSurfaceVariant,
+                              textAlign = TextAlign.Center,
+                              fontWeight = FontWeight.Bold,
+                              modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                            )
+                          }
+                        }
+                      }
+                      items(post.comments ?: emptyList()) { comment ->
+                        CommentItem(
+                          comment = comment,
+                          postViewModel = postViewModel,
+                          modifier = Modifier.padding(8.dp),
+                        )
+                      }
+                    },
+                  )
+
+                  Spacer(modifier = Modifier.height(8.dp))
+
+                  Row(
+                    modifier = Modifier
+                      .fillMaxWidth()
+                      .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(20.dp),
+                      )
+                      .padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                  ) {
+                    Icon(
+                      imageVector = Icons.AutoMirrored.Filled.InsertComment,
+                      contentDescription = "User profile",
+                      modifier = Modifier.size(32.dp),
+                      tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // TextField for adding new comment
+                    TextField(
+                      value = newComment.value,
+                      onValueChange = { newComment.value = it },
+                      modifier = Modifier.fillMaxWidth().imeNestedScroll(),
+                      placeholder = { Text(text = "Add your thoughts...") },
+                      colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                      ),
+                      keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
+                      keyboardActions = KeyboardActions(
+                        onSend = {
+                          if (newComment.value.isNotBlank()) {
+                            // Post the new comment using postViewModel
+                            postViewModel.addComment(post._id!!, newComment.value)
+                            newComment.value = "" // Reset input field after posting
+                          }
+                        }
+                      ),
+                      singleLine = true,
+                      shape = RoundedCornerShape(20.dp), // Rounded edges for the TextField
+                    )
+                  }
+                }
+              }
             }
           }
         }

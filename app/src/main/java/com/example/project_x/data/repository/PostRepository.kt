@@ -1,6 +1,8 @@
 package com.example.project_x.data.repository
 
 import com.example.project_x.common.Resource
+import com.example.project_x.data.model.CommentCreateResponse
+import com.example.project_x.data.model.CommentResponse
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
@@ -20,4 +22,8 @@ interface PostRepository {
     page: Int,
     pageSize: Int
   ): PostResponse
+
+  suspend fun getComments(postId: String, page: Int, pageSize: Int): CommentResponse
+
+  suspend fun addComment(postId: String, content: String): Flow<Resource<CommentCreateResponse>>
 }

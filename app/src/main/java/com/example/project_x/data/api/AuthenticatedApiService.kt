@@ -1,5 +1,8 @@
 package com.example.project_x.data.api
 
+import com.example.project_x.data.model.CommentCreateResponse
+import com.example.project_x.data.model.CommentRequest
+import com.example.project_x.data.model.CommentResponse
 import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
@@ -67,4 +70,17 @@ interface AuthenticatedApiService {
   ): Response<ProfileResponse>
 
   @GET("users/search") suspend fun searchUsers(@Query("q") query: String): Response<SearchResponse>
+
+  @GET("posts/{id}/comments")
+  suspend fun getComments(
+    @Path("id") id: String,
+    @Query("page") page: Int,
+    @Query("pageSize") pageSize: Int
+  ): CommentResponse
+
+  @POST("posts/{id}/comments")
+  suspend fun addComment(
+    @Path("id") id: String,
+    @Body comment: CommentRequest,
+  ): Response<CommentCreateResponse>
 }
