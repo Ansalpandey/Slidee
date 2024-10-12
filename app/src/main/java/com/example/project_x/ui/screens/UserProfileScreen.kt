@@ -337,19 +337,15 @@ fun UserProfileScreen(
                       horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                       items(userPosts.itemCount) { index ->
-                        userPosts[index].let { post ->
-                          PostItem(
-                            post = post,
-                            navController = navController,
-                            likePost = { postViewModel.likePost(post?._id!!) },
-                            unlikePost = { postViewModel.unLikePost(post?._id!!) },
-                            profileViewModel = profileViewModel,
-                            postViewModel = postViewModel,
-                            onClick = {
-                              /*TODO*/
-                            },
-                          )
-                        }
+                        PostItem(
+                          post = userPosts[index],
+                          navController = navController,
+                          profileViewModel = profileViewModel,
+                          postViewModel = postViewModel,
+                          onClick = {
+                            /*TODO*/
+                          },
+                        )
                       }
                       userPosts.apply {
                         when {

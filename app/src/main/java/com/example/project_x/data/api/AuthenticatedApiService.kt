@@ -7,6 +7,7 @@ import com.example.project_x.data.model.CourseResponse
 import com.example.project_x.data.model.EditProfileRequest
 import com.example.project_x.data.model.FollowMessage
 import com.example.project_x.data.model.FollowerResponse
+import com.example.project_x.data.model.NotificationResponse
 import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
@@ -33,7 +34,7 @@ interface AuthenticatedApiService {
     @Path("id") id: String,
     @Query("page") page: Int,
     @Query("pageSize") pageSize: Int,
-  ): PostResponse
+  ): Response<PostResponse>
 
   @POST("users/follow/{id}") suspend fun followUser(@Path("id") id: String): Response<FollowMessage>
 
@@ -54,7 +55,7 @@ interface AuthenticatedApiService {
   @GET("users/refresh-token") suspend fun refreshToken(): Response<TokenResponse>
 
   @GET("posts")
-  suspend fun getPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int): PostResponse
+  suspend fun getPosts(@Query("page") page: Int, @Query("pageSize") pageSize: Int): Response<PostResponse>
 
   @POST("posts/create") suspend fun createPost(@Body post: PostRequest): Response<PostResponse>
 
@@ -83,4 +84,8 @@ interface AuthenticatedApiService {
     @Path("id") id: String,
     @Body comment: CommentRequest,
   ): Response<CommentCreateResponse>
+
+  @GET("notifications/{id}") suspend fun getNotifications(
+    @Path("id") id: String,
+  ): List<NotificationResponse>
 }

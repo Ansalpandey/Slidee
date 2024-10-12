@@ -24,6 +24,7 @@ import com.example.project_x.ui.screens.SettingsScreen
 import com.example.project_x.ui.screens.UserProfileScreen
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
+import com.example.project_x.ui.viewmodel.NotificationViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.ui.viewmodel.SearchViewModel
@@ -267,7 +268,10 @@ fun NavigationSetup(
         )
       },
     ) {
-      NotificationScreen(modifier = modifier, navController = navController)
+      NotificationScreen(
+        modifier = modifier,
+        navController = navController,
+      )
     }
 
     composable<Route.ImageScreen>(

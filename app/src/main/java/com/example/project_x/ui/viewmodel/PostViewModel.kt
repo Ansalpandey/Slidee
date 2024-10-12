@@ -33,7 +33,7 @@ class PostViewModel
 @Inject
 constructor(
   private val postRepository: PostRepository,
-  private val postPagingSource: PostPagingSource,
+  private val postPagingSource: PostPagingSource
 ) : ViewModel() {
   private val _posts = MutableStateFlow<PagingData<Post>>(PagingData.empty())
   val posts: StateFlow<PagingData<Post>> = _posts.asStateFlow()
@@ -61,15 +61,15 @@ constructor(
   fun getPosts() {
     viewModelScope.launch(Dispatchers.IO) {
       Pager(
-          config =
-            PagingConfig(
-              pageSize = 100, // Larger page size to reduce the number of API calls
-              enablePlaceholders = false,
-              initialLoadSize = 30, // Load a larger initial page size
-            )
-        ) {
-          postPagingSource
-        }
+        config =
+        PagingConfig(
+          pageSize = 100, // Larger page size to reduce the number of API calls
+          enablePlaceholders = false,
+          initialLoadSize = 30, // Load a larger initial page size
+        )
+      ) {
+        postPagingSource
+      }
         .flow
         .cachedIn(viewModelScope)
         .collect {
@@ -82,15 +82,15 @@ constructor(
   fun getUsersPostsById(id: String) {
     viewModelScope.launch(Dispatchers.IO) {
       Pager(
-          config =
-            PagingConfig(
-              pageSize = 100, // Larger page size to reduce the number of API calls
-              enablePlaceholders = false,
-              initialLoadSize = 30, // Load a larger initial page size
-            )
-        ) {
-          UserPostsPagingSource(postRepository, id)
-        }
+        config =
+        PagingConfig(
+          pageSize = 100, // Larger page size to reduce the number of API calls
+          enablePlaceholders = false,
+          initialLoadSize = 30, // Load a larger initial page size
+        )
+      ) {
+        UserPostsPagingSource(postRepository, id)
+      }
         .flow
         .cachedIn(viewModelScope)
         .collect { _userPosts.value = it }

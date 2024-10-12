@@ -50,6 +50,7 @@ dependencies {
   implementation(libs.core.ktx)
   implementation(libs.androidx.ui.text.google.fonts)
   implementation(libs.androidx.material3.adaptive.navigation.suite.android)
+  implementation(libs.androidx.lifecycle.service)
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
@@ -121,4 +122,9 @@ dependencies {
   implementation (libs.androidx.adaptive.layout)
   implementation (libs.androidx.adaptive.navigation)
   implementation (libs.lottie.compose)
+
+  implementation (libs.socket.io.client) // for Kotlin or Java
+  implementation (libs.kotlinx.coroutines.core)
+  implementation (libs.androidx.media) // or the latest version
+  implementation (libs.androidx.core)  // to support NotificationCompat
 }

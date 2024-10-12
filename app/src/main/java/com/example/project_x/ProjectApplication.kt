@@ -1,7 +1,6 @@
 package com.example.project_x
 
 import android.app.Application
-import android.util.Log
 import com.example.project_x.utils.TokenRefreshManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject

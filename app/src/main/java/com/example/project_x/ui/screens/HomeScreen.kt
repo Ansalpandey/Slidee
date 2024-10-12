@@ -84,10 +84,7 @@ fun HomeScreen(
         scrollBehavior = scrollBehavior,
       )
     },
-    bottomBar = {
-      // BottomBar should not recompose unless navController changes
-      CustomBottomBar(navController = navController)
-    },
+    bottomBar = { CustomBottomBar(navController = navController) },
   ) { innerPadding ->
     if (userState.isLoading) {
       Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -131,8 +128,6 @@ fun HomeScreen(
                 PostItem(
                   post = post,
                   navController = navController,
-                  likePost = { postViewModel.likePost(post._id!!) },
-                  unlikePost = { postViewModel.unLikePost(post._id!!) },
                   profileViewModel = profileViewModel,
                   postViewModel = postViewModel,
                   onClick = {

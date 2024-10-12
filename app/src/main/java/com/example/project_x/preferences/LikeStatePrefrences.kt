@@ -40,5 +40,33 @@ suspend fun getLikeCount(context: Context, postId: String): Int {
       .map { it[key] ?: 0 } // Default to 0 if the value is not found
       .first()
   return preferences
+}
 
+suspend fun saveCommentLikeState(context: Context, commentId: String, isLiked: Boolean) {
+  val key = booleanPreferencesKey(commentId)
+  context.likeDataStore.edit { preferences -> preferences[key] = isLiked }
+}
+
+suspend fun getCommentLikeState(context: Context, commentId: String): Boolean {
+  val key = booleanPreferencesKey(commentId)
+  val preferences =
+    context.likeDataStore.data
+      .map { it[key] ?: false } // Default to false if the value is not found
+      .first()
+  return preferences
+}
+
+suspend fun saveCommentLikeCount(context: Context, commentId: String, count: Int){
+  if (count < 0) return // Prevent saving negative counts
+  val key = intPreferencesKey("${commentId}_count") // Create a key for the like count
+  context.likeDataStore.edit { preferences -> preferences[key] = count }
+}
+
+suspend fun getCommentLikeCount(context: Context, commentId: String): Int {
+  val key = intPreferencesKey("${commentId}_count")
+  val preferences =
+    context.likeDataStore.data
+      .map { it[key] ?: 0 } // Default to 0 if the value is not found
+      .first()
+  return preferences
 }

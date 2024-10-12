@@ -5,17 +5,22 @@ import com.example.project_x.data.api.ApiService
 import com.example.project_x.data.api.AuthInterceptor
 import com.example.project_x.data.api.AuthenticatedApiService
 import com.example.project_x.data.datasource.CourseDataSource
+import com.example.project_x.data.datasource.NotificationDataSource
 import com.example.project_x.data.datasource.PostDataSource
 import com.example.project_x.data.datasource.UserDataSource
 import com.example.project_x.data.implementation.CourseRepositoryImplementation
+import com.example.project_x.data.implementation.NotificationRepositoryImplementation
 import com.example.project_x.data.implementation.PostRepositoryImplementation
 import com.example.project_x.data.implementation.UserRepositoryImplementation
 import com.example.project_x.data.pagination.PostPagingSource
+import com.example.project_x.data.pagination.UserPostsPagingSource
 import com.example.project_x.data.repository.CourseRepository
+import com.example.project_x.data.repository.NotificationRepository
 import com.example.project_x.data.repository.PostRepository
 import com.example.project_x.data.repository.UserRepository
 import com.example.project_x.utils.TokenManager
 import com.example.project_x.utils.TokenRefreshManager
+import com.example.project_x.websocket.WebSocketManager
 import com.google.gson.Gson
 import dagger.Lazy
 import dagger.Module
@@ -23,14 +28,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
-import okhttp3.WebSocket
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.net.Socket
-import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -72,7 +75,6 @@ class AppModule {
   @Provides
   fun provideRetrofitBuilder(): Retrofit.Builder {
     return Retrofit.Builder()
-//            .baseUrl("https://project-x-production-c8d8.up.railway.app/api/v1/")
       .baseUrl("http://192.168.1.7:8000/api/v1/")
       .addConverterFactory(GsonConverterFactory.create())
   }
@@ -130,6 +132,21 @@ class AppModule {
 
   @Singleton
   @Provides
+  fun provideUserPostPagingSource(
+    postRepository: PostRepository,
+    id: String,
+  ): UserPostsPagingSource {
+    return UserPostsPagingSource(postRepository, id)
+  }
+
+  @Singleton
+  @Provides
+  fun provideWebSocketManager() : WebSocketManager{
+    return WebSocketManager()
+  }
+
+  @Singleton
+  @Provides
   fun provideUserRepository(
     userRepositoryImplementation: UserRepositoryImplementation
   ): UserRepository {
@@ -156,6 +173,20 @@ class AppModule {
   @Provides
   fun provideGson(): Gson {
     return Gson()
+  }
+
+  @Singleton
+  @Provides
+  fun provideNotificationDataSource(apiService: AuthenticatedApiService): NotificationDataSource {
+    return NotificationDataSource(apiService)
+  }
+
+  @Singleton
+  @Provides
+  fun provideNotificationRepository(
+    notificationRepositoryImplementation: NotificationRepositoryImplementation
+  ): NotificationRepository {
+    return notificationRepositoryImplementation
   }
 
   @Singleton

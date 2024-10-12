@@ -16,9 +16,9 @@ class PostPagingSource @Inject constructor(private val postRepository: PostRepos
       val response = postRepository.getPosts(currentPage, pageSize)
 
       LoadResult.Page(
-          data = response.posts ?: emptyList(),
+          data = response.body()?.posts ?: emptyList(),
           prevKey = if (currentPage == 1) null else currentPage - 1,
-          nextKey = if (response.posts?.size!! < pageSize) null else currentPage + 1)
+          nextKey = if (response.body()?.posts?.size!! < pageSize) null else currentPage + 1)
     } catch (exception: Exception) {
       LoadResult.Error(exception)
     }

@@ -11,12 +11,13 @@ import com.example.project_x.data.model.PostResponse
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 class PostDataSource
 @Inject
 constructor(private val authenticatedApiService: AuthenticatedApiService) {
 
-  suspend fun getPosts(page: Int, pageSize: Int): PostResponse {
+  suspend fun getPosts(page: Int, pageSize: Int): Response<PostResponse> {
     return authenticatedApiService.getPosts(page, pageSize)
   }
 
@@ -61,7 +62,7 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
     }
   }
 
-  suspend fun getUserPostsById(id: String, page: Int, pageSize: Int): PostResponse {
+  suspend fun getUserPostsById(id: String, page: Int, pageSize: Int): Response<PostResponse> {
     return authenticatedApiService.getUserPostsById(id, page, pageSize)
   }
 
@@ -69,18 +70,18 @@ constructor(private val authenticatedApiService: AuthenticatedApiService) {
     return authenticatedApiService.getComments(postId, page, pageSize)
   }
 
-  suspend fun addComment(postId: String, content: String): Flow<Resource<CommentCreateResponse>>  = flow {
-    emit(Resource.Loading())
+  suspend fun addComment(postId: String, content: String): Flow<Resource<CommentCreateResponse>> =
+    flow {
+      emit(Resource.Loading())
 
-    try {
-    val response = authenticatedApiService.addComment(postId, CommentRequest(postId,content))
-      if (response.isSuccessful) {
-        response.body()?.let { emit(Resource.Success(it)) }
-          ?: run { emit(Resource.Error("Failed to add comment: Empty response body")) }
+      try {
+        val response = authenticatedApiService.addComment(postId, CommentRequest(postId, content))
+        if (response.isSuccessful) {
+          response.body()?.let { emit(Resource.Success(it)) }
+            ?: run { emit(Resource.Error("Failed to add comment: Empty response body")) }
+        }
+      } catch (e: Exception) {
+        emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
       }
     }
-    catch (e:Exception) {
-      emit(Resource.Error(e.localizedMessage ?: "Unknown error"))
-    }
-  }
 }

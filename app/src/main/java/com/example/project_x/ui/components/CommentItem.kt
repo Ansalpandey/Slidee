@@ -17,8 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,11 +29,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -44,9 +45,14 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.project_x.R
 import com.example.project_x.data.model.Comment
+import com.example.project_x.preferences.getCommentLikeCount
+import com.example.project_x.preferences.getCommentLikeState
+import com.example.project_x.preferences.saveLikeCount
+import com.example.project_x.preferences.saveLikeState
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.utils.getRelativeTimeSpanString
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun CommentItem(modifier: Modifier = Modifier, comment: Comment, postViewModel: PostViewModel) {
@@ -54,8 +60,16 @@ fun CommentItem(modifier: Modifier = Modifier, comment: Comment, postViewModel: 
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(comment.createdAt!!)) }
   val isLiked = remember { mutableStateOf(false) }
   val likeCount = remember { mutableIntStateOf(comment.likes ?: 0) }
-  val showReplyField = remember { mutableStateOf(false) }
-  val replyText = remember { mutableStateOf("") }
+  val showReplyField = rememberSaveable { mutableStateOf(false) }
+  val replyText = rememberSaveable { mutableStateOf("") }
+  val context = LocalContext.current
+  val scope = rememberCoroutineScope()
+
+  LaunchedEffect(comment._id) {
+    // Fetch the like state from local storage
+    isLiked.value = getCommentLikeState(context, comment._id!!)
+    likeCount.intValue = comment.likes!!
+  }
 
   // LaunchedEffect to update the relative time every minute
   LaunchedEffect(comment.createdAt) {
@@ -138,11 +152,23 @@ fun CommentItem(modifier: Modifier = Modifier, comment: Comment, postViewModel: 
         IconButton(
           onClick = {
             if (isLiked.value) {
+              //              unlikePost(post._id!!)
+              //              postViewModel.unLikePost(post._id)
               isLiked.value = false
               likeCount.intValue -= 1
+              scope.launch {
+                saveLikeState(context, comment._id!!, false)
+                saveLikeCount(context, comment._id, likeCount.intValue) // Save the updated count
+              }
             } else {
+              //              likePost(post._id!!)
+              //              postViewModel.likePost(post._id)
               isLiked.value = true
               likeCount.intValue += 1
+              scope.launch {
+                saveLikeState(context, comment._id!!, true)
+                saveLikeCount(context, comment._id, likeCount.intValue) // Save the updated count
+              }
             }
           }
         ) {
@@ -185,12 +211,22 @@ fun CommentItem(modifier: Modifier = Modifier, comment: Comment, postViewModel: 
               .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
               .padding(horizontal = 12.dp, vertical = 8.dp),
         ) {
-          Icon(
-            imageVector = Icons.Default.AccountCircle, // Placeholder for user profile
-            contentDescription = "User profile",
-            modifier = Modifier.size(32.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
+          if (comment.createdBy?.profileImage.isNullOrEmpty()) {
+            Image(
+              painter = painterResource(id = R.drawable.profile), // Default profile image
+              contentDescription = "profile_image",
+              contentScale = ContentScale.Crop,
+              modifier = Modifier.size(32.dp).clip(CircleShape), // Adjusted size for a cleaner look
+            )
+          } else {
+
+            AsyncImage(
+              model = comment.createdBy?.profileImage,
+              contentDescription = "profile_image",
+              contentScale = ContentScale.Crop,
+              modifier = Modifier.size(32.dp).clip(CircleShape),
+            )
+          }
 
           Spacer(modifier = Modifier.width(8.dp))
 

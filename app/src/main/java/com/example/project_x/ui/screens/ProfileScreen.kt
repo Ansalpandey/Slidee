@@ -81,9 +81,7 @@ fun ProfileScreen(
   val profileState by profileViewModel.loggedInUserProfileState.collectAsStateWithLifecycle()
   val userPosts = postViewModel.userPosts.collectAsLazyPagingItems()
   LaunchedEffect(key1 = userPosts) {
-    if (userPosts.itemCount == 0) {
-      postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
-    }
+    postViewModel.getUsersPostsById(profileState.data?.user?._id!!)
   }
   val pagerState = rememberPagerState()
   val coroutineScope = rememberCoroutineScope()
@@ -92,15 +90,11 @@ fun ProfileScreen(
   var coursesFetched by remember { mutableStateOf(false) }
   val refreshTrigger by remember { mutableStateOf(false) }
   val isProfileRefreshing = profileState is Resource.Loading
-  val isPostRefreshing = userPosts.loadState.refresh is LoadState.Loading
-
-  val isRefreshing = isProfileRefreshing || isPostRefreshing
 
   val pullRefreshState =
     rememberPullRefreshState(
-      refreshing = isRefreshing,
+      refreshing = isProfileRefreshing,
       onRefresh = {
-        // Trigger both profile refresh and post refresh
         profileViewModel.refreshProfile()
         postViewModel.getUsersPostsById(profileState.data?.user?._id ?: "")
       },
@@ -345,19 +339,15 @@ fun ProfileScreen(
                       horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                       items(userPosts.itemCount) { index ->
-                        userPosts[index].let { post ->
-                          PostItem(
-                            post = post,
-                            navController = navController,
-                            likePost = { postViewModel.likePost(post?._id!!) },
-                            unlikePost = { postViewModel.unLikePost(post?._id!!) },
-                            profileViewModel = profileViewModel,
-                            postViewModel = postViewModel,
-                            onClick = {
-                              /*TODO*/
-                            },
-                          )
-                        }
+                        PostItem(
+                          post = userPosts[index],
+                          navController = navController,
+                          profileViewModel = profileViewModel,
+                          postViewModel = postViewModel,
+                          onClick = {
+                            /*TODO*/
+                          },
+                        )
                       }
                       userPosts.apply {
                         when {
@@ -416,7 +406,7 @@ fun ProfileScreen(
           modifier = Modifier.fillMaxWidth(),
           horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-          PullRefreshIndicator(refreshing = isRefreshing, state = pullRefreshState)
+          PullRefreshIndicator(refreshing = isProfileRefreshing, state = pullRefreshState)
         }
       }
     }

@@ -7,9 +7,10 @@ import com.example.project_x.data.model.PostLikeResponse
 import com.example.project_x.data.model.PostRequest
 import com.example.project_x.data.model.PostResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 
 interface PostRepository {
-  suspend fun getPosts(page: Int, pageSize: Int): PostResponse
+  suspend fun getPosts(page: Int, pageSize: Int): Response<PostResponse>
 
   suspend fun createPost(postRequest: PostRequest): Flow<Resource<PostResponse>>
 
@@ -21,7 +22,7 @@ interface PostRepository {
     id: String,
     page: Int,
     pageSize: Int
-  ): PostResponse
+  ): Response<PostResponse>
 
   suspend fun getComments(postId: String, page: Int, pageSize: Int): CommentResponse
 

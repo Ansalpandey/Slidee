@@ -19,15 +19,16 @@ import com.example.project_x.preferences.UserPreferences
 import com.example.project_x.preferences.dataStore
 import com.example.project_x.ui.stateholder.UserStateHolder
 import com.example.project_x.utils.TokenManager
+import com.example.project_x.websocket.WebSocketManager
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
 
 class UserRepositoryImplementation
 @Inject
@@ -35,6 +36,7 @@ constructor(
   private val userDataSource: UserDataSource,
   @ApplicationContext private val context: Context,
   private val tokenManager: TokenManager,
+  private val webSocketManager: WebSocketManager,
 ) : UserRepository {
   private val dataStore = context.dataStore
 
@@ -75,9 +77,14 @@ constructor(
     return userDataSource.loginUser(user).onEach { resource ->
       if (resource is Resource.Success) {
         setUserPreferences(resource.data!!, true)
+
         if (resource.data.token != tokenManager.getToken()) {
           tokenManager.saveToken(resource.data.token!!)
         }
+        val userId =
+          dataStore.data.first { it[UserPreferences.USER_ID] != null }[UserPreferences.USER_ID]
+        webSocketManager.setUserId(userId!!)
+        webSocketManager.connect()
       }
     }
   }

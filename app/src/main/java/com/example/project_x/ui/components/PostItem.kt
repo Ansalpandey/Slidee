@@ -41,13 +41,11 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,6 +76,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -90,8 +89,6 @@ fun PostItem(
   onClick: () -> Unit,
   profileViewModel: ProfileViewModel,
   postViewModel: PostViewModel,
-  likePost: (String) -> Unit,
-  unlikePost: (String) -> Unit,
 ) {
   val timeAgo = remember { mutableStateOf(getRelativeTimeSpanString(post?.createdAt!!)) }
   val context = LocalContext.current
@@ -100,11 +97,18 @@ fun PostItem(
   val likeCount = remember { mutableIntStateOf(post?.likes ?: 0) }
   val newComment = rememberSaveable { mutableStateOf("") }
   val showComments = rememberSaveable { mutableStateOf(false) }
+  val isCommentCreated = rememberSaveable { mutableStateOf(false) }
+  // Fetch logged-in user ID
+  val loggedInUserId = remember { profileViewModel.loggedInUserProfileState.value.data?.user?._id }
 
   LaunchedEffect(post?._id) {
-    // Fetch the like state from local storage
     isLiked.value = getLikeState(context, post?._id!!)
-    likeCount.intValue = getLikeCount(context, post._id)
+    // If no stored like state, fallback to checking the likedBy list
+    if (!isLiked.value) {
+      isLiked.value = post.likedBy?.any { it._id == loggedInUserId } == true
+    }
+    likeCount.intValue =
+      if (getLikeCount(context, post._id) == 0) post.likes!! else getLikeCount(context, post._id)
   }
 
   LaunchedEffect(post?.createdAt) {
@@ -273,22 +277,20 @@ fun PostItem(
             IconButton(
               onClick = {
                 if (isLiked.value) {
-                  unlikePost(post._id!!)
-                  postViewModel.unLikePost(post._id)
+                  post._id?.let { postViewModel.unLikePost(it) }
                   isLiked.value = false
                   likeCount.intValue -= 1
-                  scope.launch {
-                    saveLikeState(context, post._id, false)
-                    saveLikeCount(context, post._id, likeCount.intValue) // Save the updated count
+                  scope.launch(Dispatchers.IO) {
+                    post._id?.let { saveLikeState(context, it, false) }
+                    post._id?.let { saveLikeCount(context, it, likeCount.intValue) }
                   }
                 } else {
-                  likePost(post._id!!)
-                  postViewModel.likePost(post._id)
+                  post._id?.let { postViewModel.likePost(it) }
                   isLiked.value = true
                   likeCount.intValue += 1
-                  scope.launch {
-                    saveLikeState(context, post._id, true)
-                    saveLikeCount(context, post._id, likeCount.intValue) // Save the updated count
+                  scope.launch(Dispatchers.IO) {
+                    post._id?.let { saveLikeState(context, it, true) }
+                    post._id?.let { saveLikeCount(context, it, likeCount.intValue) }
                   }
                 }
               }
@@ -343,24 +345,25 @@ fun PostItem(
 
             if (showComments.value) {
               ModalBottomSheet(
-                onDismissRequest = {
-                  showComments.value = false
-                },
+                onDismissRequest = { showComments.value = false },
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                modifier = Modifier
-                  .fillMaxHeight()
-                  .fillMaxWidth()
-                  .padding(top = 100.dp)
-                  .imePadding(), // Ensure padding is adjusted for the keyboard
+                modifier =
+                  Modifier.fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(top = 100.dp)
+                    .imePadding(), // Ensure padding is adjusted for the keyboard
               ) {
                 // State to trigger comment fetching
                 val commentsFetched = remember { mutableStateOf(false) }
 
-                // Fetch comments when the modal is shown
-                LaunchedEffect(showComments.value) {
-                  if (showComments.value && !commentsFetched.value) {
+                // Fetch comments when the modal is shown or a new comment is created
+                LaunchedEffect(showComments.value, isCommentCreated.value) {
+                  if (showComments.value && (!commentsFetched.value || isCommentCreated.value)) {
                     postViewModel.getComments(post._id!!) // Fetch comments
                     commentsFetched.value = true // Mark as fetched
+                    if (isCommentCreated.value) {
+                      isCommentCreated.value = false // Reset flag after fetching new comments
+                    }
                   }
                 }
 
@@ -373,9 +376,9 @@ fun PostItem(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
                   )
                   LazyColumn(
-                    modifier = Modifier
-                      .weight(1f) // Makes the LazyColumn take available space for scrolling
-                      .fillMaxWidth(),
+                    modifier =
+                      Modifier.weight(1f) // Makes the LazyColumn take available space for scrolling
+                        .fillMaxWidth(),
                     content = {
                       if (post.comments.isNullOrEmpty()) {
                         item {
@@ -385,15 +388,16 @@ fun PostItem(
                             horizontalAlignment = Alignment.CenterHorizontally,
                           ) {
                             Icon(
-                              imageVector = Icons.Default.ChatBubbleOutline, // Replace with desired icon
+                              imageVector =
+                                Icons.Default.ChatBubbleOutline, // Replace with desired icon
                               contentDescription = "No comments available",
-                              modifier = Modifier
-                                .fillMaxWidth()
-                                .size(144.dp)
-                                .fillMaxHeight()
-                                .padding(16.dp)
-                                .align(Alignment.CenterHorizontally),
-                              tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                              modifier =
+                                Modifier.fillMaxWidth()
+                                  .size(144.dp)
+                                  .fillMaxHeight()
+                                  .padding(16.dp)
+                                  .align(Alignment.CenterHorizontally),
+                              tint = MaterialTheme.colorScheme.primaryContainer,
                             )
 
                             Text(
@@ -420,20 +424,20 @@ fun PostItem(
                   Spacer(modifier = Modifier.height(8.dp))
 
                   Row(
-                    modifier = Modifier
-                      .fillMaxWidth()
-                      .background(
-                        MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(20.dp),
-                      )
-                      .padding(horizontal = 12.dp, vertical = 8.dp),
+                    modifier =
+                      Modifier.fillMaxWidth()
+                        .background(
+                          MaterialTheme.colorScheme.surface,
+                          shape = RoundedCornerShape(20.dp),
+                        )
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                   ) {
                     Icon(
                       imageVector = Icons.AutoMirrored.Filled.InsertComment,
                       contentDescription = "User profile",
                       modifier = Modifier.size(32.dp),
-                      tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                      tint = MaterialTheme.colorScheme.primaryContainer,
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -444,24 +448,27 @@ fun PostItem(
                       onValueChange = { newComment.value = it },
                       modifier = Modifier.fillMaxWidth().imeNestedScroll(),
                       placeholder = { Text(text = "Add your thoughts...") },
-                      colors = TextFieldDefaults.colors(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                      ),
+                      colors =
+                        TextFieldDefaults.colors(
+                          focusedIndicatorColor = Color.Transparent,
+                          unfocusedContainerColor = Color.Transparent,
+                          focusedContainerColor = Color.Transparent,
+                          unfocusedIndicatorColor = Color.Transparent,
+                        ),
                       keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
-                      keyboardActions = KeyboardActions(
-                        onSend = {
-                          if (newComment.value.isNotBlank()) {
-                            // Post the new comment using postViewModel
-                            postViewModel.addComment(post._id!!, newComment.value)
-                            newComment.value = "" // Reset input field after posting
+                      keyboardActions =
+                        KeyboardActions(
+                          onSend = {
+                            if (newComment.value.isNotBlank()) {
+                              // Post the new comment using postViewModel
+                              postViewModel.addComment(post._id!!, newComment.value)
+                              isCommentCreated.value = true // Set the flag to true
+                              newComment.value = "" // Reset input field after posting
+                            }
                           }
-                        }
-                      ),
+                        ),
                       singleLine = true,
-                      shape = RoundedCornerShape(20.dp), // Rounded edges for the TextField
+                      shape = RoundedCornerShape(20.dp),
                     )
                   }
                 }
@@ -471,6 +478,50 @@ fun PostItem(
         }
       }
     }
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(start = 80.dp),
+    ) {
+      Text(
+        text = if (post?.likes!! >= 1) "Liked by" else "",
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(end = 2.dp),
+      )
+
+      val likedByUsers = post.likedBy
+      if (!likedByUsers.isNullOrEmpty()) {
+        val firstUser = likedByUsers.firstOrNull()?.username ?: ""
+        val likesCount = post.likes?.minus(1) ?: 0
+        Text(
+          text =
+            when {
+              likedByUsers.size == 1 -> firstUser // Only one user
+              likedByUsers.size > 1 -> firstUser
+              else -> ""
+            },
+          style = MaterialTheme.typography.bodyLarge,
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.padding(end = 2.dp),
+        )
+        Text(
+          "and",
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(end = 2.dp),
+        )
+        Text(
+          text = "$likesCount",
+          style = MaterialTheme.typography.bodyLarge,
+          fontWeight = FontWeight.Bold,
+          modifier = Modifier.padding(end = 2.dp),
+        )
+
+        Text(
+          text = if (likesCount > 1) "others" else "other",
+          style = MaterialTheme.typography.bodyLarge,
+          modifier = Modifier.padding(end = 2.dp),
+        )
+      }
+    }
+    HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)
   }
-  HorizontalDivider(color = Color.Gray, thickness = 0.25.dp)
 }

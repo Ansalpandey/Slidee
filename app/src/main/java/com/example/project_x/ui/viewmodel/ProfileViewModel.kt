@@ -40,7 +40,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
 
   fun fetchUserProfile() {
     if (!isProfileFetched) {
-      viewModelScope.launch(Dispatchers.IO) {
+      viewModelScope.launch {
         userRepository.getUserProfile().collect { resource ->
           _loggedInUserProfileState.value = resource
           isProfileFetched = true
@@ -50,7 +50,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun fetchUserProfileById(userId: String) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       userRepository.getUserProfileById(userId).collect { resource ->
         _profileState.value = resource
       }
@@ -58,7 +58,7 @@ class ProfileViewModel @Inject constructor(private val userRepository: UserRepos
   }
 
   fun editProfile(id: String, user: EditProfileRequest) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch {
       userRepository.editProfile(id, user).collect { resource -> _profileState.value = resource }
     }
   }

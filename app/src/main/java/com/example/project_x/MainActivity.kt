@@ -19,11 +19,14 @@ import com.example.project_x.ui.navigation.NavigationSetup
 import com.example.project_x.ui.theme.ProjectXTheme
 import com.example.project_x.ui.viewmodel.AuthViewModel
 import com.example.project_x.ui.viewmodel.CourseViewModel
+import com.example.project_x.ui.viewmodel.NotificationViewModel
 import com.example.project_x.ui.viewmodel.PostViewModel
 import com.example.project_x.ui.viewmodel.ProfileViewModel
 import com.example.project_x.ui.viewmodel.SearchViewModel
 import com.example.project_x.ui.viewmodel.SplashViewModel
+import com.example.project_x.websocket.WebSocketManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -41,6 +44,7 @@ class MainActivity : ComponentActivity() {
       val postViewModel: PostViewModel by viewModels()
       val searchViewModel: SearchViewModel by viewModels()
       val navController = rememberNavController()
+
       ProjectXTheme {
         Surface(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
           MyApp(
